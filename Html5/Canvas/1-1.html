@@ -9,10 +9,14 @@
             Your browser doesn't support canvas.
         </canvas>
 
+        <input type="range" id="scaleRage" style="display:block;margin:20px auto;" step="0.01" min="0.5" max="3.0" value="2"/>
+
         <script>
             var canvas = document.getElementById("canvas");
             var context = canvas.getContext("2d");
             var context2 = canvas.getContext("2d");
+
+            var slider = document.getElementById("scaleRage");
 
             var image = new Image();
             
@@ -29,7 +33,19 @@
                     //context.drawImage(image,0,0,canvas.width,canvas.height);
 
                     // drawImage(image,50,50,200,200,300,300,500,500);指定图片中的某部分（50,50,200,200）平铺在画布的某位置上（300,300,500,500）
-                    context.drawImage(image,50,50,200,200,300,300,500,500);
+
+                    // 获取缩放值
+                    var scale = slider.value;
+                    
+                    // 计算缩放后图片的宽度、高度
+                    var imageWidth = image.width*scale;
+                    var imageHeight = image.height*scale;
+
+                    // 计算图片缩放后的起点坐标
+                    var dx = canvas.width/2- imageWidth/2;
+                    var dy = canvas.height/2-imageHeight/2;
+
+                    context.drawImage(image,dx,dy,imageWidth,imageHeight);
                 }
             }
         </script>

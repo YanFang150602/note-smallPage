@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="utf-8"/>
+        <title>Canvas 1-1</title>
+    </head>
+    <body>
+        <canvas id="canvas" style="display:block;margin:0 auto;border:1px solid #CCC">
+            Your browser doesn't support canvas.
+        </canvas>
+
+        <script>
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+            var context2 = canvas.getContext("2d");
+
+            var image = new Image();
+            
+            window.onload = function () {
+                canvas.width = 1152;
+                canvas.height = 768;
+
+                image.src = "./image/1-1.jpg";
+                image.onload = function () {
+                    // drawImage(image,100,100)指定图片原有的尺寸平铺在画布上
+                    //context.drawImage(image,100,100);
+
+                    // drawImage(image,0,0,canvas.width,canvas.height)使图片铺满画布
+                    //context.drawImage(image,0,0,canvas.width,canvas.height);
+
+                    // drawImage(image,50,50,200,200,300,300,500,500);指定图片中的某部分（50,50,200,200）平铺在画布的某位置上（300,300,500,500）
+                    context.drawImage(image,50,50,200,200,300,300,500,500);
+                }
+            }
+        </script>
+    </body>
+</html>

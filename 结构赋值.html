@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+    <head>
+        <style script="text/css">
+            #china{
+                width:300px;
+                height:300px;
+                border:1px solid red;
+                margin:auto;
+            }
+            #beijing{
+                width:300px;
+                height:200px;
+                border:1px solid blue;
+                margin:auto;
+            }
+            #haiding{
+                width:200px;
+                height:100px;
+                border:1px solid green;
+                margin:auto;
+            }
+            #chaoyang{
+                width:200px;
+                height:100px;
+                border:1px solid green;
+                margin:auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="china">
+            <div id="beijing">
+                <div id="haiding">
+                
+                </div>
+                <div id="chaoyang">
+                
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        /*------------- 数组解构 start -------------*/
+        let [a,b,c] = [1,2,3]
+        console.log(b);//2
+        
+        let [e,f,[g,h],i] = ['2e','3f',['45','5h'],33]
+        console.log(g,h,i);//45 5h 33
+        
+        let [e2,f2,[g2],i2] = ['2e','3f',['45','5h']]
+        console.log(g2,i2);//45 undefined
+        
+        let [e3,f3,,i3=7] = ['3e','3f',['45','5h']]
+        console.log(f3,i3);//3f 7
+        
+        let [e4,f4,[g4],i4=7] = ['4e','4f',['45','5h'],89]
+        console.log(g4,i4);//45 89
+        /*------------- 数组解构 end -------------*/
+        
+        /*------------- 对象解构 start -------------*/
+        let obj = {name:'God',sex:'X'};
+        let {name:vName,sex:vSex} = obj;
+        let {name,sex} = obj;
+        console.log(vName,vSex);//God X
+        console.log(name,sex);//God X
+        /*------------- 对象解构 end -------------*/
+        
+        /*------------- 函数参数解构 start -------------*/
+        (({b}={a:11,b:22,c:33}) => {
+            console.log(b);//22
+        })();
+        
+        (({a:a1,b,c:c1}={a:11,b:22,c:33}) => {
+            console.log(b);//22
+        })();
+        
+        // Uncaught SyntaxError: Invalid destructuring assignment target
+        //(({a:111,b,c:c1}={}) => {
+        //    console.log(b);//22
+        //})();
+        /*------------- 函数参数解构 end -------------*/
+        
+        
+        /*------------- 字符串解构 start -------------*/
+        let [x,y,z] = '汤 菜 也';
+        console.log(x,y,z);//汤   菜
+        /*------------- 字符串解构 end -------------*/
+    </script>
+</html>

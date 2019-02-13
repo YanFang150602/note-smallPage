@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Vue 测试实例 - 菜鸟教程(runoob.com)</title>
+        <script type="text/javascript" src="vue.js"></script>
+    </head>
+    <body>
+        <author></author>
+        <div id="app"></div>
+        <script type="text/javascript">
+            var authorExtend = Vue.extend({
+                template:"<p><a :href='authorURL'>{{authorName}}</a></p>",
+                data:function(){
+                    return {
+                        authorName:"JSPang",
+                        authorURL:"http://www.runoob.com"
+                    }
+                }
+            })
+            
+            new authorExtend().$mount('author');
+            new authorExtend().$mount('#app');
+        </script>
+    </body>
+</html>

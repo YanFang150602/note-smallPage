@@ -26,8 +26,9 @@
             // 扩展实例构造器还需要挂载
             // 对于同一个扩展构造器而言，它的每一个实例其实是可以挂载到不同的标签上的
             // 利用propsData传递参数
-            new authorExtend({propsData:{name:'all developers'}}).$mount('author');
-            new authorExtend({propsData:{name:'all developers22'}}).$mount('#app');
+            var ae = new authorExtend({propsData:{name:'all developers'}}).$mount('author');
+            var ae2 = new authorExtend({propsData:{name:'all developers22'}}).$mount('#app');
+            alert(JSON.stringify(ae.$data)+";"+JSON.stringify(ae2.$data));//{"authorName":"JSPang","authorURL":"http://www.runoob.com"};{"authorName":"JSPang","authorURL":"http://www.runoob.com"}
         </script>
     </body>
 </html>

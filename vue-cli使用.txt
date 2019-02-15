@@ -1,0 +1,18 @@
+1、本地安装node.js
+2、安装vue
+Vue.js提供了两种不同的安装方式：
+1）直接引入<script>的方式（此处不做介绍了）
+2）Vue-cli脚手架，官方的命令行工具，用于快速构建具有热重载、vuex状态管理、router路由等配置的项目。
+安装Vue-cli
+npm install --global vue-cli
+
+使用脚手架搭建工程，执行以下命令：
+vue init webpack my-project
+cd my-project
+npm install
+若第一步网络无法下载webpack模板，可以先去网站https://github.com/vuejs-templates下载模板，再本地离线安装。
+模板下载后，解压到目录C:\Users\yanfangfang/.vue-templates下。
+
+再执行第一步的命令，后面加上--offline
+vue init webpack my-project --offline
+npm run dev 

@@ -1,4 +1,6 @@
-vue-i18n 仓库地址：https://github.com/kazupon/vue-i18n
+vue-i18n
+仓库地址：https://github.com/kazupon/vue-i18n
+
 兼容性：
 支持 Vue.js 2.x 以上版本
  

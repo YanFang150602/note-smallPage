@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <meta charset="utf-8" />
+    <style type="text/css">
+        /*div1一定要包容div2*/
+        #div1{
+            width:400px;
+            height:400px;
+            background-color:powderblue;
+            position:relative;/*相对定位*/
+        }
+        #div2{
+            width:100px;
+            height:100px;
+            background-color:red;
+            position:absolute;/*绝对定位*/
+            top:0px;
+            left:0px;
+        }
+        #div3{
+            width:100px;
+            height:100px;
+            background-color:red;
+            position:absolute;/*绝对定位*/
+            top:0px;
+            right:0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="div1">
+        <div id="div2"></div>
+        <div id="div3"></div>
+    </div>
+</body>
+</html>

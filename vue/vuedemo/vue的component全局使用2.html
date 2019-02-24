@@ -9,15 +9,18 @@
         <div id="app">
             <runoob></runoob>
         </div>
+		<div id="name"></div>
         <div id="app2">
             <runoob></runoob>
         </div>
         <!-- <runoob></runoob> 全局组件需使用在Vue实例中-->
         <script>
             // 注册
-            Vue.component('runoob', {
-              template: '<h1>自定义组件!</h1>'
-            })
+			let runoob = Vue.extend({
+				template: '<h1>自定义组件!</h1>'
+			});
+			
+            Vue.component('runoob', runoob)
             
             // 创建根实例
             new Vue({

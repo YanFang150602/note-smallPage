@@ -101,18 +101,7 @@ server.on('request',function(request,response){
 
     if(content){
         response.writeHead(200, {"Content-Type": "application/json;charset=utf-8"});//在返回头中写入内容类型
-        var json = JSON.parse(content);
-        if(json["response"]){
-            response.writeHead(json["response"]);
-            json = json[json["response"]];
-            if(json[request.method]){
-                json = json[request.method];
-            }
-            response.write(JSON.stringify(json));
-        }
-        else{
-            response.write(content);
-        }
+        response.write(content);
     }else{
         response.writeHead(200, {"Content-Type": "text/html"});
         response.write("ok");

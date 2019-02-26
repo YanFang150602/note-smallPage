@@ -1,0 +1,37 @@
+<!DOCtype html>
+<html>
+    <head>
+        <title>ajax调试</title>
+    </head>
+    <body>
+        <p>
+            111
+        </p>
+        <script type="text/javascript">
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                // IE6, IE5 浏览器执行代码
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            console.log(xmlhttp);
+
+            var url = "http://localhost:18003/test2";
+            var method = "GET";
+            xmlhttp.onreadystatechange = function(event){
+                console.log("event.target == xmlhttp "+(event.target == xmlhttp));
+                console.log(event.target);
+                if(xmlhttp.readyState == "4"){
+                    console.log("success...");
+                    console.log(event.target.responseText);
+                    console.log(xmlhttp.responseText);
+                }
+            };
+            xmlhttp.open(method,url);
+            xmlhttp.send(null);
+        </script>
+    </body>
+</html>

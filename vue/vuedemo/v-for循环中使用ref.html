@@ -51,6 +51,7 @@
               methods:{
                 click:function(){
                   for(let index in this.childMsgs){
+                    //当 v-for 用于元素或组件的时候，引用信息将是包含 DOM 节点或组件实例的数组。
                     this.$refs[this.childMsgs[index].ref][0].getMessage();
                   }
                 }

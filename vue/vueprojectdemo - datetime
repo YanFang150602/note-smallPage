@@ -1,0 +1,602 @@
+<template>
+  <!--data_selector start-->
+  <div class="dateSelectWrapper">
+    <div class="dateSelectInput">
+      <div class="icon-marvelIcon-21 heightCls" v-on:click="onInputClick"></div>
+      <div class="LabelArea" :title="datetime">
+        <input  type="text" v-model="datetime"
+                class="inputWrapper heightCls"
+                @input="onInputDatetime"></input>
+      </div>
+    </div>
+    <div class="dateDropWrapper" :class="{dpn:!show}">
+      <div class="yearMonthWrapper">
+        <a style="float:left;padding-left:16px;" class="icon-marvelIcon_2-11" @click="preMonth"></a>
+        <div class="yearMonthDiv" @click="openOrCloseYearMonth">
+          <input type="text" class="yearMonth" v-model="currentYear" readonly>
+          <input type="text" class="yearMonth" style="width:32px" v-model="currentMonth" readonly>
+          <a :class="[isShowYearMonthList?colspan:expand]"></a>
+        </div>
+        <a style="float:right;padding-right:16px;" class="icon-marvelIcon_2-09" @click="nextMonth"></a>
+        <div ref="yearListRef" class="yearListDiv" :class="{yearMonthListDisplay:!isShowYearMonthList}">
+          <div v-for="year in yearList" class="mousehover" :class="{select:year == currentYear}" @click="onYearClick(year)">
+            {{year}}
+          </div>
+        </div>
+        <div class="monthListDiv" :class="{yearMonthListDisplay:!isShowYearMonthList}">
+          <div v-for="month in monthList" class="mousehover" :class="{select:month == currentMonth}" @click="onMonthClick(month)">
+            {{month}}
+          </div>
+        </div>
+      </div>
+      <div class="weekWrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>{{$t('marvelDate_su')}}</th>
+            <th>{{$t('marvelDate_mo')}}</th>
+            <th>{{$t('marvelDate_tu')}}</th>
+            <th>{{$t('marvelDate_we')}}</th>
+            <th>{{$t('marvelDate_th')}}</th>
+            <th>{{$t('marvelDate_fr')}}</th>
+            <th>{{$t('marvelDate_sa')}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="week in weekList">
+            <td v-for="day in week.dayList" :class="{mousehover:day.isUse,disableused:!day.isUse,select:day.label == currentDay && day.isUse}" @click="onDayClick(day)">
+              {{day.label}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="timestampWrapper">
+        <div class="timestampInput">
+          <input type="time" v-model="timestamp" step="01" ></input>
+        </div>
+        <div style="float:right">
+          <marvel-button classCustom="autoPageCustomBtn" :label="$t('marvelDate_confirm')"
+                         v-on:onClick="submitDatetime"></marvel-button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--data_selector end-->
+</template>
+<i18n>
+  {
+  "en": {
+  "marvelDate_confirm": "Confirm",
+  "marvelDateEx_year": "Year",
+  "marvelDateEx_month": "Month",
+  "marvelDateEx_day": "Day",
+  "marvelDateEx_hour": "Hour",
+  "marvelDateEx_minute": "Minute",
+  "marvelDateEx_second": "Second",
+  "marvelDateEx_maxDate": "The current datetime is great than ",
+  "marvelDateEx_minDate": "The current datetime is less than ",
+  "marvelDate_su":"Su",
+  "marvelDate_mo":"Mo",
+  "marvelDate_tu":"Tu",
+  "marvelDate_we":"We",
+  "marvelDate_th":"Th",
+  "marvelDate_fr":"Fr",
+  "marvelDate_sa":"Sa",
+  "marvelDate_jan": "Jan",
+  "marvelDate_feb": "Feb",
+  "marvelDate_mar": "Mar",
+  "marvelDate_apr": "Apr",
+  "marvelDate_may": "May",
+  "marvelDate_jun": "Jun",
+  "marvelDate_jul": "jul",
+  "marvelDate_aug": "Aug",
+  "marvelDate_sep": "Sep",
+  "marvelDate_oct": "Oct",
+  "marvelDate_nov": "Nov",
+  "marvelDate_dec": "Dec"
+  },
+  "zh": {
+  "marvelDate_confirm": "确定",
+  "marvelDateEx_year": "年",
+  "marvelDateEx_month": "月",
+  "marvelDateEx_day": "日",
+  "marvelDateEx_hour": "时",
+  "marvelDateEx_minute": "分",
+  "marvelDateEx_second": "秒",
+  "marvelDateEx_maxDate": "当前时间大于最大时间",
+  "marvelDateEx_minDate": "当前时间小于最小时间",
+  "marvelDate_su":"Su",
+  "marvelDate_mo":"Mo",
+  "marvelDate_tu":"Tu",
+  "marvelDate_we":"We",
+  "marvelDate_th":"Th",
+  "marvelDate_fr":"Fr",
+  "marvelDate_sa":"Sa",
+  "marvelDate_jan": "Jan",
+  "marvelDate_feb": "Feb",
+  "marvelDate_mar": "Mar",
+  "marvelDate_apr": "Apr",
+  "marvelDate_may": "May",
+  "marvelDate_jun": "Jun",
+  "marvelDate_jul": "Jul",
+  "marvelDate_aug": "Aug",
+  "marvelDate_sep": "Sep",
+  "marvelDate_oct": "Oct",
+  "marvelDate_nov": "Nov",
+  "marvelDate_dec": "Dec"
+  }
+  }
+</i18n>
+<script>
+  import MarvelDateUtils from "../../component/date";
+  import MarvelButton from "../button/MarvelButton";
+  
+  export default {
+    name: 'MarvelDateCustom',
+    props: {
+      "yearStart": {
+        type: String,
+        default: "1970"
+      },
+      "yearEnd": {
+        type: String,
+        default: "2099"
+      }
+    },
+    components:{
+      MarvelButton
+    },
+    data: function () {
+      return {
+        show: false,
+        datetime: '',
+        timestamp: '',
+        currentYear: '',
+        currentMonth: '',
+        currentDay: '',
+        isShowYearMonthList: false,
+        yearList:[],
+        monthList: [
+          this.$t('marvelDate_jan'),
+          this.$t('marvelDate_feb'),
+          this.$t('marvelDate_mar'),
+          this.$t('marvelDate_apr'),
+          this.$t('marvelDate_may'),
+          this.$t('marvelDate_jun'),
+          this.$t('marvelDate_jul'),
+          this.$t('marvelDate_aug'),
+          this.$t('marvelDate_sep'),
+          this.$t('marvelDate_oct'),
+          this.$t('marvelDate_nov'),
+          this.$t('marvelDate_dec')
+        ],
+        weekList:[],
+        mouseHover: 'mousehover',
+        select: 'select',
+        colspan: 'icon-marvelIcon_2-10',
+        expand: 'icon-marvelIcon_2-12'
+      }
+    },
+    computed: {
+    },
+    created: function(){
+      
+    },
+    mounted: function () {
+      let _self = this;
+      $(this.$root.$el).on("click",function(e){
+        var e = e || window.event; //浏览器兼容性
+        var target = $(e.target) || $(e.srcElement);
+        if (!target.closest(".dateDropWrapper").length && !target.closest(".dateSelectInput").length) {
+            _self.isShowYearMonthList = false;
+            _self.show = false;
+        }
+      });
+      let curDate = new Date();
+      this.currentYear = curDate.getFullYear();
+      let currentMonth = curDate.getMonth()+1;
+      this.currentMonth = this.monthList[currentMonth - 1];
+      
+      let hhSelect = this.initDatetimeFormat(curDate.getHours());
+      let mmSelect = this.initDatetimeFormat(curDate.getMinutes());
+      let ssSelect = this.initDatetimeFormat(curDate.getSeconds());
+      this.timestamp = hhSelect+":"+mmSelect+":"+ssSelect;
+      
+      this.getWeeks(this.currentYear, currentMonth);// 当前月的第一日周几
+      this.currentDay = this.initDatetimeFormat(curDate.getDate());
+      
+      //1.init yearLst
+      this.yearLst = [];
+      for (var i = this.yearStart; i <= this.yearEnd; i++) {
+        this.yearList.push(i);
+      }
+      if(this.currentYear >= this.yearEnd){
+        for (var i = this.yearEnd+1; i < this.currentYear+50; i++) {
+          this.yearList.push(i);
+        }
+      }
+      
+    },
+    methods: {
+      preMonth: function(){
+        let currentMonth = this.monthList.indexOf(this.currentMonth)+1;
+        if(currentMonth == 12){
+          this.currentYear--;
+          currentMonth--;
+          this.currentMonth = this.monthList[currentMonth];
+        }
+        else{
+          currentMonth = currentMonth-2;
+          this.currentMonth = this.monthList[currentMonth];
+        }
+        this.getWeeks(this.currentYear,currentMonth+1);
+      },
+      nextMonth: function(){
+        let currentMonth = this.monthList.indexOf(this.currentMonth)+1;
+        if(currentMonth == 1){
+          this.currentYear++;
+          currentMonth--;
+          this.currentMonth = this.monthList[currentMonth];
+        }
+        else{
+          this.currentMonth = this.monthList[currentMonth];
+        }
+        
+        this.getWeeks(this.currentYear,currentMonth+1);
+      },
+      onYearClick: function(year){
+        this.currentYear = year;
+      },
+      onMonthClick: function(month){
+        this.currentMonth = month;
+        this.getWeeks(this.currentYear,this.monthList.indexOf(this.currentMonth)+1);
+        this.isShowYearMonthList = false;
+      },
+      onDayClick: function(day){
+        if(day.isUse){
+          this.currentDay = day.label;
+        }
+        else{
+          if(day.month == 12){
+            this.currentYear--;
+          }
+          else if(day.month == 1){
+            this.currentYear++;
+          }
+          this.currentMonth = this.monthList[day.month-1];
+          this.currentDay = day.label;
+          this.getWeeks(this.currentYear,day.month);
+        }
+      },
+      getWeeks: function(year,month){
+        this.weekList = [];
+        let str=new Date(year,month-1,1);
+        let day=str.getDay();                       // 获取该年月的第一日周几
+        let days=new Date(year,month,0).getDate();  // 获取当前月份的天数
+        
+        let first=0;
+        day==0 ? first=1 : first=7-day;              // 要减去开头的这几天
+        days = days-first;
+        let weeks =  1+ Math.ceil(days/7);
+        this.getDayList(year,month,weeks);
+        
+      },
+      getDayList: function(year,month,weeks){
+        let firstWeek = [];
+        let day = new Date(year,month-1,1).getDay();
+        firstWeek[day] = {
+          month: month,
+          label: 1,
+          isUse: true
+        };
+        for(let i = day+1; i < 7;i++){
+          firstWeek[i] = firstWeek[i-1]+1;
+          firstWeek[i] = {
+            month: month,
+            label:firstWeek[i-1].label+1,
+            isUse: true
+          }
+        }
+        if(day != 0){
+          let lastMonthDays = new Date(year,month-1,0).getDate();
+          firstWeek[day-1] = {
+            month: month-1?month-1:12,
+            label:lastMonthDays,
+            isuse: false
+          };
+          for(let i = day-1; i >=1;i--){
+            firstWeek[i-1] = {
+              month: month-1?month-1:12,
+              label:firstWeek[i].label-1,
+              isUse: false
+            }
+          }
+        }
+        this.weekList.push({dayList:firstWeek});//第一周
+        console.log(firstWeek);
+        
+        let lastWeek = [];
+        day = new Date(year,month,0).getDay();
+        let days = new Date(year,month,0).getDate();
+        lastWeek[day] = {
+          month: month,
+          label: days,
+          isUse: true
+        };
+        
+        for(let i = day-1; i >=0;i--){
+          lastWeek[i] = {
+            month: month,
+            label:lastWeek[i+1].label-1,
+            isUse: true
+          }
+        }
+        if(day != 6){
+          lastWeek[day+1] = {
+            month: month+1 == 13?1:month+1,
+            label: 1,
+            isUse: false
+          };
+          for(let i=day+1; i <= 5;i++){
+            lastWeek[i+1] = {
+              month: month+1 == 13?1:month+1,
+              label:lastWeek[i].label+1,
+              isUse: false
+            }
+          }
+        }
+        
+        let watingNum = weeks;
+        if(firstWeek.length ){
+          watingNum--;
+        }
+        if(lastWeek.length){
+          watingNum--;
+        }
+        let nextWeekDay = firstWeek[6].label;
+        for(let i =0;i<watingNum;i++){
+          let waitingWeek = [];
+          for(let j=0;j<7;j++){
+            waitingWeek[j] = {
+              label: ++nextWeekDay,
+              isUse: true
+            };
+          }
+          this.weekList.push({dayList:waitingWeek});
+        }
+        
+        this.weekList.push({dayList:lastWeek});// 最后一周
+      },
+      submitDatetime: function(){
+        if(this.timestamp.split(":").length == 2){
+          this.timestamp = this.timestamp + ":00";
+        }
+        this.datetime = this.currentYear+"/"+this.initDatetimeFormat(this.monthList.indexOf(this.currentMonth)+1)+"/"+this.initDatetimeFormat(this.currentDay)+" "+this.timestamp;
+        this.show = false;
+      },
+      openOrCloseYearMonth:function(){
+        this.isShowYearMonthList = !this.isShowYearMonthList;
+        this.$nextTick(function(){
+          let index = this.yearList.indexOf(this.currentYear);
+          index = index > 12 ? index-6: index > 6 ? index-3 : 0;
+          this.$refs.yearListRef.scrollTop = index*32;
+        });
+      },
+      initDatetimeFormat:function(str){
+        return str<10?"0"+str:str;
+      },
+      onInputClick: function () {
+        this.show = !this.show;
+        this.isShowYearMonthList = false;
+      },
+      onInputDatetime: function(){
+        
+      },
+      _changeDateTime: function(){
+        this.$emit("changeDateTime",this.datetime)
+      },
+      getDateTime: function () {
+        console.log(this.datetime.match(/\d{4}-\d{1,2}-\d{1,2} \d{1,2}：\d{1,2}：\d{1,2}/));
+        if(!/\d{4}[\/|-]\d{2}[\/|-]\d{2} \d{2}:\d{2}:\d{2}/.test(this.datetime)){
+          return "";
+        }
+        return this.datetime;
+      },
+      clearDateTime: function(){
+        this.datetime = "";
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .autoPageCustomBtn {
+    float: left;
+    text-align: center;
+  }
+  
+  .dpn {
+    display: none;
+  }
+  .heightCls{
+    height: 30px;
+    line-height: 30px;
+  }
+  .dateSelectWrapper {
+    height: 32px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    position: relative;
+    line-height: 32px;
+    color: #3399ff;
+    font-size: 16px;
+    text-align: right;
+    padding: 0 16px;
+    box-sizing: border-box;
+    background-color: white;
+  }
+  .dateSelectWrapper:hover {
+    border: 1px solid #3399ff;
+  }
+  .dateSelectWrapper .dateSelectInput {
+    height: 32px;
+    width: 100%;
+    line-height: 32px;
+    color: #3399ff;
+    font-size: 16px;
+  }
+  .dateSelectWrapper .dateSelectInput .icon-marvelIcon-21:hover{
+    cursor: pointer;
+  }
+  .dateSelectWrapper .inputWrapper{
+    width: 100%;
+    border: 0px;
+    font-size: 16px;
+    outline: none;
+  }
+  .dateSelectWrapper .LabelArea {
+    height: 100%;
+    width: calc(100% - 56px);
+    position: absolute;
+    top: 0;
+    left: 16px;
+    color: #333;
+    text-align: left;
+    font-size: 16px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .dateSelectWrapper .dateDropWrapper {
+    position: absolute;
+    width: 100%;
+    top: 40px;
+    left: 0px;
+    z-index: 1;
+    border: 1px solid #ccc;
+    background: white;
+  }
+  .dateSelectWrapper .dateDropWrapper .yearMonthWrapper{
+    height: 32px;
+    width: 100%;
+    display: inline-flex;
+    flex-flow: nowrap;
+  }
+  .yearMonthWrapper a{
+    text-align: center;
+    height: 32px;
+    line-height: 32px;
+    cursor: pointer;
+  }
+  .dateSelectWrapper .dateDropWrapper .yearMonthDiv{
+    display: inline-flex;
+    flex-flow: nowrap;
+    margin: auto;
+  }
+  .dateSelectWrapper .dateDropWrapper .yearMonthDiv .yearMonth{
+    height: 30px;
+    line-height: 30px;
+    border: none;
+    outline: none;
+    color: #666;
+    font-weight: 400;
+    width:50px;
+  }
+  .dateSelectWrapper .dateDropWrapper .select {
+    background-color: #1b8adb;
+    color: #ffffff;
+  }
+  .mousehover:hover{
+    background-color: #e6e6e6;
+    cursor: pointer;
+  }
+  .disableused{
+    color: #ccc !important;
+  }
+  .disableused:hover{
+    background-color: #e6e6e6;
+    cursor: pointer;
+  }
+  .yearMonthDiv ul li{
+    list-style:none;
+  }
+  
+  .yearMonthListDisplay{
+    display: none;
+  }
+  .yearListDiv{
+    position: absolute;
+    top: 32px;
+    left: 36%;
+    max-height: 380px;
+    width: 64px;
+    border: 1px solid #ccc;
+    background-color: white;
+    overflow: scroll;
+    text-align: center;
+    color: #666;
+    z-index: 1001;
+  }
+  
+  .monthListDiv{
+    position: absolute;
+    top: 32px;
+    left: calc(36% + 64px);
+    max-height: 380px;
+    width: 48px;
+    border: 1px solid #ccc;
+    background-color: white;
+    text-align: center;
+    color: #666;
+    z-index: 1001;
+  }
+  
+  .dateSelectWrapper .dateDropWrapper .weekWrapper{
+    text-align: -webkit-center;
+  }
+  
+  .dateDropWrapper table{
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .dateDropWrapper table th{
+    background-color: #e6e6e6;
+    color: #212121;
+    line-height: 1.9375rem;
+    height: 1.9375rem;
+    font-size: .875rem;
+    font-weight: 400;
+    text-align: center;
+  }
+  .dateDropWrapper table td{
+    color: #666;
+    line-height: 1.9375rem;
+    height: 1.9375rem;
+    font-size: .875rem;
+    text-align: center;
+  }
+  
+  .dateSelectWrapper .dateDropWrapper .timestampWrapper{
+    display: inline-block;
+    padding: 8px;
+    width: 94%;
+  }
+  .timestampInput{
+    width: 100px;
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #ccc;
+  }
+  .timestampInput input{
+    border: none;
+    height: 30px;
+    line-height: 30px;
+    outline: none;
+    float: left;
+    width: 98%;
+  }
+  /*endregion*/
+</style>

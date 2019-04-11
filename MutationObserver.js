@@ -26,4 +26,5 @@ observer.observe(element, config);
 observer.disconnect();
 //从MutationObserver的通知队列中删除所有待处理的通知，并将它们返回到MutationRecord对象的新Array中。
 observer.takeRecords();
+observer = null;
 

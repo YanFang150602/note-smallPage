@@ -1,11 +1,19 @@
+<!--
+  yearStart：开始年份
+  yearEnd：  结束年份
+  maxDate：  最大时间
+  minDate：  最小时间
+  tipContent：提示内容
+  inputTime： 组件事件($emit)，输入时，获取时间值（可以用来控制开始、结束时间场景的最大值、最小值）
+-->
 <template>
   <!--data_selector start-->
-  <div class="dateSelectWrapper">
+  <div class="dateSelectWrapper" v-bind:class="[errorsBorder]">
     <div class="dateSelectInput">
       <div ref="dateIconRef" class="icon-marvelIcon-21 heightCls" v-on:click="onInputClick"></div>
       <div class="LabelArea" :title="datetime">
-        <input  type="text" v-model="datetime"
-                class="inputWrapper heightCls"></input>
+        <input  ref="timeInputRef" type="text" v-model="datetime"
+                class="inputWrapper heightCls" @blur="onBlur" @focus="onFocus" @input="onInput"></input>
       </div>
     </div>
     <div class="dateDropWrapper" :class="{dpn:!show}">
@@ -78,6 +86,8 @@
         </div>
       </div>
     </div>
+    <marvel-tip-custom ref="validationRef" :status="2" :content="validationErrorMsg" :showToolTip="showValidation"></marvel-tip-custom>
+    <marvel-tip-custom ref="tipRef" :status="1" :content="tipContent" :showToolTip="showToolTip"></marvel-tip-custom>
   </div>
   <!--data_selector end-->
 </template>
@@ -93,6 +103,7 @@
   "marvelDateEx_second": "Second",
   "marvelDateEx_maxDate": "The current datetime is great than ",
   "marvelDateEx_minDate": "The current datetime is less than ",
+  "marvelDateEx_timeFormat": "The datetime format is wrong.",
   "marvelDate_su":"Su",
   "marvelDate_mo":"Mo",
   "marvelDate_tu":"Tu",
@@ -123,6 +134,7 @@
   "marvelDateEx_second": "秒",
   "marvelDateEx_maxDate": "当前时间大于最大时间",
   "marvelDateEx_minDate": "当前时间小于最小时间",
+  "marvelDateEx_timeFormat": "当前时间的时间格式不正确。",
   "marvelDate_su":"日",
   "marvelDate_mo":"一",
   "marvelDate_tu":"二",
@@ -148,6 +160,7 @@
 <script>
   import MarvelDateUtils from "../../component/date";
   import MarvelButton from "../button/MarvelButton";
+  import MarvelTipCustom from '../tooltip/MarvelTipCustom'
 
   export default {
     name: 'MarvelDateCustom',
@@ -159,10 +172,23 @@
       "yearEnd": {
         type: String,
         default: "2099"
+      },
+      "maxDate": {
+        type: String,
+        default: ""
+      },
+      "minDate": {
+        type: String,
+        default: ""
+      },
+      tipContent: {
+        type:String,
+        default: ''
       }
     },
     components:{
-      MarvelButton
+      MarvelButton,
+      MarvelTipCustom
     },
     data: function () {
       return {
@@ -198,7 +224,12 @@
         mouseHover: 'mousehover',
         select: 'select',
         colspan: 'icon-marvelIcon_2-10',
-        expand: 'icon-marvelIcon_2-12'
+        expand: 'icon-marvelIcon_2-12',
+        validationErrorMsg: '', //校验信息提示内容
+        errorsBorder: '',
+        showValidation: false, //是否显示校验信息
+        showToolTip: false,
+        inputFlag: false //是否手动输入时间
       }
     },
     computed: {
@@ -228,6 +259,8 @@
     },
     mounted: function () {
       this.$nextTick(function(){
+        this.$refs.validationRef.setPosition(32,38);
+        this.$refs.tipRef.setPosition(32,38);
         let _self = this;
         $(this.$root.$el).on("click",function(e){
           var e = e || window.event; //浏览器兼容性
@@ -242,7 +275,6 @@
           }
         });
       });
-
       this.initEx();
     },
     methods: {
@@ -488,6 +520,22 @@
         
         this.datetime = this.currentYear+"/"+this.initDatetimeFormat(this.monthList.indexOf(this.currentMonth)+1)+"/"+this.initDatetimeFormat(this.currentDay)+" "+this.currentHour+":"+this.currentMin+":"+this.currentSecond;
         this.show = false;
+        this.$emit("inputTime",this.datetime);
+        let _self = this;
+        // 时间框里确定时间后，聚焦在时间框上。避免失焦情况下，校验信息提示依然显示
+        setTimeout(function (event) {
+          _self.$refs.timeInputRef.focus();
+        }, 300);
+      },
+      onInput: function(){
+        //表示手动输入时间
+        this.inputFlag = true;
+        // 判断时间（正则：时间格式，isNaN：有效时间）
+        if(!/^\d{4}[\/|-]\d{1,2}[\/|-]\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}$/.test(this.datetime) || isNaN(this.getTime(this.datetime))){
+          this.$emit("inputTime","");//时间不正确，值为空
+          return;
+        }
+        this.$emit("inputTime",this.datetime);
       },
       openOrCloseHourMS:function(){
         this.isShowHourMSList = !this.isShowHourMSList;
@@ -508,12 +556,14 @@
       uptScrollPosition:function(ref,list,item){
         let index = list.indexOf(item.toString());
         index = index > 12 ? index-6: index > 6 ? index-3 : 0;
+        // 更新滚动条位置
         this.$refs[ref].scrollTop = index*32;
       },
       initDatetimeFormat:function(str){
         return str.toString().length < 2 && str < 10 ? "0"+str.toString() : str.toString();
       },
       onInputClick: function () {
+        this.inputFlag = false;
         this.show = !this.show;
         this.isShowYearMonthList = false;
         this.isShowHourMSList = false;
@@ -522,15 +572,147 @@
         this.$emit("changeDateTime",this.datetime)
       },
       getDateTime: function () {
-        if(!/^\d{4}[\/|-]\d{1,2}[\/|-]\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}$/.test(this.datetime)){
-          return "";
+        if(!/^\d{4}[\/|-]\d{1,2}[\/|-]\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}$/.test(this.datetime) || isNaN(this.getTime(this.datetime))){
+          return "";//时间不正确，值为空
         }
         return this.datetime;
       },
       clearDateTime: function(){
         this.initEx();
         this.datetime = "";
+        this.$emit("inputTime","");//若有最大值或最小值，则清空
+      },
+      onBlur: function () {
+        //失焦时，inputFlag为false
+        this.inputFlag = false;
+        this.showToolTip = false;
+        this.showValidation = false;
+        //存在校验信息时，只将边框标红
+        if(this.validationErrorMsg){
+          this.errorsBorder = 'errorsBorder';
+        }
+        //否则恢复正常样式
+        else{
+          this.errorsBorder = '';
+        }
+        this.$emit("onBlur", this.inputMsg);
+      },
+      onFocus: function () {
+        //聚焦时，inputFlag为true
+        this.inputFlag = true;
+        //存在校验信息时，则显示校验
+        if(this.validationErrorMsg){
+          this.showValidation = true;
+          this.errorsBorder = 'errorsBorder';
+        }
+        //否则不显示校验
+        else{
+          this.showValidation = false;
+          // 无校验信息且有提示信息时，则显示提示信息
+          this.showToolTip = this.tipContent?true:false;
+          this.errorsBorder = '';
+        }
+        this.$emit("onFocus", this.inputMsg);
+      },
+      showDateTimeErrorTip:function(){
+        this.showValidation = false;
+        if(this.validationErrorMsg){
+          // 手动输入的情况下，存在校验信息，则显示，否则根据this.show（时间框）来判断是否显示
+          this.showValidation = this.inputFlag?true:this.show?true:false;
+          console.log(this.inputFlag,this.show,this.showValidation);
+          this.errorsBorder = 'errorsBorder';
+        }
+      },
+      // 聚焦，提供给父组件使用
+      setFocus(){
+        this.$refs.timeInputRef.focus();
+      },
+      getTime(time){
+        return time?new Date(time).getTime():0;
+      },
+      // 校验时间，提供给父组件使用，包括对时间格式、时间是否有效、是否小于最大值、是否大于最小值
+      validateTime(){
+        if(/^\d{4}[\/|-]\d{1,2}[\/|-]\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}$/.test(this.datetime) && !isNaN(this.getTime(this.datetime))){
+          var curDate = this.getTime(this.datetime);
+          var maxDate = this.getTime(this.maxDate);
+          var minDate = this.getTime(this.minDate);
+          if(maxDate && curDate > maxDate){
+            return false;
+          }
+          if(minDate && curDate < minDate){
+            return false;
+          }
+          return true;
+        }
+        return false;
+      } 
+    },
+    watch:{
+      datetime: {
+        handler:function(val,oldVal){
+          let curDate = this.getTime(val);
+          let minDate = this.getTime(this.minDate);
+          let maxDate = this.getTime(this.maxDate);
+          if(!val){
+            this.validationErrorMsg = "";
+            this.errorsBorder = '';
+          }
+          // 监控时间不正确，则显示格式有误校验信息
+          else if(!/^\d{4}[\/|-]\d{1,2}[\/|-]\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}$/.test(val) || isNaN(curDate)){
+            console.log("datetime format",!/^\d{4}[\/|-]\d{1,2}[\/|-]\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}$/.test(val));
+            this.validationErrorMsg = this.$t('marvelDateEx_timeFormat');
+          }
+          // 监控时间大于最大时间，则显示大于最大时间校验信息
+          else if(maxDate && curDate > maxDate){
+            console.log("datetime maxDate",val,this.maxDate);
+            this.validationErrorMsg = this.$t('marvelDateEx_maxDate')+this.maxDate;
+          }
+          // 监控时间小于最小时间，则显示小于最小时间校验信息
+          else if(minDate && curDate < minDate){
+            console.log("datetime minDate",val,this.minDate);
+            this.validationErrorMsg = this.$t('marvelDateEx_minDate')+this.minDate;
+          }
+          else{
+            this.validationErrorMsg = "";
+            this.errorsBorder = '';
+          }
+          this.showDateTimeErrorTip();
+        }
+      },
+      maxDate: {
+        handler:function(val,oldVal){
+          let maxDate = this.getTime(val);
+          let datetime = this.getTime(this.datetime);
+          console.log("val=",val);
+          console.log(datetime && maxDate && maxDate < datetime);
+          if(datetime && maxDate && maxDate < datetime){
+            this.validationErrorMsg = this.$t('marvelDateEx_maxDate')+val;
+          }
+          else{
+            this.validationErrorMsg = "";
+            this.errorsBorder = '';
+          }
+          
+          this.showDateTimeErrorTip();
+        }
+      },
+      minDate: {
+        handler:function(val,oldVal){
+          let minDate = this.getTime(val);
+          let datetime = this.getTime(this.datetime);
+          console.log("minDate=",minDate);
+          if(datetime && minDate && minDate > datetime){
+            this.validationErrorMsg = this.$t('marvelDateEx_minDate')+val;
+          }
+          else{
+            this.validationErrorMsg = "";
+            this.errorsBorder = '';
+          }
+          
+          this.showDateTimeErrorTip();
+        }
       }
+      
     }
   }
 </script>
@@ -561,6 +743,9 @@
     padding: 0 16px;
     box-sizing: border-box;
     background-color: white;
+  }
+  .errorsBorder {
+    border: 1px solid #ff4c4c !important;
   }
   .dateSelectWrapper:hover {
     border: 1px solid #3399ff;

@@ -1,0 +1,2 @@
+1、computed里配的属性，如果依赖了其他属性，给该属性赋值时，注意添加setter方法；
+2、this.$nextTrick(function(){});Vue实例里属性都响应over后，会触发其中的回调函数；

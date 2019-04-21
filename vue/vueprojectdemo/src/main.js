@@ -7,6 +7,8 @@ import i18n from './i18n'
 
 Vue.config.productionTip = false
 console.log(i18n);
+
+
 /* eslint-disable no-new */
 new Vue({
   router,

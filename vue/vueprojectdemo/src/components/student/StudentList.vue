@@ -4,22 +4,22 @@
       <thead>
         <th>
           <td>
-          {{L["table.id"]}}
+          {{ $t('L["table.id"]' )}}
           </td>
           <td>
-          <!-- {{$t('L.table.name')}} -->
+          {{$t('L.table.name')}}
           </td>
           <td>
-          <!-- {{$t('L.table.age')}} -->
+          {{$t('L.table.age')}}
           </td>
           <td>
-          <!-- {{$t('L.table.grade')}} -->
+          {{$t('L.table.grade')}}
           </td>
           <td>
-          <!-- {{$t('L.table.address')}} -->
+          {{$t('L.table.address')}}
           </td>
           <td>
-          <!-- {{$t('L.table.tephone')}} -->
+          {{$t('L.table.tephone')}}
           </td>
         </th>
       </thead>

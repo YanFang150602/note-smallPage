@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <style type="text/css">
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    body{
+      -webkit-user-select: none; 
+      -moz-user-select: none; 
+      -ms-user-select: none; 
+       user-select: none;
+    }
+    #wrap{
+      height: 100px;
+      text-align: center;
+    }
+    img{
+      width: 100px;
+      height: 100px;
+      cursor: -webkit-grab;
+      cursor: -moz-grab;
+      cursor: grab;
+    }
+    #cart{
+      width: 500px;
+      height: 100px;
+      border-radius: 20px;
+      margin: 50px auto 0;
+      background-color: orange;
+    }
+    #cart.hover{
+      background-color: red;
+    }
+    #cart img{
+      width: 70px;
+      height: 70px;
+      margin: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div id='container'>
+    <div id='wrap'>
+        <img src="./image/icon1.png" title='鞋子'/>
+        <img src="./image/icon2.png" title='包子'/>
+        <img src="./image/icon3.png" title='薯片'/>
+    </div>
+    <div id='cart'></div>
+  </div>
+  <script type="text/javascript">
+    
+    //被拖动元素的三个事件
+    function dragstart(e){
+      console.log("dragstart");
+      e = EventUtil.getEvent(e);
+      var target = EventUtil.getTarget(e);
+      e.dataTransfer.setData("text",target.title);
+      //因为IE10、IE11和Edge不支持setDragImage()方法，需要判断
+      if(e.dataTransfer.setDragImage){
+        e.dataTransfer.setDragImage(target,50,50); 
+      }
+      
+      //effectAllowed事件和dropEffect事件搭配使用
+      e.dataTransfer.effectAllowed = 'move';
+      dragElement = target;
+    }
+    function drag(e){
+      console.log("drag");
+      e = EventUtil.getEvent(e);
+      var target = EventUtil.getTarget(e);
+      setOpacity(target,0);
+    }
+    function dragend(e){
+      console.log("dragend");
+      e = EventUtil.getEvent(e);
+      var target = EventUtil.getTarget(e);
+      setOpacity(target,1);
+    }
+
+    //放置目标的四个事件
+    function dragenter(e){
+      console.log("dragenter");
+      e = EventUtil.getEvent(e);
+      var target = EventUtil.getTarget(e);
+      //重要！重写dragenter事件的默认行为，使其可以触发drop事件
+      EventUtil.preventDefault(e); 
+      //dropEffect事件和effectAllowed事件搭配使用
+      e.dataTransfer.dropEffect = 'move';
+      target.className = 'hover';
+    }
+    function dragover(e){
+      console.log("dragover");
+      e = EventUtil.getEvent(e);
+      //重要！重写dragover事件的默认行为，使其可以触发drop事件
+      EventUtil.preventDefault(e); 
+    }
+    function dragleave(e){
+      console.log("dragleave");
+      e = EventUtil.getEvent(e);
+      var target = EventUtil.getTarget(e);
+      target.className = '';
+    }
+    function drop(e){
+      console.log("drop");
+      e = EventUtil.getEvent(e);
+      var target = EventUtil.getTarget(e);
+      var title = e.dataTransfer.getData("text");
+      console.warn('把%s添加到购物车中！',title);
+      target.className = '';
+      dragElement.parentNode.removeChild(dragElement);
+      var img = dragElement.cloneNode();
+      img.draggable = false;
+      setOpacity(img,1);
+      cart.appendChild(img);
+
+      //重要！为了让Firefox支持正常的拖放，取消drop事件的默认行为
+      EventUtil.preventDefault(e); 
+    }
+
+
+    //设置透明度
+    function setOpacity(element,value){
+      if(typeof element.style.opacity!='undefined'){
+        element.style.opacity=value;
+      }else{
+        element.style.filter = "alpha(opacity="+value*100+")";
+      }
+    }
+
+    //事件处理，做兼容处理
+    var EventUtil={
+      //添加事件处理程序
+      addHandler:function(element,type,handler){
+        if(element.addEventListener){
+          element.addEventListener(type,handler,false);
+        }
+        else if(element.attachEvent){
+          element.attachEvent("on"+type,handler);
+        }
+        else{
+          element["on"+type]=handler;
+        }
+      },
+      //获取事件对象
+      getEvent:function(event){
+        return event?event:window.event;
+      },
+      //获取事件的目标
+      getTarget:function(event){
+        return event.target||event.srcElement;
+      },    
+      //取消默认事件
+      preventDefault:function(event){
+        if(event.preventDefault){
+          event.preventDefault();
+        }
+        else{
+          event.returnValue=false;
+        }
+      }
+    };
+
+    var imgs = document.getElementsByTagName("img"),
+        cart = document.getElementById('cart'),
+        dragElement = null;
+
+    for(var i=0; i<imgs.length; i++ ){
+      EventUtil.addHandler(imgs[i],'dragstart',dragstart);
+      EventUtil.addHandler(imgs[i],'drag',drag);
+      EventUtil.addHandler(imgs[i],'dragend',dragend);
+    }
+    EventUtil.addHandler(cart,'dragenter',dragenter);
+    EventUtil.addHandler(cart,'dragover',dragover);
+    EventUtil.addHandler(cart,'dragleave',dragleave);
+    EventUtil.addHandler(cart,'drop',drop);
+
+  </script>
+</body>
+</html>

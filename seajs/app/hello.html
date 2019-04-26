@@ -22,16 +22,37 @@
 
 <script src="../sea-modules/seajs/seajs/2.2.0/sea.js"></script>
 <script>
-
-  // Set configuration
+  /*
   seajs.config({
-    base: "../sea-modules/",
-    alias: {
-      "jquery": "jquery/jquery/1.10.1/jquery.js"
-    }
+      //设置路径
+      paths: {
+          'gallery': 'https://a.alipayobjects.com/gallery'
+      },
+
+      // 设置别名，方便调用
+      alias: {
+          'underscore': 'gallery/underscore'
+      }
+  });
+  define(function(require, exports, module) {
+      var _ = require('underscore');
+       //=> 加载的是 https://a.alipayobjects.com/gallery/underscore.js
   });
 
-  seajs.use("../static/hello/main");
+  这样我觉得应该很清晰了.设置paths可以在保证paths的gallery值,也就是基目录可以重复使用的情况下,调用其他模块.
+  至于生效的alias而不是paths这个也不难理解.好比paths下有个键名为 modal_one 
+  alias有个模块要加载modal_one,如果是paths生效的话,岂不是就只是加载了基目录而不是加载的模块?
+  */
+  seajs.config({
+      base: "../sea-modules",
+      alias: {
+          "jquery": "jquery/jquery/1.10.1/jquery.js"
+      }
+  });
+  //use和require方法中用到的路径，只要用了“./”或“../”，base的配置就不起作用了，解析直接就是基于调用方法的文件所在的路径。
+  seajs.use("../static/main",function(main){
+      main.doSomething();
+  });
 </script>
 
 </body>

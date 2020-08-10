@@ -147,13 +147,22 @@ deferred.resolve(returnValue)
 4、更新`promise`的执行状态通知 ：
 
 ```js
-
+deferred.notify("notify");
 ```
 
 5、对`promise`处理 ：
 
 ```js
+function getPromise(){
+    var deferred = $q.defer();
+    setTimeout(() => {
+        deferred.resolve(returnValue);
+    });
+    return deferred.promise;   
+}
 
+var promise = getPromise();
+promise.then((data) => {}, (error) => {}, (notify) => {}).catch();
 ```
 
 
@@ -165,6 +174,7 @@ deferred.resolve(returnValue)
 2、试图文件里加入ui-view
 
 ```html
-
+<!-- ui-view -->
+<div ui-view></div>
 ```
 

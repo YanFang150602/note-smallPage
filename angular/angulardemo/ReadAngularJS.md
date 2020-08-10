@@ -141,7 +141,7 @@ deferred.resolve(returnValue)
 3、未成功解决其派生的`promise`。参数`error`被用来说明未成功的原因。此时`deferred`实例的`promise`对象将会捕获一个任务未成功执行的错误，`  promise.catch(errorCallback(reason){}) `：
 
 ```js
-
+deferred.reject(error);
 ```
 
 4、更新`promise`的执行状态通知 ：

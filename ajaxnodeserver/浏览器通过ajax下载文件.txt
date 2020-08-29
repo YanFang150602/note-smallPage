@@ -1,0 +1,42 @@
+var xhr = new XMLHttpRequest();
+if (settings.requestType) {
+    xhr.open(settings.requestType, settings.url, true);
+} else {
+    xhr.open("POST", settings.url, true);
+}
+xhr.setRequestHeader("Content-Type", "application/json");
+//xhr.setRequestHeader("Accept-Language", iemp.i18n.language);
+//xhr.setRequestHeader("x-uni-crsf-token", localStorage.getItem("Csrf-Token"));
+xhr.responseType = "arraybuffer";
+xhr.onload = function(event){
+  var content = event.target.response;
+  var blob = new Blob([content]);
+  downloadFile(blob,"fileName.xls");
+  
+  // 下载txt文件
+  var blob = new Blob([content], { type: 'text/plain' });
+  var reader = new FileReader();
+  reader.readAsText(blob, 'utf-8');
+  reader.onload = function (e) {
+    downloadFile(blob,"fileName.txt");
+  }
+}
+xhr.send(settings.data);
+
+function downloadFile(blob,fileName){
+  var isIE = "ActiveXObject" in window;
+  var isEdge = navigator.userAgent.indexOf("Edge") !== -1;
+  if ( isIE || isEdge ) {
+      window.navigator.msSaveOrOpenBlob(blob, fileName);
+  } else {
+      var aLink = document.createElement("a");
+      var evt = document.createEvent("MouseEvents");
+      evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, aLink);
+      aLink.download = fileName;
+      aLink.href = URL.createObjectURL(blob);
+      aLink.dispatchEvent(evt);//触发事件
+  }
+}
+
+
+

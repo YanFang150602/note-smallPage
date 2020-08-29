@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Vue 测试实例 - 菜鸟教程(runoob.com)</title>
+        <script type="text/javascript" src="js/vue.js"></script>
+    </head>
+    <body>
+        <author></author>
+        <div id="app"></div>
+        <script type="text/javascript">
+            // 使用Vue构造器，创建一个“子类”，参数是一个包含组件选项的对象，其中,data选项中必须是函数。
+            // 返回的是一个“扩展实例构造器”，也就是预设了部分选项的Vue的实例构造器
+            var authorExtend = Vue.extend({
+                template:"<p><a :href='authorURL'>{{authorName}} & {{name}}</a></p>",
+                data:function(){
+                    return {
+                        authorName:"JSPang",
+                        authorURL:"http://www.runoob.com"
+                    }
+                },
+                props : ['name']
+            })
+            
+            // 扩展实例构造器还需要挂载
+            // 对于同一个扩展构造器而言，它的每一个实例其实是可以挂载到不同的标签上的
+            // 利用propsData传递参数
+            var ae = new authorExtend({propsData:{name:'all developers'}}).$mount('author');
+            var ae2 = new authorExtend({propsData:{name:'all developers22'}}).$mount('#app');
+            alert(JSON.stringify(ae.$data)+";"+JSON.stringify(ae2.$data));//{"authorName":"JSPang","authorURL":"http://www.runoob.com"};{"authorName":"JSPang","authorURL":"http://www.runoob.com"}
+        </script>
+    </body>
+</html>

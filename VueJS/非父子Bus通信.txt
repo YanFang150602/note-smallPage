@@ -1,0 +1,59 @@
+vue 2 使用Bus.js进行兄弟(非父子)组件通信 简单案例
+  vue2中废弃了$dispatch和$broadcast广播和分发事件的方法。父子组件中可以用props和$emit()。如何实现非父子组件间的通信，可以通过实例一个vue实例Bus作为媒介，要相互通信的兄弟组件之中，都引入Bus，之后通过分别调用Bus事件触发和监听来实现组件之间的通信和参数传递。
+
+ 
+首先需要在任意地方添加一个bus.js
+ 
+在bus.js里面 写入下面信息
+import Vue from 'vue'
+export default new Vue;
+
+在需要通信的组件里都引入Bus.js
+如果你的bus.js是自定义一个bus的文件，那from后面就改成你的所放的位置
+import Bus from './bus.js'
+ 
+接下来就是要组件通信了
+添加一个 触发 #emit的事件按钮
+
+<template>
+  <div id="emit"><button @click="bus">按钮</button></div>
+</template>
+
+import Bus from './bus.js' 
+export default { 
+  data() {
+    return {
+      message: ''"
+    }
+  },
+  methods: {
+   bus () {
+      Bus.$emit('msg', '我要传给兄弟组件们，你收到没有')
+   }
+}}
+ 
+打开要和$emit通信的另外一个组件
+在钩子函数中监听msg事件
+<template>
+  <div id="on">
+    <p>{{message}}</p>
+  </div>
+</template>
+
+import Bus from './bus.js'
+export default {
+  data() {
+    return {
+      message:  ''
+    }
+  },
+  mounted() {
+    let self = this
+    Bus.$on('msg', (e) => {
+      self.message = e;
+      console.log(`传来的数据是：${e}`)
+    })
+  }
+}
+
+最后<p>会显示来自$emit传来的信息

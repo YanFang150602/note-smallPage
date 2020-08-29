@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Vue 测试实例 - 菜鸟教程(runoob.com)</title>
+        <script src="js/vue.js"></script>
+    </head>
+    <body>
+        <div id="example">
+            <parent></parent>
+        </div>
+        <script>
+          var childNode = {
+            template: `
+              <div>{{id}},{{title}},{{num}},{{isFlag}}
+                <ul>
+                  <li v-for="name in names">{{name}}</li>
+                </ul>
+              </div>`,
+            props:{               // props为数组时，所有属性都为String默认类型
+              'isFlag': Boolean,  // 父组件里使用该属性时，需要用v-bind:isFlag(:isFlag)，直接用isFlag，报Expected Boolean, got String.
+              'id': Number,       // 父组件里使用该属性时，需要用v-bind:id(:id)，直接用id，报Expected Number, got String.
+              'title':String,     // 父组件里使用该属性时，v-bind:title(:title)（可与父组件交互）、title（父传给子固定的一个值）都可以用
+              'num': {
+                'type': Number,
+                'default': 1001
+              },
+              'names': {
+                'type': Array,
+                'default': function(){
+                  return [11];
+                }
+              }
+            }
+          };
+          
+          var parentNode = {
+            template: `
+              <div class="parent">
+                <!-- 
+                  title：直接传值；
+                  names：动态绑定值，父组件改变值子组件自动渲染；
+                  id、isFlag：父组件使用该子组件的属性时需要用:id,:isFlag(不能直接id,isFlag)
+                -->
+                <child v-bind:id="20190222" title="测试test" :isFlag="true" :names="pNames"></child>
+                <button @click="change">change</button>
+              </div>`,
+            components: {
+              'child': childNode
+            },
+            data(){
+              return{
+                msg: 123,
+                pNames:["yff","cb"]
+              }
+            },
+            methods: {
+              change: function(){
+                console.log("click....");
+                // 子组件names属性在父组件里使用了v-bind动态绑定，父组件改变值子组件也会自动渲染
+                this.pNames = ["change1","change2"];
+              }
+            }
+          };
+          
+          // 创建根实例
+          new Vue({
+            el: '#example',
+            components: {
+              'parent': parentNode
+            }
+          })
+          </script>
+    </body>
+</html>

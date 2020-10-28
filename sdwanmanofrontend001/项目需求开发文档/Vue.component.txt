@@ -1,0 +1,36 @@
+Vue.component('domain-opration', {
+  template: `<span>
+      <a-select
+        v-if="!rowData['domain']"
+        placeholder="--Select--"
+        size="small"
+        @change="change"
+      >
+        <a-select-option
+          :value="item.label"
+          v-for="(item, index) in vpnTableSelects.vpnDomain"
+          v-if="!item.used"
+          :key="index"
+        >
+          {{ item.label }}
+        </a-select-option>
+      </a-select>
+      <label>{{ rowData['domain'] }} </label>
+    </span>`,
+  props,
+  computed: {
+    ...mapState(['vpnTableSelects'])
+  },
+  methods: {
+    change(label) {
+      // 参数根据业务场景随意构造
+      let params = {
+        type: 'domain',
+        index: this.index,
+        rowData: this.rowData,
+        label
+      };
+      this.$emit('on-custom-comp', params);
+    }
+  }
+});

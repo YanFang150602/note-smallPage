@@ -1,0 +1,80 @@
+{
+      "name"：String
+      "tunnelnitiate" : String,
+      "vpnType" : String
+      "hardwareAccelerator":String,
+      "routingInstance": String,
+      "tunnelRoutingInstance":String,
+      "tunnelInterface":String,
+      "branchSdwanProfile:"",
+      "precedence":Integer,//优先级
+      "remoteAuthType":"",//远端认证类型
+      "certAuthClients":{ //鉴权认证客户端 证书
+        remoteCertClient:["",……]; 
+      },
+      "pskAuthClients":{ //鉴权认证客户端 psk
+        remoteClient:["",……],
+      },
+      "revocationCheck": String,
+      "alarms":{ 
+        "ipsecStateChange":String,
+        "ikeStateChange":String,
+        "ikeAuthFailure":String
+      },
+      "ike":{
+        "version":String,
+        "mode":String,
+        "group":String,
+        "transform":String,
+        "authDimain":String,
+        "dpdTimeout":String,
+        "lifetime":String,
+        "hashAlgorithms":String[],
+        "encryptionAlgorithms":String[],
+        "groups":String[]
+      },
+      "ipsec": {
+        "forceNatT":String,
+        "fragmentation:String,
+        "transform":String,
+        "pfsGroup":String,
+        "mode":String,
+        "pfsGroups":String,
+        "hashAlgorithms":String[],
+        "encryptionAlgorithms":String[],
+        "antiReplay":String,
+        "keepaliveTimeout":String,
+        "Life":{
+          "duration":String,
+          "volume":String
+        }
+      },
+      "localAuthInfo":{
+        "authType":String,
+        "idType":String,
+        "key":String,
+        "idString":String,
+        "caChain":String,
+        "certDomain":String,
+        "certName":String
+      },
+      "peerAuthInfo":{
+        "authType":String,
+        "idType":String,
+        "idString":String,
+        "key":String,
+        "caChain":String
+      },
+      "local":{
+        "address":String,
+        "inet":String,
+        "interfaceName":String,
+        "hostname":String
+      },
+      "peer": {
+        "address":String[],
+        "inet":String,
+        "hostname":String,
+        "peerFqdnList":String[]
+      }
+    }

@@ -1,0 +1,29 @@
+1.获取token
+http://oscargw.dev.cmiov.virtueit.net:81/v0-snapshot/gateway/api/login
+POST
+
+Request：
+{
+	"loginType": "ACCOUNT",
+	"evidenceType": "PASSWORD",
+	"userName": "core",
+	"evidence": "@e6vC3sj6d3J9@3##",
+	"encrypted": false
+}
+
+Response：
+{
+    "result": {
+        "expiresIn": 1800,
+        "expiresRefresh": 43200,
+        "accountId": "106123904",
+        "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiIxbCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.wBGUkIGCv3s3J-NCVgxw7q8McY2oo15A7b0GySsDqGI",
+        "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJQcCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.XYdAJ0axujL1np9iD1q-7WD6qEvdTS6RYLIwClw9ntY"
+    },
+    "code": "001_0000_0000",
+    "message": "success",
+    "status": "000_0000_0000"
+}
+
+2.请求url请求头加上access-token
+url前缀：oscargw.dev.cmiov.virtueit.net:81/v0-snapshot/gateway/api/openapi/sdwan

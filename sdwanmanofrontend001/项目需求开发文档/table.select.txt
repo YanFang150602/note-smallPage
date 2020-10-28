@@ -1,0 +1,23 @@
+
+    selectAllCertAuth(checkdList) {
+      this.delDomainList = [];
+      checkdList.forEach(item => {
+        this.delDomainList.push(item['server']);
+      });
+    },
+    selectChangeCertAuth(checked) {
+      this.delDomainList = [];
+      checked.forEach(item => {
+        this.delDomainList.push(item['server']);
+      });
+    },
+    customDomainFunc(params) {
+      this.domainList[params.index]['server'] = params.label;
+      // 通过刷新表格数据，实现对子组件刷新
+      this.domainList = [...this.domainList];
+      // 隐藏store里下拉框已被使用的option
+      this.vpnTableSelectsMinus({
+        key: 'vpnDomain',
+        label: params.label
+      });
+    },

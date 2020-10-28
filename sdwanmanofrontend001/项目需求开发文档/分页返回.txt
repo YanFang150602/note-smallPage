@@ -1,0 +1,159 @@
+{
+    "status": "0000",
+    "message": "Success",
+    "result": {
+        "vpnProfile": [
+            {
+                "name": "controller01-Profile",
+                "vpnType": "branch-sdwan",
+                "tunnelInitiate": "automatic",
+                "hardwareAccelerator": null,
+                "routingInstance": "yuff1023DesonOrg-Control-VR",
+                "tunnelInterface": "ptvi167",
+                "tunnelRoutingInstance": "yuff1023DesonOrg-Control-VR",
+                "revocationCheck": null,
+                "branchSdwanProfile": "b2b-sdwan",
+                "precedence": null,
+                "remoteAuthType": null,
+                "certAuthClients": null,
+                "pskAuthClients": null,
+                "localAuthInfo": {
+                    "authType": "psk",
+                    "idType": "email",
+                    "idString": "yuff1026DesonD@yuff1023DesonOrg.com",
+                    "key": "N8Zupj3U0HQLUPml",
+                    "caChain": null,
+                    "certDomain": null,
+                    "certName": null
+                },
+                "peerAuthInfo": {
+                    "authType": "psk",
+                    "idType": "email",
+                    "idString": "controller01@yuff1023DesonOrg.com",
+                    "key": "1234",
+                    "caChain": null
+                },
+                "ipsec": {
+                    "forceNatT": null,
+                    "fragmentation": null,
+                    "transform": "esp-aes128-gcm",
+                    "pfsGroup": null,
+                    "mode": null,
+                    "pfsGroups": null,
+                    "hashAlgorithms": null,
+                    "encryptionAlgorithms": null,
+                    "antiReplay": null,
+                    "keepaliveTimeout": null,
+                    "life": {
+                        "duration": "28000",
+                        "volume": null
+                    }
+                },
+                "local": {
+                    "address": null,
+                    "inet": null,
+                    "interfaceName": "tvi-0/334.0",
+                    "hostname": null
+                },
+                "peer": {
+                    "address": [
+                        "10.83.128.1"
+                    ],
+                    "inet": null,
+                    "hostname": null,
+                    "peerFqdnList": null
+                },
+                "ike": {
+                    "version": null,
+                    "mode": null,
+                    "group": "mod19",
+                    "transform": "aes256-sha256",
+                    "authDomain": null,
+                    "dpdTimeout": "10",
+                    "lifetime": "28800",
+                    "hashAlgorithms": null,
+                    "encryptionAlgorithms": null,
+                    "groups": null
+                },
+                "alarms": null,
+                "rule": null
+            },
+            {
+                "name": "sjm005",
+                "vpnType": "branch-prestaging-sdwan",
+                "tunnelInitiate": "automatic",
+                "hardwareAccelerator": "any",
+                "routingInstance": "yuff1023DesonOrg-Control-VR",
+                "tunnelInterface": "tvi-0/335.0",
+                "tunnelRoutingInstance": "yuff1023DesonOrg-Control-VR",
+                "revocationCheck": null,
+                "branchSdwanProfile": null,
+                "precedence": null,
+                "remoteAuthType": null,
+                "certAuthClients": null,
+                "pskAuthClients": null,
+                "localAuthInfo": {
+                    "authType": "psk",
+                    "idType": "email",
+                    "idString": "ShangHaiF310@cmcc_shanghai.com",
+                    "key": "phZsfLzFltAcxYZi",
+                    "caChain": null,
+                    "certDomain": null,
+                    "certName": null
+                },
+                "peerAuthInfo": {
+                    "authType": "psk",
+                    "idType": "email",
+                    "idString": "controller01@cmcc_shanghai.com",
+                    "key": "1233",
+                    "caChain": null
+                },
+                "ipsec": {
+                    "forceNatT": "disable",
+                    "fragmentation": "pre-fragmentation",
+                    "transform": "esp-aes256-sha384",
+                    "pfsGroup": "mod2",
+                    "mode": "tunnel",
+                    "pfsGroups": null,
+                    "hashAlgorithms": null,
+                    "encryptionAlgorithms": null,
+                    "antiReplay": "enable",
+                    "keepaliveTimeout": "10",
+                    "life": {
+                        "duration": "28800",
+                        "volume": null
+                    }
+                },
+                "local": {
+                    "address": "2.2.2.2",
+                    "inet": "2.2.2.2",
+                    "interfaceName": null,
+                    "hostname": null
+                },
+                "peer": {
+                    "address": [
+                        "11.1.1.1"
+                    ],
+                    "inet": "11.1.1.1",
+                    "hostname": null,
+                    "peerFqdnList": null
+                },
+                "ike": {
+                    "version": "v2",
+                    "mode": null,
+                    "group": "mod2",
+                    "transform": "aes128-sha1",
+                    "authDomain": null,
+                    "dpdTimeout": "30",
+                    "lifetime": "28800",
+                    "hashAlgorithms": null,
+                    "encryptionAlgorithms": null,
+                    "groups": null
+                },
+                "alarms": null,
+                "rule": null
+            }
+        ],
+        "totalCount": "2"
+    }
+}

@@ -522,6 +522,8 @@ export default {
     this.vpnTableSelectsAll({ key: 'vpnIPsecHash' });
     this.vpnTableSelectsAll({ key: 'vpnIPsecEntry' });
     this.vpnTableSelectsAll({ key: 'vpnIPsecForward' });
+    this.cVPNProfile.ipsec = this.ipsec;
+    this.$emit('passChildContent', this.cVPNProfile);
   },
   updated() {
     this.cVPNProfile.ipsec = this.ipsec;

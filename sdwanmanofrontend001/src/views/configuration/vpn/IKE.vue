@@ -1002,6 +1002,10 @@ export default {
     this.vpnTableSelectsAll({ key: 'vpnIKEHash' });
     this.vpnTableSelectsAll({ key: 'vpnIKEEntry' });
     this.vpnTableSelectsAll({ key: 'vpnIKEDH' });
+    this.cVPNProfile.localAuthInfo = this.localAuthInfo;
+    this.cVPNProfile.peerAuthInfo = this.peerAuthInfo;
+    this.cVPNProfile.ike = this.ike;
+    this.$emit('passChildContent', this.cVPNProfile);
   },
   updated() {
     this.cVPNProfile.localAuthInfo = this.localAuthInfo;

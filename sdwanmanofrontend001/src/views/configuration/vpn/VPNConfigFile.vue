@@ -252,28 +252,28 @@ export default {
         {
           field: 'ipsec-pfsGroup',
           title: 'Forward Secrecy Mode',
-          width: 246,
+          width: 140,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ipsec-antiReplay',
           title: 'Anti Replay',
-          width: 246,
+          width: 100,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ike-version',
           title: 'IKE Version',
-          width: 246,
+          width: 80,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ike-mode',
           title: 'DH Mode',
-          width: 246,
+          width: 80,
           columnAlign: 'left',
           isResize: true
         },
@@ -471,7 +471,8 @@ export default {
         this.tableDataList = [];
         vpnProfileList.forEach(item => {
           let vpnProFile = {};
-          this.forVPNProfileProperties(item, vpnProFile);
+          let curKey = '';
+          this.forVPNProfileProperties(item, vpnProFile, curKey);
           this.tableDataList.push(vpnProFile);
         });
         this.totalCount = res.totalCount;
@@ -480,12 +481,26 @@ export default {
         this.totalCount = 0;
       }
     },
-    forVPNProfileProperties(item, vpnProFile) {
+    forVPNProfileProperties(item, vpnProFile, curKey) {
       for (let key in item) {
         if (Object.prototype.toString.call(item[key]) === '[object Object]') {
-          this.forVPNProfileProperties(item[key], vpnProFile);
-        } else if (key.indexOf('temp') == -1){
-          vpnProFile[key] = item[key];
+          if (key === 'ike' || key === 'ipsec' || key === 'local') {
+            curKey = key;
+          } else if(key === 'local') {
+            
+          }else {
+            curKey = '';
+          }
+          this.forVPNProfileProperties(item[key], vpnProFile, curKey);
+        } else if (key.indexOf('temp') == -1) {
+          if (curKey === 'ike' || curKey === 'ipsec') {
+            vpnProFile[curKey + '-' + key] = item[key];
+          } else if (curKey === 'local') {
+            curKey = curKey + ' ' + key;
+            vpnProFile[curKey] = item[key];
+          } else {
+            vpnProFile[key] = item[key];
+          }
         }
       }
     },
@@ -515,9 +530,21 @@ export default {
         this.vpnProfile.deviceName = this.deviceName;
         let params = { vpnProfile: this.vpnProfile };
         if (this.curAddVPNProfile.name) {
-          Object.assign(this.vpnProfile, this.curAddVPNProfile);
+          let curVPNProfile = {};
+          for (let key in this.curAddVPNProfile) {
+            if (!(key.indexOf('temp') == 0)) {
+              curVPNProfile[key] = this.curAddVPNProfile[key];
+            }
+          }
+          Object.assign(this.vpnProfile, curVPNProfile);
         } else {
-          Object.assign(this.vpnProfile, this.curEditVPNProfile);
+          let curVPNProfile = {};
+          for (let key in this.curEditVPNProfile) {
+            if (!(key.indexOf('temp') == 0)) {
+              curVPNProfile[key] = this.curEditVPNProfile[key];
+            }
+          }
+          Object.assign(this.vpnProfile, curVPNProfile);
         }
         const res = await VPNProfileCreate(params);
         this.addOrEditLoading = false;

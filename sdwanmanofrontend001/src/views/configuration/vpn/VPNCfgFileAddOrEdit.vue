@@ -647,7 +647,6 @@ export default {
         branchSdwanProfile: '',
         tunnelRoutingInstance: '',
         tunnelInterface: '',
-        revocationCheck: '',
         alarms: {
           ipsecStateChange: 'disable',
           ikeStateChange: 'disable',
@@ -939,8 +938,6 @@ export default {
       delStrategyList: [],
       curEditStrategy: {},
       curAddStrategy: {},
-      ikeVPNProfile: {},
-      ipsecVPNProfile: {},
       networkList: [{}],
       delNetworkList: [],
       serverList: [{}],
@@ -954,7 +951,7 @@ export default {
   computed: {
     fqdnColumns() {
       let column = {
-        field: 'peerFqdn',
+        field: 'peer-fqdn',
         title: this.$t('VPNPeerFQDN'),
         width: 120,
         columnAlign: 'left',
@@ -965,7 +962,7 @@ export default {
     },
     ipColumns() {
       let column = {
-        field: 'peerIp',
+        field: 'peer-ip',
         title: this.$t('VPNPeerIP'),
         width: 120,
         columnAlign: 'left',
@@ -1024,7 +1021,6 @@ export default {
           let row = { peerIp };
           this.peerIPList.push(row);
         });
-
       this.cVPNProfile.tempAlarms = [];
       if (this.cVPNProfile.alarms) {
         for (let key in this.cVPNProfile.alarms) {
@@ -1038,9 +1034,11 @@ export default {
       this.vpnTableSelectsAll({ key: 'vpnPeerIP' });
       this.vpnTableSelectsAll({ key: 'vpnNetwork' });
     }
-    this.changeVPNType(this.cVPNProfile.type);
+    // 设置VPN Type
+    this.changeVPNType(this.cVPNProfile.vpnType);
   },
   updated() {
+    console.log('addOrEdit vpnProfile = ', this.cVPNProfile);
     this.$emit('passChildContent', this.cVPNProfile);
   },
   methods: {
@@ -1076,10 +1074,6 @@ export default {
               let filter = true;
               for (let i = 0; i < this.delPeerFQDNList.length; i++) {
                 if (item['peerFqdn'] === this.delPeerFQDNList[i]) {
-                  this.vpnTableSelectsPlus({
-                    key: 'vpnPeerFQDN',
-                    label: item['peerFqdn']
-                  });
                   filter = false;
                   break;
                 }
@@ -1104,10 +1098,6 @@ export default {
               let filter = true;
               for (let i = 0; i < this.delPeerIPList.length; i++) {
                 if (item['peerIp'] === this.delPeerIPList[i]) {
-                  this.vpnTableSelectsPlus({
-                    key: 'vpnPeerIP',
-                    label: item['peerIp']
-                  });
                   filter = false;
                   break;
                 }
@@ -1122,7 +1112,7 @@ export default {
       }
     },
     peerFQDNCellMerge(rowIndex, rowData, field) {
-      if (field === 'peerFqdn') {
+      if (field === 'peer-fqdn') {
         return {
           colSpan: 3,
           rowSpan: 1,
@@ -1132,7 +1122,7 @@ export default {
       }
     },
     peerIPCellMerge(rowIndex, rowData, field) {
-      if (field === 'peerIp') {
+      if (field === 'peer-ip') {
         return {
           colSpan: 3,
           rowSpan: 1,
@@ -1354,8 +1344,17 @@ export default {
       this.disablePeerFQDNRadio = disabled;
       this.disablePeerIPRadio = disabled;
       this.disablePeerHostsRadio = disabled;
-      this.loopListEnableOrDisable('peerFQDNList', disabled);
-      this.loopListEnableOrDisable('peerIPList', disabled);
+      if (disabled) {
+        this.loopListEnableOrDisable('peerFQDNList', disabled);
+        this.loopListEnableOrDisable('peerIPList', disabled);
+      } else {
+        let checked = this.peerFQDNChecked
+          ? this.peerFQDNChecked
+          : this.peerIPChecked
+          ? this.peerIPChecked
+          : this.peerHostChecked;
+        this.changeRadio({ target: { value: checked } });
+      }
     },
     changeATabs(value) {
       console.log('changeATabs ', value);
@@ -1370,6 +1369,7 @@ export default {
           this.peerHostChecked = '';
           this.loopListEnableOrDisable('peerFQDNList', false);
           this.loopListEnableOrDisable('peerIPList', true);
+          console.log(this.peerIPList);
           this.disablePeerHost = true;
           break;
         // 对等IP
@@ -1435,6 +1435,7 @@ export default {
         item['_disabled'] = disabled;
         return item;
       });
+      console.log(listName, this[listName]);
     },
     selectALLFQDN(checkdList) {
       this.delPeerFQDNList = [];
@@ -1682,10 +1683,10 @@ export default {
       this.addOrEditWinVisible = true;
     },
     ikePassContent(ikeVPNProfile) {
-      this.ikeVPNProfile = ikeVPNProfile;
+      Object.assign(this.cVPNProfile, ikeVPNProfile);
     },
     ipsecPassContent(ipsecVPNProfile) {
-      this.ipsecVPNProfile = ipsecVPNProfile;
+      Object.assign(this.cVPNProfile, ipsecVPNProfile);
     }
   }
 };
@@ -1702,36 +1703,24 @@ let props = {
 };
 Vue.component('peerfqdn-opration', {
   template: `<span>
-     <a-select
+     <a-input
         v-if="!rowData['peerFqdn']"
-        placeholder="--Select--"
         size="small"
         :disabled="rowData['_disabled']"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.label"
-          v-for="(item, index) in vpnTableSelects.vpnPeerFQDN"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
+        @pressEnter="pressEnter"
+      />
       <label>{{ rowData['peerFqdn'] }} </label>
     </span>`,
   props,
-  computed: {
-    ...mapState(['vpnTableSelects'])
-  },
   methods: {
-    change(label) {
+    pressEnter(e) {
+      console.log('peerfqdn', e);
       // 参数根据业务场景随意构造
       let params = {
         type: 'peerFqdn',
         index: this.index,
         rowData: this.rowData,
-        label
+        label: e.target.value
       };
       this.$emit('on-custom-comp', params);
     }
@@ -1739,36 +1728,23 @@ Vue.component('peerfqdn-opration', {
 });
 Vue.component('peerip-opration', {
   template: `<span>
-      <a-select
+      <a-input
         v-if="!rowData['peerIp']"
-        placeholder="--Select--"
         size="small"
         :disabled="rowData['_disabled']"
-        @change="change"
-      >
-        <a-select-option
-          :value="item.label"
-          v-for="(item, index) in vpnTableSelects.vpnPeerIP"
-          v-if="!item.used"
-          :key="index"
-        >
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
-      <label>{{ rowData['peerIp'] }} </label>
+        @pressEnter="pressEnter"
+      />
+      <label>{{ rowData['peerIp']}} </label>
     </span>`,
   props,
-  computed: {
-    ...mapState(['vpnTableSelects'])
-  },
   methods: {
-    change(label) {
+    pressEnter(e) {
       // 参数根据业务场景随意构造
       let params = {
         type: 'peerIp',
         index: this.index,
         rowData: this.rowData,
-        label
+        label: e.target.value
       };
       this.$emit('on-custom-comp', params);
     }

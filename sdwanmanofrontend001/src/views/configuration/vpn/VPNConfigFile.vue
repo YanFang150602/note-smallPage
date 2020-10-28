@@ -496,8 +496,13 @@ export default {
           if (curKey === 'ike' || curKey === 'ipsec') {
             vpnProFile[curKey + '-' + key] = item[key];
           } else if (curKey === 'local') {
-            curKey = curKey + ' ' + key;
-            vpnProFile[curKey] = item[key];
+            let temp = vpnProFile[curKey];
+            curKey = curKey + '-' + key;
+            vpnProFile[curKey] = temp + '/' + item[key];
+          } else if (curKey === 'peer') {
+            let temp = vpnProFile[curKey];
+            curKey = curKey + '-' + key;
+            vpnProFile[curKey] = temp + '/' + item[key];
           } else {
             vpnProFile[key] = item[key];
           }

@@ -130,8 +130,14 @@
 </template>
 <script>
 import Vue from 'vue';
+import { mapState } from 'vuex';
 import ScheduleAddOrEdit from './ScheduleAddOrEdit';
-// import { ScheduleQuery, ScheduleAdd } from 'apis/Configuration';
+import {
+  ScheduleQuery,
+  ScheduleAdd,
+  ScheduleModify,
+  ScheduleDelete
+} from 'apis/Configuration';
 export default {
   name: 'Schedule',
   components: {
@@ -198,52 +204,19 @@ export default {
       title: ''
     };
   },
+  computed: {
+    ...mapState(['organization', 'deviceName'])
+  },
   created() {
     this.querySchedules();
   },
   methods: {
-    async mockList() {
-      const res = {
-        message: 'Success',
-        totalCount: 30,
-        result: []
-      };
-      for (let i = 0; i < 10; i++) {
-        let obj = {};
-        if (i % 3 == 0) {
-          obj = {
-            name: `name${(i + 10).toString(36)}`,
-            description: `description${(i + 10).toString(36)}`,
-            tag: '',
-            recurrence: 'Daily',
-            time: ''
-          };
-        } else if (i % 5 == 0) {
-          obj = {
-            name: `name${(i + 10).toString(36)}`,
-            description: `description${(i + 10).toString(36)}`,
-            tag: '',
-            recurrence: 'Weekly',
-            time: ''
-          };
-        } else {
-          obj = {
-            name: `name${(i + 10).toString(36)}`,
-            description: `description${(i + 10).toString(36)}`,
-            tag: '',
-            recurrence: 'Non-Recurring',
-            time: ''
-          };
-        }
-        res.result.push(obj);
-      }
-      return res;
-    },
     // 表格操作Table start
     search() {
       this.querySchedules();
     },
     customTableFunc(params) {
+      this.operType = 'edit';
       this.curEditSchedule = params.rowData;
       this.curEditSchedule.disabled = true;
       this.title = 'Edit Schedule';
@@ -251,31 +224,30 @@ export default {
     },
     selectALL(selection) {
       this.delScheduleList = {
-        ids: []
+        data: []
       };
       for (let row of selection) {
-        this.delScheduleList.ids.push(row.name);
+        this.delScheduleList.data.push(row.name);
       }
     },
     selectChange(selection) {
       this.delScheduleList = {
-        ids: []
+        data: []
       };
       for (let row of selection) {
-        this.delScheduleList.ids.push(row.name);
+        this.delScheduleList.data.push(row.name);
       }
     },
     selectGroupChange(selection) {
       console.log('select-group-change', selection);
     },
     async querySchedules() {
-      /* await ScheduleInterface.ScheduleQuery({
-        name: this.keywords,
+      const res = await ScheduleQuery({
+        orgName: this.organization,
+        deviceName: this.deviceName,
         offset: (this.pageIndex - 1) * this.pageSize,
         limit: this.pageSize
-      }); */
-      // 前端死数据
-      const res = await this.mockList();
+      });
       if (res.message === 'Success') {
         this.tableDataList = res.result;
         this.totalCount = res.totalCount;
@@ -298,6 +270,7 @@ export default {
     // 分页操作Page end
     // Schedule Add start
     showAddWinModal() {
+      this.operType = 'add';
       this.curEditSchedule = {
         name: '',
         description: '',
@@ -313,8 +286,17 @@ export default {
       let isOK = this.satisfyValidation();
       if (isOK) {
         this.addOrEditLoading = true;
-        // await ScheduleAdd(this.curAddSchedule);
-        const res = await this.mockList(this.curAddSchedule);
+        let params = {
+          orgaName: this.organization,
+          deviceName: this.deviceName
+        };
+        let res = {};
+        params.data = this.curAddSchedule;
+        if (this.operType === 'add') {
+          res = await ScheduleAdd(params);
+        } else {
+          res = await ScheduleModify(params);
+        }
         this.addOrEditLoading = false;
         if (res.message === 'Success') {
           this.addOrEditWinVisible = false;
@@ -345,6 +327,16 @@ export default {
     },
     async delOK() {
       // coding
+      const res = await ScheduleDelete({
+        orgName: this.organization,
+        deviceName: this.deviceName,
+        data: this.delScheduleList.data
+      });
+      if (res.message === 'Success') {
+        this.showDelWinModal = false;
+        this.pageIndex = 1;
+        this.querySchedules();
+      }
     },
     delCancel() {
       this.delWinVisible = false;

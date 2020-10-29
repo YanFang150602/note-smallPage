@@ -15,7 +15,8 @@ import {
   VPN_MINUS_OPTIONS,
   VPN_ALL_OPTIONS,
   DEVICE_NAME_SAVE,
-  ORGANIZATION_SAVE
+  ORGANIZATION_SAVE,
+  VPN_PEERFQDN_OPTIONS
 } from '@/store/mutation-types';
 
 export default {
@@ -143,7 +144,9 @@ export default {
     state.deviceName = deviceName;
   },
   [ORGANIZATION_SAVE](state, { organization }) {
-    console.log('organization = ', organization);
     state.organization = organization;
+  },
+  [VPN_PEERFQDN_OPTIONS](state, { peerFQDNOptions }) {
+    state.vpnTableSelects.vpnPeerFQDN = peerFQDNOptions;
   }
 };

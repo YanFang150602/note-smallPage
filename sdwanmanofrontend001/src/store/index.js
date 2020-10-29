@@ -36,26 +36,7 @@ const state = {
   deviceName: [],
   isLoading: 0,
   vpnTableSelects: {
-    vpnPeerFQDN: [
-      {
-        label: 'test',
-        used: false
-      },
-      {
-        label: 'test2',
-        used: false
-      }
-    ],
-    vpnPeerIP: [
-      {
-        label: 'ip1',
-        used: false
-      },
-      {
-        label: 'ip2',
-        used: false
-      }
-    ],
+    vpnPeerFQDN: [],
     vpnIKEHash: [
       {
         label: 'md5',
@@ -120,6 +101,7 @@ const state = {
       },
       {
         label: 'Diffie-Hellman Group 15 – 3072 bit modulus',
+        value: 'mod15',
         used: false
       },
       {
@@ -128,27 +110,27 @@ const state = {
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 19 – 256 bit ellipticcurve',
+        label: 'Diffie-Hellman Group 19 – 256 bit elliptic curve',
         value: 'mod19',
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 20 – 384 bit ellipticcurve',
+        label: 'Diffie-Hellman Group 20 - 384 bit elliptic curve',
         value: 'mod20',
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 21– 251bit ellipticcurve',
+        label: 'Diffie-Hellman Group 21 - 521 bit elliptic curve',
         value: 'mod21',
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 25– 192bit ellipticcurve',
+        label: 'Diffie-Hellman Group 25 - 192 bit elliptic curve',
         value: 'mod25',
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 26– 224bit ellipticcurve',
+        label: 'Diffie-Hellman Group 26 - 224 bit elliptic curve',
         value: 'mod26',
         used: false
       }
@@ -233,6 +215,7 @@ const state = {
       },
       {
         label: 'Diffie-Hellman Group 15 – 3072 bit modulus',
+        value: 'mod15',
         used: false
       },
       {
@@ -241,27 +224,27 @@ const state = {
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 19 – 256 bit ellipticcurve',
+        label: 'Diffie-Hellman Group 19 – 256 bit elliptic curve',
         value: 'mod19',
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 20 – 384 bit ellipticcurve',
+        label: 'Diffie-Hellman Group 20 - 384 bit elliptic curve',
         value: 'mod20',
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 21– 251bit ellipticcurve',
+        label: 'Diffie-Hellman Group 21 - 521 bit elliptic curve',
         value: 'mod21',
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 25– 192bit ellipticcurve',
+        label: 'Diffie-Hellman Group 25 - 192 bit elliptic curve',
         value: 'mod25',
         used: false
       },
       {
-        label: 'Diffie-Hellman Group 26– 224bit ellipticcurve',
+        label: 'Diffie-Hellman Group 26 - 224 bit elliptic curve',
         value: 'mod26',
         used: false
       }

@@ -693,23 +693,23 @@ export default {
           value: 'mod16'
         },
         {
-          label: 'Diffie-Hellman Group 19 – 256 bit ellipticcurve',
+          label: 'Diffie-Hellman Group 19 – 256 bit elliptic curve',
           value: 'mod19'
         },
         {
-          label: 'Diffie-Hellman Group 20 – 384 bit ellipticcurve',
+          label: 'Diffie-Hellman Group 20 – 384 bit elliptic curve',
           value: 'mod20'
         },
         {
-          label: 'Diffie-Hellman Group 21– 251bit ellipticcurve',
+          label: 'Diffie-Hellman Group 21– 251 bit elliptic curve',
           value: 'mod21'
         },
         {
-          label: 'Diffie-Hellman Group 25– 192bit ellipticcurve',
+          label: 'Diffie-Hellman Group 25– 192 bit elliptic curve',
           value: 'mod25'
         },
         {
-          label: 'Diffie-Hellman Group 26– 224bit ellipticcurve',
+          label: 'Diffie-Hellman Group 26– 224 bit elliptic curve',
           value: 'mod26'
         }
       ],
@@ -930,7 +930,7 @@ export default {
   computed: {
     hashColumns() {
       let column = {
-        field: 'hash',
+        field: 't-hash',
         title: this.$t('VPNIKEHash'),
         width: 140,
         columnAlign: 'left',
@@ -941,7 +941,7 @@ export default {
     },
     entryColumns() {
       let column = {
-        field: 'encry',
+        field: 't-encry',
         title: this.$t('VPNIKEEntry'),
         width: 140,
         columnAlign: 'left',
@@ -952,7 +952,7 @@ export default {
     },
     dhColumns() {
       let column = {
-        field: 'dh',
+        field: 't-dh',
         title: this.$t('VPNIKEDHGroup'),
         width: 140,
         columnAlign: 'left',
@@ -1060,7 +1060,7 @@ export default {
       }
     },
     hashCellMerge(rowIndex, rowData, field) {
-      if (field === 'hash') {
+      if (field === 't-hash') {
         return {
           colSpan: 3,
           rowSpan: 1,
@@ -1096,7 +1096,7 @@ export default {
       }
     },
     entryCellMerge(rowIndex, rowData, field) {
-      if (field === 'encry') {
+      if (field === 't-encry') {
         return {
           colSpan: 3,
           rowSpan: 1,
@@ -1132,7 +1132,7 @@ export default {
       }
     },
     dhCellMerge(rowIndex, rowData, field) {
-      if (field === 'dh') {
+      if (field === 't-dh') {
         return {
           colSpan: 3,
           rowSpan: 1,

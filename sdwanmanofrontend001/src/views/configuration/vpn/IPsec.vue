@@ -89,12 +89,7 @@
       <a-row type="flex" justify="start" align="top">
         <a-col>
           <a-form-model-item :label="$t('VPNIPsecRestartTime')">
-            <a-select
-              v-model="cVPNProfile.restartTimeType"
-              placeholder="--Select--"
-              style="width:170px"
-              size="small"
-            >
+            <a-select style="width:170px" size="small" default-value="hours">
               <a-select-option
                 :value="item.value"
                 v-for="(item, index) in restartTimeTypeOptions"
@@ -112,12 +107,7 @@
         </a-col>
         <a-col>
           <a-form-model-item :label="$t('VPNIPsecRestatVolumne')">
-            <a-select
-              v-model="cVPNProfile.restartVolumneType"
-              placeholder="--Select--"
-              style="width:170px"
-              size="small"
-            >
+            <a-select style="width:170px" size="small" default-value="MB">
               <a-select-option
                 :value="item.value"
                 v-for="(item, index) in restartVolumneTypeOptions"
@@ -254,9 +244,7 @@ export default {
   data() {
     return {
       cVPNProfile: {
-        tempIpsecNewOrOld: 'Old',
-        restartTimeType: 'hours',
-        restartVolumneType: 'MB'
+        tempIpsecNewOrOld: 'Old'
       },
       ipsec: {
         forceNatT: '',
@@ -440,7 +428,7 @@ export default {
           value: 'mod16'
         },
         {
-          label: 'Diffie-Hellman Group 19 – 256 bit ellipticcurve',
+          label: 'Diffie-Hellman Group 19 – 256 bit elliptic curve',
           value: 'mod19'
         },
         {
@@ -448,15 +436,15 @@ export default {
           value: 'mod20'
         },
         {
-          label: 'Diffie-Hellman Group 21– 251bit ellipticcurve',
+          label: 'Diffie-Hellman Group 21– 251 bit elliptic curve',
           value: 'mod21'
         },
         {
-          label: 'Diffie-Hellman Group 25– 192bit ellipticcurve',
+          label: 'Diffie-Hellman Group 25– 192 bit elliptic curve',
           value: 'mod25'
         },
         {
-          label: 'Diffie-Hellman Group 26– 224bit ellipticcurve',
+          label: 'Diffie-Hellman Group 26– 224 bit elliptic curve',
           value: 'mod26'
         }
       ]
@@ -709,8 +697,8 @@ export default {
           this.forwardModeList[params.index]['forward'] = params.label;
           this.forwardModeList = [...this.forwardModeList];
           this.ipsec.pfsGroups = [];
-          this.encryList.forEach(obj => {
-            this.ipsec.pfsGroups.push(obj.encry);
+          this.forwardModeList.forEach(obj => {
+            this.ipsec.pfsGroups.push(obj.forward);
           });
           this.vpnTableSelectsMinus({
             key: 'vpnIPsecForward',

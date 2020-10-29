@@ -62,9 +62,9 @@
           </a-col>
           <a-col>
             <v-pagination
-              :total="totalCount"
               size="small"
               :page-size="pageSize"
+              :total="totalCount"
               :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
               @page-change="pageChange"
               @page-size-change="pageSizeChange"
@@ -75,17 +75,19 @@
     </a-row>
     <!-- 列表 -->
     <!-- 表单主体内容 -->
-    <v-table
-      is-horizontal-resize
-      column-width-drag
-      :columns="columns"
-      :table-data="tableDataList"
-      :select-all="selectALL"
-      :select-change="selectChange"
-      :height="550"
-      style="width:100%;"
-      @on-custom-comp="customTableFunc"
-    ></v-table>
+    <div class="tablescroll">
+      <v-table
+        is-horizontal-resize
+        column-width-drag
+        :columns="columns"
+        :table-data="tableDataList"
+        :select-all="selectALL"
+        :select-change="selectChange"
+        :height="550"
+        style="width:100%;"
+        @on-custom-comp="customTableFunc"
+      ></v-table>
+    </div>
     <!-- 组群弹框 -->
     <div>
       <a-modal
@@ -139,6 +141,7 @@ import VPNCfgFileAddOrEdit from './VPNCfgFileAddOrEdit';
 import {
   VPNProfileQuery,
   VPNProfileCreate,
+  VPNProfileModify,
   VPNProfileDelete
 } from 'apis/Configuration';
 export default {
@@ -160,7 +163,7 @@ export default {
         {
           field: 'name',
           title: 'VPN Profile',
-          width: 100,
+          width: 120,
           columnAlign: 'left',
           isResize: true,
           componentName: 'vpncfgfile-opration'
@@ -168,76 +171,104 @@ export default {
         {
           field: 'vpnType',
           title: 'VPN Type',
-          width: 80,
+          width: 100,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'local-ip-interface-host',
+          field: 'local-aih',
           title: 'Local IP/Interface/Hostname',
-          width: 160,
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'peerip-fqdn-host',
+          field: 'peer-ifh',
           title: 'Peer IP/FQDN/Hostname',
           width: 160,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'local-auth-type',
-          title: 'Auth Type',
-          width: 100,
+          field: 'localAuthInfo-authType',
+          title: 'Local Auth Info - Auth Type',
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'local-auth-info',
-          title: 'Auth Info',
-          width: 100,
+          field: 'localAuthInfo-authInfo',
+          title: 'Local Auth Info - Auth Info',
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'peer-auth-type',
-          title: 'Auth Type',
-          width: 100,
+          field: 'peerAuthInfo-authType',
+          title: 'Peer Auth Info - Auth Type',
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'peer-auth-type',
-          title: 'Auth Info',
-          width: 100,
+          field: 'peerAuthInfo-authInfo',
+          title: 'Peer Auth Info - Auth Info',
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'peer-psk-auth',
-          title: 'Psk Auth Clients',
-          width: 120,
+          field: 'pskAuthClients',
+          title: 'Peer Auth Info - Psk Auth Clients',
+          width: 220,
+          columnAlign: 'left',
+          isResize: true
+        },
+        {
+          field: 'rules',
+          title: 'Rules',
+          width: 220,
+          columnAlign: 'left',
+          isResize: true
+        },
+        {
+          field: 'routing-instance',
+          title: 'Routing Instance',
+          width: 220,
+          columnAlign: 'left',
+          isResize: true
+        },
+        {
+          field: 'tunnel-interface',
+          title: 'Tunnel Interface',
+          width: 220,
+          columnAlign: 'left',
+          isResize: true
+        },
+        {
+          field: 'tunnel-initiate',
+          title: 'Tunnel Initiate',
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ipsec-fragmentation',
           title: 'IPSec Fragmentation',
-          width: 160,
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ipsec-forceNatT',
-          title: 'Force NAT-T Configuration',
-          width: 160,
+          title: 'IP Sec - Force NAT-T Configuration',
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ipsec-algorithm',
-          title: 'Encryption and Hashing Algorithm',
+          title: 'IP Sec - Encryption and Hashing Algorithm',
           width: 220,
           columnAlign: 'left',
           isResize: true
@@ -251,35 +282,35 @@ export default {
         },
         {
           field: 'ipsec-pfsGroup',
-          title: 'Forward Secrecy Mode',
-          width: 140,
+          title: 'IP Sec - Forward Secrecy Mode',
+          width: 220,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ipsec-antiReplay',
-          title: 'Anti Replay',
+          title: 'IP Sec - Anti Replay',
           width: 100,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ike-version',
-          title: 'IKE Version',
+          title: 'IKE - IKE Version',
           width: 80,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ike-mode',
-          title: 'DH Mode',
+          title: 'IKE - DH Mode',
           width: 80,
           columnAlign: 'left',
           isResize: true
         },
         {
           field: 'ike-algorithm',
-          title: 'Encryption and Hashing Algorithm',
+          title: 'IKE - Encryption and Hashing Algorithm',
           width: 220,
           columnAlign: 'left',
           isResize: true
@@ -439,7 +470,13 @@ export default {
       this.queryTableDataList();
     },
     customTableFunc(params) {
-      this.curEditVPNProfile = params.rowData;
+      for (let i = 0; i < this.allVPNProfileList.length; i++) {
+        if (this.allVPNProfileList[i].name === params.rowData.name) {
+          this.curEditVPNProfile = this.allVPNProfileList[i];
+          break;
+        }
+      }
+      this.operType = 'edit';
       this.curEditVPNProfile.tempDisabledName = true;
       this.title = 'Edit IPsec VPN';
       this.addOrEditWinVisible = true;
@@ -467,47 +504,68 @@ export default {
         limit: this.pageSize
       });
       if (res.message === 'Success') {
-        let vpnProfileList = res.vpnProfile;
+        this.allVPNProfileList = res.result.vpnProfile;
         this.tableDataList = [];
-        vpnProfileList.forEach(item => {
+        this.allVPNProfileList.forEach(item => {
           let vpnProFile = {};
-          let curKey = '';
-          this.forVPNProfileProperties(item, vpnProFile, curKey);
+          this.forVPNProfileProperties(item, vpnProFile);
+          this.forVPNProfileProperties(item.local, vpnProFile, 'local');
+          this.forVPNProfileProperties(item.peer, vpnProFile, 'peer');
+          this.forVPNProfileProperties(item.ike, vpnProFile, 'ike');
+          this.forVPNProfileProperties(item.ipsec, vpnProFile, 'ipsec');
+          this.forVPNProfileProperties(
+            item.localAuthInfo,
+            vpnProFile,
+            'localAuthInfo'
+          );
+          this.forVPNProfileProperties(
+            item.peerAuthInfo,
+            vpnProFile,
+            'peerAuthInfo'
+          );
           this.tableDataList.push(vpnProFile);
         });
-        this.totalCount = res.totalCount;
+        this.totalCount = res.result.totalCount;
       } else {
         this.tableDataList = [];
         this.totalCount = 0;
       }
     },
     forVPNProfileProperties(item, vpnProFile, curKey) {
+      let fieldValues = [];
+      let field = '';
       for (let key in item) {
-        if (Object.prototype.toString.call(item[key]) === '[object Object]') {
-          if (key === 'ike' || key === 'ipsec' || key === 'local') {
-            curKey = key;
-          } else if(key === 'local') {
-            
-          }else {
-            curKey = '';
-          }
-          this.forVPNProfileProperties(item[key], vpnProFile, curKey);
-        } else if (key.indexOf('temp') == -1) {
-          if (curKey === 'ike' || curKey === 'ipsec') {
+        if (Object.prototype.toString.call(item[key]) != '[object Object]') {
+          if (curKey === 'ike') {
+            vpnProFile[curKey + '-' + key] = item[key];
+          } else if (curKey === 'ipsec') {
             vpnProFile[curKey + '-' + key] = item[key];
           } else if (curKey === 'local') {
-            let temp = vpnProFile[curKey];
-            curKey = curKey + '-' + key;
-            vpnProFile[curKey] = temp + '/' + item[key];
+            field = 'local-aih';
+            item[key] ? fieldValues.push(key + '=' + item[key]) : '';
           } else if (curKey === 'peer') {
-            let temp = vpnProFile[curKey];
-            curKey = curKey + '-' + key;
-            vpnProFile[curKey] = temp + '/' + item[key];
+            field = 'peer-ifh';
+            item[key] ? fieldValues.push(key + '=' + item[key]) : '';
+          } else if (curKey === 'localAuthInfo') {
+            if (key === 'authType') {
+              vpnProFile[curKey + '-' + key] = item[key];
+            } else {
+              field = 'localAuthInfo-authInfo';
+              item[key] ? fieldValues.push(key + '=' + item[key]) : '';
+            }
+          } else if (curKey === 'peerAuthInfo') {
+            if (key === 'authType') {
+              vpnProFile[curKey + '-' + key] = item[key];
+            } else {
+              field = 'peerAuthInfo-authInfo';
+              item[key] ? fieldValues.push(key + '=' + item[key]) : '';
+            }
           } else {
             vpnProFile[key] = item[key];
           }
         }
       }
+      field ? (vpnProFile[field] = fieldValues.join('\n')) : '';
     },
     // 表格操作Table end
     // 分页操作Page start
@@ -523,6 +581,7 @@ export default {
     // 分页操作Page end
     // VPN Config file Add start
     showAddWinModal() {
+      this.operType = 'add';
       this.curEditVPNProfile = {};
       this.title = 'Add IPsec VPN';
       this.addOrEditWinVisible = true;
@@ -534,24 +593,19 @@ export default {
         this.vpnProfile.orgName = this.organization;
         this.vpnProfile.deviceName = this.deviceName;
         let params = { vpnProfile: this.vpnProfile };
-        if (this.curAddVPNProfile.name) {
-          let curVPNProfile = {};
-          for (let key in this.curAddVPNProfile) {
-            if (!(key.indexOf('temp') == 0)) {
-              curVPNProfile[key] = this.curAddVPNProfile[key];
-            }
+        let res = {};
+        let curVPNProfile = {};
+        for (let key in this.curAddVPNProfile) {
+          if (!(key.indexOf('temp') == 0)) {
+            curVPNProfile[key] = this.curAddVPNProfile[key];
           }
-          Object.assign(this.vpnProfile, curVPNProfile);
-        } else {
-          let curVPNProfile = {};
-          for (let key in this.curEditVPNProfile) {
-            if (!(key.indexOf('temp') == 0)) {
-              curVPNProfile[key] = this.curEditVPNProfile[key];
-            }
-          }
-          Object.assign(this.vpnProfile, curVPNProfile);
         }
-        const res = await VPNProfileCreate(params);
+        Object.assign(this.vpnProfile, curVPNProfile);
+        if (this.operType === 'add') {
+          res = await VPNProfileCreate(params);
+        } else {
+          res = await VPNProfileModify(params);
+        }
         this.addOrEditLoading = false;
         if (res.message === 'Success') {
           this.addOrEditWinVisible = false;
@@ -668,6 +722,13 @@ Vue.component('vpncfgfile-opration', {
   }
   .ant-modal-footer {
     background-color: #e9f4fc;
+  }
+}
+.tablescroll {
+  /deep/.v-table-rightview .v-table-body,
+  .v-table-rightview .v-table-footer {
+    overflow-x: auto !important;
+    overflow-y: auto;
   }
 }
 </style>

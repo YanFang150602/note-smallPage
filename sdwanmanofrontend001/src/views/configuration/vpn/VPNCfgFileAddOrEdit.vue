@@ -27,7 +27,7 @@
               :disabled="cVPNProfile.tempDisabledName"
             />
           </a-form-model-item>
-          <a-tabs default-active-key="1" @change="changeATabs">
+          <a-tabs default-active-key="1">
             <a-tab-pane key="1" tab="一般">
               <a-row type="flex" justify="start" align="top">
                 <a-col>
@@ -110,6 +110,7 @@
                       v-model="cVPNProfile.routingInstance"
                       style="width:250px;"
                       size="small"
+                      @change="changeRouteIns"
                     >
                       <a-select-option
                         :value="item.value"
@@ -244,12 +245,20 @@
                       />
                     </a-form-model-item>
                     <a-form-model-item>
-                      <a-input
+                      <a-select
                         size="small"
                         v-model="cVPNProfile.local.interfaceName"
                         style="width:250px;"
                         :disabled="disableLocalInterface"
-                      />
+                      >
+                        <a-select-option
+                          :value="item.value"
+                          v-for="(item, index) in localInterfaceOptions"
+                          :key="index"
+                        >
+                          {{ item.label }}
+                        </a-select-option>
+                      </a-select>
                     </a-form-model-item>
                   </a-col>
                   <a-col>
@@ -299,8 +308,9 @@
                       >
                         <a-select-option
                           :value="item.value"
-                          v-for="(item, index) in tunnelRouteInstanceList"
+                          v-for="(item, index) in tunnelRouteInsOptions"
                           :key="index"
+                          @change="changeTunnelRouteIns"
                         >
                           {{ item.label }}
                         </a-select-option>
@@ -317,7 +327,7 @@
                       >
                         <a-select-option
                           :value="item.value"
-                          v-for="(item, index) in tunnelInterfaceList"
+                          v-for="(item, index) in tunnelInterfaceOptions"
                           :key="index"
                         >
                           {{ item.label }}
@@ -342,7 +352,7 @@
                       >
                         <a-select-option
                           :value="item.value"
-                          v-for="(item, index) in tunnelRouteInstanceList"
+                          v-for="(item, index) in tunnelRouteInsOptions"
                           :key="index"
                         >
                           {{ item.label }}
@@ -600,6 +610,13 @@ import IKE from './IKE';
 import IPsec from './IPsec';
 import StrategyAddOrEdit from './StrategyAddOrEdit';
 import { mapState, mapMutations } from 'vuex';
+import {
+  RouteInstanceQuery,
+  TunnelRouteInsQuery,
+  TunnelRouteInsQueryByName,
+  PeerFQDNQuery,
+  LocalInterfaceQuery
+} from 'apis/Configuration';
 export default {
   name: 'VPNCfgFileAddOrEdit',
   props: ['vpnProfile'],
@@ -779,19 +796,19 @@ export default {
       peerOptions: [
         [
           {
-            label: '对等FQDN',
+            label: this.$t('VPNPeerFQDN'),
             value: '1'
           }
         ],
         [
           {
-            label: '对等IP',
+            label: this.$t('VPNPeerIP'),
             value: '2'
           }
         ],
         [
           {
-            label: '对等主机名',
+            label: this.$t('VPNPeerHost'),
             value: '3'
           }
         ]
@@ -802,19 +819,19 @@ export default {
       localOptions: [
         [
           {
-            label: '本地IP',
+            label: this.$t('VPNLocalIP'),
             value: '4'
           }
         ],
         [
           {
-            label: '本地接口',
+            label: this.$t('VPNLocalInterface'),
             value: '5'
           }
         ],
         [
           {
-            label: '主机名',
+            label: this.$t('VPNLocalHost'),
             value: '6'
           }
         ]
@@ -825,18 +842,28 @@ export default {
       baseOptionVal: '7',
       baseOptions: [
         {
-          label: '基于路由',
+          label: this.$t('VPNBaseRoute'),
           value: '7',
           disabled: false
         },
         {
-          label: '基于策略',
+          label: this.$t('VPNBaseStrategy'),
           value: '8',
           disabled: false
         }
       ],
-      tunnelRouteInstanceList: [],
-      tunnelInterfaceList: [],
+      tunnelRouteInsOptions: [
+        {
+          label: this.$t('SelectNull'),
+          value: ''
+        }
+      ],
+      tunnelInterfaceOptions: [
+        {
+          label: this.$t('SelectNull'),
+          value: ''
+        }
+      ],
       showP2PStrategy: false,
       rules: {
         name: [
@@ -945,7 +972,13 @@ export default {
       domainList: [{}],
       delDomainList: [],
       conSDWAN: false,
-      showRemoteServer: false
+      showRemoteServer: false,
+      localInterfaceOptions: [
+        {
+          label: this.$t('SelectNull'),
+          value: ''
+        }
+      ]
     };
   },
   computed: {
@@ -1003,10 +1036,12 @@ export default {
         componentName: 'domain-opration'
       };
       return [this.selection, column, this.plus, this.minus];
-    }
+    },
+    ...mapState(['organization', 'deviceName'])
   },
   created() {},
   mounted() {
+    console.log('add mounted...', this.vpnProfile);
     if (this.vpnProfile.name) {
       this.cVPNProfile = { ...this.vpnProfile };
       this.peerFQDNList = [];
@@ -1031,11 +1066,15 @@ export default {
       }
     } else {
       this.vpnTableSelectsAll({ key: 'vpnPeerFQDN' });
-      this.vpnTableSelectsAll({ key: 'vpnPeerIP' });
       this.vpnTableSelectsAll({ key: 'vpnNetwork' });
     }
     // 设置VPN Type
     this.changeVPNType(this.cVPNProfile.vpnType);
+    this.queryRouteInsOptions();
+    this.queryTunnelRouteInsOptions();
+    this.queryPeerFQDN();
+    this.queryLocalInterfaceOptions();
+    this.queryTunnelInterfaceOptions();
   },
   updated() {
     console.log('addOrEdit vpnProfile = ', this.cVPNProfile);
@@ -1045,8 +1084,159 @@ export default {
     ...mapMutations([
       'vpnTableSelectsPlus',
       'vpnTableSelectsMinus',
-      'vpnTableSelectsAll'
+      'vpnTableSelectsAll',
+      'savePeerFQDNOptions'
     ]),
+    async queryRouteInsOptions() {
+      const res = await RouteInstanceQuery({ deviceName: this.deviceName });
+      if (res.message === 'Success') {
+        console.log('routing-instance = ', res['routing-instance']);
+        this.existLocalInterface = new Map();
+        this.nExistLocalInterface = new Map();
+        res['routing-instance'].forEach(item => {
+          if (item.name) {
+            let option = {
+              label: item.name
+            };
+            this.routeOptions.push(option);
+            if (item.interfaces) {
+              let interfaces = item.interfaces.map(item => {
+                return {
+                  label: item,
+                  value: item
+                };
+              });
+              this.existLocalInterface.set(item.name, interfaces);
+            } else {
+              this.this.nExistLocalInterface.set(item.name, item.networks);
+            }
+          }
+        });
+      }
+    },
+    async queryPeerFQDN() {
+      const res = await PeerFQDNQuery({
+        orgName: this.organization,
+        deviceName: this.deviceName,
+        offset: 0,
+        limit: 10000
+      });
+      if (res.message === 'Success') {
+        let addressList = res.result['address'];
+        console.log('address = ', addressList);
+        let peerFQDNOptions = [];
+        let duFqdn = new Map();
+        addressList.forEach(item => {
+          if (item['fqdn']) {
+            let option = {
+              label: item['fqdn'],
+              used: false
+            };
+            if (!duFqdn.get(item['fqdn'])) {
+              duFqdn.set(item['fqdn'], option);
+              peerFQDNOptions.push(option);
+            }
+          }
+        });
+        this.savePeerFQDNOptions({ peerFQDNOptions });
+      }
+    },
+    // 查询隧道路由实例接口
+    async queryTunnelRouteInsOptions() {
+      const res = await TunnelRouteInsQuery({
+        orgName: this.organization,
+        deviceName: this.deviceName
+      });
+      if (res.message === 'Success') {
+        console.log(
+          'available-routing-instances = ',
+          res.result['available-routing-instances']
+        );
+        this.allTunnelRouteInsNames = res.result['available-routing-instances'];
+        this.allTunnelRouteInsNames.forEach(item => {
+          let obj = {
+            label: item
+          };
+          this.tunnelRouteInsOptions.push(obj);
+        });
+      }
+    },
+    async queryLocalInterfaceOptions() {
+      const res = await LocalInterfaceQuery({ deviceName: this.deviceName });
+      if (res.message === 'Success') {
+        console.log('networks = ', res['networks']);
+        this.allLocalInterfaceList = res['networks'];
+      }
+    },
+    async queryTunnelInterfaceOptions() {
+      const res = await TunnelRouteInsQueryByName({
+        deviceName: this.deviceName
+      });
+      if (res.message === 'Success') {
+        console.log('interfaces = ', res['interfaces']);
+        this.allTunnelInterfaceList = res['interfaces'];
+      }
+    },
+    changeTunnelRouteIns(value) {
+      if (this.existLocalInterface.get(value)) {
+        this.tunnelInterfaceOptions = this.existLocalInterface.get(value);
+        this.tunnelInterfaceOptions.unshift({
+          label: this.$t('SelectNull'),
+          value: ''
+        });
+      } else {
+        let networks = this.nExistLocalInterface.get(value);
+        this.tunnelInterfaceOptions = [];
+        networks.forEach(item => {
+          for (let i = 0; i < this.allLocalInterfaceList.length; i++) {
+            if (item === this.allLocalInterfaceList[i].name) {
+              this.allLocalInterfaceList[i].interfaces.forEach(item2 => {
+                let option = {
+                  label: item2,
+                  value: item2
+                };
+                this.localInterfaceOptions.push(option);
+              });
+              break;
+            }
+          }
+        });
+        this.localInterfaceOptions.unshift({
+          label: this.$t('SelectNull'),
+          value: ''
+        });
+      }
+    },
+    changeRouteIns(value) {
+      if (this.existLocalInterface.get(value)) {
+        this.localInterfaceOptions = this.existLocalInterface.get(value);
+        this.localInterfaceOptions.unshift({
+          label: this.$t('SelectNull'),
+          value: ''
+        });
+      } else {
+        let networks = this.nExistLocalInterface.get(value);
+        this.localInterfaceOptions = [];
+        networks.forEach(item => {
+          for (let i = 0; i < this.allLocalInterfaceList.length; i++) {
+            if (item === this.allLocalInterfaceList[i].name) {
+              this.allLocalInterfaceList[i].interfaces.forEach(item2 => {
+                let option = {
+                  label: item2,
+                  value: item2
+                };
+                this.localInterfaceOptions.push(option);
+              });
+              break;
+            }
+          }
+        });
+        this.localInterfaceOptions.unshift({
+          label: this.$t('SelectNull'),
+          value: ''
+        });
+      }
+    },
     changeAlarms(checkedValues) {
       for (let key in this.cVPNProfile.alarms) {
         this.cVPNProfile.alarms[key] = 'disable';
@@ -1074,6 +1264,10 @@ export default {
               let filter = true;
               for (let i = 0; i < this.delPeerFQDNList.length; i++) {
                 if (item['peerFqdn'] === this.delPeerFQDNList[i]) {
+                  this.vpnTableSelectsPlus({
+                    key: 'vpnPeerFQDN',
+                    label: item['peerFqdn']
+                  });
                   filter = false;
                   break;
                 }
@@ -1356,11 +1550,7 @@ export default {
         this.changeRadio({ target: { value: checked } });
       }
     },
-    changeATabs(value) {
-      console.log('changeATabs ', value);
-    },
     changeRadio(e) {
-      console.log('changeRadio ', e.target.value);
       switch (e.target.value) {
         // 对等FQDN
         case '1':
@@ -1369,8 +1559,9 @@ export default {
           this.peerHostChecked = '';
           this.loopListEnableOrDisable('peerFQDNList', false);
           this.loopListEnableOrDisable('peerIPList', true);
-          console.log(this.peerIPList);
           this.disablePeerHost = true;
+          this.cVPNProfile.peer.address = [];
+          this.cVPNProfile.peer.hostname = '';
           break;
         // 对等IP
         case '2':
@@ -1380,6 +1571,8 @@ export default {
           this.loopListEnableOrDisable('peerFQDNList', true);
           this.loopListEnableOrDisable('peerIPList', false);
           this.disablePeerHost = true;
+          this.cVPNProfile.peer.peerFqdnList = [];
+          this.cVPNProfile.peer.hostname = '';
           break;
         // 对等Host
         case '3':
@@ -1389,6 +1582,8 @@ export default {
           this.loopListEnableOrDisable('peerFQDNList', true);
           this.loopListEnableOrDisable('peerIPList', true);
           this.disablePeerHost = false;
+          this.cVPNProfile.peer.peerFqdnList = [];
+          this.cVPNProfile.peer.address = [];
           break;
         // 本地IP
         case '4':
@@ -1398,6 +1593,8 @@ export default {
           this.disableLocalIP = false;
           this.disableLocalInterface = true;
           this.disableLocalHost = true;
+          this.cVPNProfile.local.interfaceName = '';
+          this.cVPNProfile.local.hostname = '';
           break;
         case '5':
           this.localIP = '';
@@ -1406,6 +1603,8 @@ export default {
           this.disableLocalIP = true;
           this.disableLocalInterface = false;
           this.disableLocalHost = true;
+          this.cVPNProfile.local.address = '';
+          this.cVPNProfile.local.hostname = '';
           break;
         case '6':
           this.localIP = '';
@@ -1414,6 +1613,8 @@ export default {
           this.disableLocalIP = true;
           this.disableLocalInterface = true;
           this.disableLocalHost = false;
+          this.cVPNProfile.local.address = '';
+          this.cVPNProfile.local.interfaceName = '';
           break;
         // 基于路由
         case '7':
@@ -1483,6 +1684,9 @@ export default {
       this.peerIPList.forEach(obj => {
         this.cVPNProfile.peer.address.push(obj.peerIp);
       });
+      this.cVPNProfile.peer.inet = this.peerIPList.length
+        ? this.peerIPList[this.peerIPList.length - 1].peerIp
+        : '';
       // 隐藏store里下拉框已被使用的option
       this.vpnTableSelectsMinus({
         key: 'vpnPeerIP',
@@ -1703,24 +1907,36 @@ let props = {
 };
 Vue.component('peerfqdn-opration', {
   template: `<span>
-     <a-input
+      <a-select
         v-if="!rowData['peerFqdn']"
-        size="small"
+        placeholder="--Select--"
         :disabled="rowData['_disabled']"
-        @pressEnter="pressEnter"
-      />
+        size="small"
+        @change="change"
+      >
+        <a-select-option
+          :value="item.label"
+          v-for="(item, index) in vpnTableSelects.vpnPeerFQDN"
+          v-if="!item.used"
+          :key="index"
+        >
+          {{ item.label }}
+        </a-select-option>
+      </a-select>
       <label>{{ rowData['peerFqdn'] }} </label>
     </span>`,
   props,
+  computed: {
+    ...mapState(['vpnTableSelects'])
+  },
   methods: {
-    pressEnter(e) {
-      console.log('peerfqdn', e);
+    change(label) {
       // 参数根据业务场景随意构造
       let params = {
         type: 'peerFqdn',
         index: this.index,
         rowData: this.rowData,
-        label: e.target.value
+        label
       };
       this.$emit('on-custom-comp', params);
     }

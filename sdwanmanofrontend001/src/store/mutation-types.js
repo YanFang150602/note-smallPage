@@ -35,6 +35,7 @@ export const DEVICE_NAME_SAVE = 'saveDeviceName';
 export const ORGANIZATION_SAVE = 'saveOrganization';
 
 // 更新VPN相关下拉框数据
+export const VPN_PEERFQDN_OPTIONS = 'savePeerFQDNOptions';
 export const VPN_PLUS_OPTIONS = 'vpnTableSelectsPlus';
 export const VPN_MINUS_OPTIONS = 'vpnTableSelectsMinus';
 export const VPN_ALL_OPTIONS = 'vpnTableSelectsAll';

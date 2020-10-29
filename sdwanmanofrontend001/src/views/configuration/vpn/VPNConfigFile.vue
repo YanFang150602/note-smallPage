@@ -614,6 +614,7 @@ export default {
       }
     },
     addOrEditCancel() {
+      this.addOrEditLoading = false;
       this.addOrEditWinVisible = false;
       this.curAddVPNProfile = {};
       this.curEditVPNProfile = {};

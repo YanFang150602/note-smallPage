@@ -105,7 +105,7 @@
                       </a-select-option>
                     </a-select>
                   </a-form-model-item>
-                  <a-form-model-item :label="$t('VPNRouteInstance')">
+                  <a-form-model-item :label="$t('VPNRouteInstance')" prop="routingInstance">
                     <a-select
                       v-model="cVPNProfile.routingInstance"
                       style="width:250px;"
@@ -158,7 +158,7 @@
                         :table-data="peerFQDNList"
                         :select-all="selectALLFQDN"
                         :select-change="selectChangeFQDN"
-                        :height="550"
+                        :height="80"
                         style="width:250px;"
                         isFrozen="true"
                         :title-click="peerFQDNTitleClick"
@@ -184,7 +184,7 @@
                         :table-data="peerIPList"
                         :select-all="selectALLIP"
                         :select-change="selectChangeIP"
-                        :height="550"
+                        :height="80"
                         style="width:250px;"
                         isFrozen="true"
                         :title-click="peerIPTitleClick"
@@ -318,7 +318,7 @@
                     </a-form-model-item>
                   </a-col>
                   <a-col>
-                    <a-form-model-item :label="$t('VPNTunnelInterface')">
+                    <a-form-model-item :label="$t('VPNTunnelInterface')" prop="tunnelInterface">
                       <a-select
                         v-model="cVPNProfile.tunnelInterface"
                         placeholder="--Select--"
@@ -872,6 +872,12 @@ export default {
         vpnType: [
           { required: true, message: 'VPN Type is required', trigger: 'blur' }
         ],
+        routingInstance: [
+          { required: true, message: `${this.$t('VPNRouteInstance')} is required`, trigger: 'blur' }
+        ],
+        tunnelInterface: [
+          { required: true, message: `${this.$t('VPNTunnelInterface')} is required`, trigger: 'blur' }
+        ],
         addressFrom: [
           {
             required: true,
@@ -1041,7 +1047,7 @@ export default {
   },
   created() {},
   mounted() {
-    console.log('add mounted...', this.vpnProfile);
+    console.log('add mounted...');
     if (this.vpnProfile.name) {
       this.cVPNProfile = { ...this.vpnProfile };
       this.peerFQDNList = [];

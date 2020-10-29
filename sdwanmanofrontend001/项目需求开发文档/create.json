@@ -1,13 +1,13 @@
 {
-      "name"：String
-      "tunnelnitiate" : String,
-      "vpnType" : String
-      "hardwareAccelerator":String,
-      "routingInstance": String,
-      "tunnelRoutingInstance":String,
-      "tunnelInterface":String,
+      "name"：""
+      "tunnelnitiate" : "",
+      "vpnType" : ""
+      "hardwareAccelerator":"",
+      "routingInstance": "",
+      "tunnelRoutingInstance":"",
+      "tunnelInterface":"",
       "branchSdwanProfile:"",
-      "precedence":Integer,//优先级
+      "precedence":0,//优先级
       "remoteAuthType":"",//远端认证类型
       "certAuthClients":{ //鉴权认证客户端 证书
         remoteCertClient:["",……]; 
@@ -15,66 +15,66 @@
       "pskAuthClients":{ //鉴权认证客户端 psk
         remoteClient:["",……],
       },
-      "revocationCheck": String,
+      "revocationCheck": "",
       "alarms":{ 
-        "ipsecStateChange":String,
-        "ikeStateChange":String,
-        "ikeAuthFailure":String
+        "ipsecStateChange":"",
+        "ikeStateChange":"",
+        "ikeAuthFailure":""
       },
       "ike":{
-        "version":String,
-        "mode":String,
-        "group":String,
-        "transform":String,
-        "authDimain":String,
-        "dpdTimeout":String,
-        "lifetime":String,
-        "hashAlgorithms":String[],
-        "encryptionAlgorithms":String[],
-        "groups":String[]
+        "version":"",
+        "mode":"",
+        "group":"",
+        "transform":"",
+        "authDimain":"",
+        "dpdTimeout":"",
+        "lifetime":"",
+        "hashAlgorithms":""[],
+        "encryptionAlgorithms":""[],
+        "groups":""[]
       },
       "ipsec": {
-        "forceNatT":String,
-        "fragmentation:String,
-        "transform":String,
-        "pfsGroup":String,
-        "mode":String,
-        "pfsGroups":String,
-        "hashAlgorithms":String[],
-        "encryptionAlgorithms":String[],
-        "antiReplay":String,
-        "keepaliveTimeout":String,
+        "forceNatT":"",
+        "fragmentation:"",
+        "transform":"",
+        "pfsGroup":"",
+        "mode":"",
+        "pfsGroups":"",
+        "hashAlgorithms":""[],
+        "encryptionAlgorithms":""[],
+        "antiReplay":"",
+        "keepaliveTimeout":"",
         "Life":{
-          "duration":String,
-          "volume":String
+          "duration":"",
+          "volume":""
         }
       },
       "localAuthInfo":{
-        "authType":String,
-        "idType":String,
-        "key":String,
-        "idString":String,
-        "caChain":String,
-        "certDomain":String,
-        "certName":String
+        "authType":"",
+        "idType":"",
+        "key":"",
+        "idString":"",
+        "caChain":"",
+        "certDomain":"",
+        "certName":""
       },
       "peerAuthInfo":{
-        "authType":String,
-        "idType":String,
-        "idString":String,
-        "key":String,
-        "caChain":String
+        "authType":"",
+        "idType":"",
+        "idString":"",
+        "key":"",
+        "caChain":""
       },
       "local":{
-        "address":String,
-        "inet":String,
-        "interfaceName":String,
-        "hostname":String
+        "address":"",
+        "inet":"",
+        "interfaceName":"",
+        "hostname":""
       },
       "peer": {
-        "address":String[],
-        "inet":String,
-        "hostname":String,
-        "peerFqdnList":String[]
+        "address":[],
+        "inet":"",
+        "hostname":"",
+        "peerFqdnList":[]
       }
     }

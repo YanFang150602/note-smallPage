@@ -1,0 +1,1224 @@
+{
+	"info": {
+		"_postman_id": "51599842-c734-45f4-b381-9559c8542366",
+		"name": "Devops Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Zones",
+			"item": [
+				{
+					"name": "params",
+					"item": [
+						{
+							"name": "ZoneProtectFile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "access-token",
+										"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{ip}}/controller/sdwan/v1/objects/zones/params/zoneProtection?deviceName=ShanghaiF310&orgName=cmcc_shanghai",
+									"host": [
+										"{{ip}}"
+									],
+									"path": [
+										"controller",
+										"sdwan",
+										"v1",
+										"objects",
+										"zones",
+										"params",
+										"zoneProtection"
+									],
+									"query": [
+										{
+											"key": "deviceName",
+											"value": "ShanghaiF310"
+										},
+										{
+											"key": "orgName",
+											"value": "cmcc_shanghai"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LogProfile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "access-token",
+										"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{ip}}/controller/sdwan/v1/objects/zones/params/logProfile?deviceName=ShanghaiF310&orgName=cmcc_shanghai",
+									"host": [
+										"{{ip}}"
+									],
+									"path": [
+										"controller",
+										"sdwan",
+										"v1",
+										"objects",
+										"zones",
+										"params",
+										"logProfile"
+									],
+									"query": [
+										{
+											"key": "deviceName",
+											"value": "ShanghaiF310"
+										},
+										{
+											"key": "orgName",
+											"value": "cmcc_shanghai"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ZoneInterface",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "access-token",
+										"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{ip}}/controller/sdwan/v1/objects/zones/params/interfaces?deviceName=ShanghaiF310&orgName=cmcc_shanghai",
+									"host": [
+										"{{ip}}"
+									],
+									"path": [
+										"controller",
+										"sdwan",
+										"v1",
+										"objects",
+										"zones",
+										"params",
+										"interfaces"
+									],
+									"query": [
+										{
+											"key": "deviceName",
+											"value": "ShanghaiF310"
+										},
+										{
+											"key": "orgName",
+											"value": "cmcc_shanghai"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ZoneNetworks",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "access-token",
+										"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{ip}}/controller/sdwan/v1/objects/zones/params/networks?deviceName=ShanghaiF310&orgName=cmcc_shanghai",
+									"host": [
+										"{{ip}}"
+									],
+									"path": [
+										"controller",
+										"sdwan",
+										"v1",
+										"objects",
+										"zones",
+										"params",
+										"networks"
+									],
+									"query": [
+										{
+											"key": "deviceName",
+											"value": "ShanghaiF310"
+										},
+										{
+											"key": "orgName",
+											"value": "cmcc_shanghai"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RoutingInstance",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "access-token",
+										"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{ip}}/controller/sdwan/v1/objects/zones/params/routingInstance?deviceName=ShanghaiF310&orgName=cmcc_shanghai",
+									"host": [
+										"{{ip}}"
+									],
+									"path": [
+										"controller",
+										"sdwan",
+										"v1",
+										"objects",
+										"zones",
+										"params",
+										"routingInstance"
+									],
+									"query": [
+										{
+											"key": "deviceName",
+											"value": "ShanghaiF310"
+										},
+										{
+											"key": "orgName",
+											"value": "cmcc_shanghai"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Zone-query",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/objects/zones?deviceName=yuff1028D&orgName=yuff1023DesonOrg&offset=0&pageSize=25",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"objects",
+								"zones"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "yuff1028D"
+								},
+								{
+									"key": "orgName",
+									"value": "yuff1023DesonOrg"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "25"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Zone-create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"name\": \"sxyZone01\",\r\n        \"description\": \"1111\",\r\n        \"lef-profile\": \"Default-Logging-Profile\",\r\n        \"tag\": [\r\n            \"1111\"\r\n        ],\r\n        \"interface-list\": [\r\n            \"tvi-0/334.0\"\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/objects/zones"
+					},
+					"response": []
+				},
+				{
+					"name": "Zone-Modify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"name\": \"sxyZone01\",\r\n        \"description\": \"3333\",\r\n        \"lef-profile\": \"Default-Logging-Profile\",\r\n        \"tag\": [\r\n            \"1111\"\r\n        ],\r\n        \"interface-list\": [\r\n            \"tvi-0/334.0\"\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/objects/zones/zone/modify"
+					},
+					"response": []
+				},
+				{
+					"name": "Zone-Delete",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": \"sxyZone01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/objects/zones/zone/delete"
+					},
+					"response": []
+				},
+				{
+					"name": "Zone-zoneDetail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/objects/zones/zone/get?deviceName=yuff1028D&orgName=yuff1023DesonOrg&name=Intf-CM-Cloud-Zone",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"objects",
+								"zones",
+								"zone",
+								"get"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "yuff1028D"
+								},
+								{
+									"key": "orgName",
+									"value": "yuff1023DesonOrg"
+								},
+								{
+									"key": "name",
+									"value": "Intf-CM-Cloud-Zone"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "AssInterface",
+			"item": [
+				{
+					"name": "param",
+					"item": [
+						{
+							"name": "ScheduleMap",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "access-token",
+										"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{ip}}/controller/sdwan/v1/associateInterfaces/params/scheduleMap?deviceName=ShanghaiF310&orgName=cmcc_shanghai",
+									"host": [
+										"{{ip}}"
+									],
+									"path": [
+										"controller",
+										"sdwan",
+										"v1",
+										"associateInterfaces",
+										"params",
+										"scheduleMap"
+									],
+									"query": [
+										{
+											"key": "deviceName",
+											"value": "ShanghaiF310"
+										},
+										{
+											"key": "orgName",
+											"value": "cmcc_shanghai"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Ass-Interface",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "access-token",
+										"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{ip}}/controller/sdwan/v1/associateInterfaces/params/interface?deviceName=ShanghaiF310&orgName=cmcc_shanghai",
+									"host": [
+										"{{ip}}"
+									],
+									"path": [
+										"controller",
+										"sdwan",
+										"v1",
+										"associateInterfaces",
+										"params",
+										"interface"
+									],
+									"query": [
+										{
+											"key": "deviceName",
+											"value": "ShanghaiF310"
+										},
+										{
+											"key": "orgName",
+											"value": "cmcc_shanghai"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AssInterface-RwRules",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "access-token",
+										"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{ip}}/controller/sdwan/v1/associateInterfaces/params/reWriteRule?deviceName=ShanghaiF310&orgName=cmcc_shanghai&type=ieee-802.1p",
+									"host": [
+										"{{ip}}"
+									],
+									"path": [
+										"controller",
+										"sdwan",
+										"v1",
+										"associateInterfaces",
+										"params",
+										"reWriteRule"
+									],
+									"query": [
+										{
+											"key": "deviceName",
+											"value": "ShanghaiF310"
+										},
+										{
+											"key": "orgName",
+											"value": "cmcc_shanghai"
+										},
+										{
+											"key": "type",
+											"value": "ieee-802.1p"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "AssInterface-Query",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"ShanghaiF310\",\r\n    \"orgName\": \"cmcc_shanghai\",\r\n    \"data\": {\r\n        \"name\": \"sadasd\",\r\n        \"description\": \"\",\r\n        \"peakRatePps\": \"\",\r\n        \"peakRateKbps\": \"\",\r\n        \"peakBurstSize\": \"\",\r\n        \"forwardingClass\": \"fc3\",\r\n        \"lossPriority\": \"low\",\r\n        \"dscpRwEnable\": \"yes\",\r\n        \"dot1pRwEnable\": \"no\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/associateInterfaces?deviceName=ShanghaiF310&orgName=cmcc_shanghai&offset=0&pageSize=25",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"associateInterfaces"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "ShanghaiF310"
+								},
+								{
+									"key": "orgName",
+									"value": "cmcc_shanghai"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "25"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AssInterface-Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"mode\": \"interface\",\r\n        \"name\": \"tvi-0/334.0\",\r\n        \"description\": \"1234\",\r\n        \"tags\": \"11111,2222,3333\",\r\n        \"dscpRewriteRule\": null,\r\n        \"dscp6RewriteRule\": null\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/associateInterfaces"
+					},
+					"response": []
+				},
+				{
+					"name": "AssInterface-Modify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"mode\": \"interface\",\r\n        \"name\": \"tvi-0/334.0\",\r\n        \"description\": \"32131312\",\r\n        \"tags\": \"11111,2222,3333\",\r\n        \"dscpRewriteRule\": null,\r\n        \"dscp6RewriteRule\": null\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/associateInterfaces/associateInterface/modify"
+					},
+					"response": []
+				},
+				{
+					"name": "AssInterface-Deleted",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"mode\": \"interface\",\r\n        \"name\": \"tvi-0/334.0\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/associateInterfaces/associateInterface/delete"
+					},
+					"response": []
+				},
+				{
+					"name": "AssInterface-QueryDetail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/associateInterfaces/associateInterface/get?deviceName=ShanghaiF310&orgName=cmcc_shanghai&name=vni-0/0&mode=interface",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"associateInterfaces",
+								"associateInterface",
+								"get"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "ShanghaiF310"
+								},
+								{
+									"key": "orgName",
+									"value": "cmcc_shanghai"
+								},
+								{
+									"key": "name",
+									"value": "vni-0/0"
+								},
+								{
+									"key": "mode",
+									"value": "interface"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Schedule",
+			"item": [
+				{
+					"name": "Schedule-Modify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiIxWiIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.KYGmqvB6Oxh-pfHE10kJrjvDL6mEyqC231UWVqO8ncc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"name\": \"yffZone001\",\r\n        \"recurring\": [{\r\n            \"when\": \"daily\",\r\n            \"timeOfDay\": \"00:00-05:15\"\r\n        }],\r\n        \"description\": \"111111\",\r\n        \"tag\": [\"111111\", \"222222\"]\r\n    }\r\n}"
+						},
+						"url": "{{ip}}/controller/sdwan/v1/schedules/schedule/modify"
+					},
+					"response": []
+				},
+				{
+					"name": "Schedule-Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiIxWiIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.KYGmqvB6Oxh-pfHE10kJrjvDL6mEyqC231UWVqO8ncc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"name\": \"yffZone002\",\r\n        \"recurring\": [{\r\n            \"when\": \"daily\",\r\n            \"timeOfDay\": \"00:00-05:15\"\r\n        }]\r\n    }\r\n}"
+						},
+						"url": "{{ip}}/controller/sdwan/v1/schedules"
+					},
+					"response": []
+				},
+				{
+					"name": "Schedule-Query",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiIxWiIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.KYGmqvB6Oxh-pfHE10kJrjvDL6mEyqC231UWVqO8ncc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/schedules?deviceName=ShanghaiF310&orgName=cmcc_shanghai&offset=0&pageSize=25",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"schedules"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "ShanghaiF310"
+								},
+								{
+									"key": "orgName",
+									"value": "cmcc_shanghai"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "25"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Schedule-Delete",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiIxWiIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.KYGmqvB6Oxh-pfHE10kJrjvDL6mEyqC231UWVqO8ncc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": \"yffZone001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/schedules/schedule/delete"
+					},
+					"response": []
+				},
+				{
+					"name": "Schedule-queryDetail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiIxWiIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.KYGmqvB6Oxh-pfHE10kJrjvDL6mEyqC231UWVqO8ncc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/schedules/schedule/get?deviceName=yuff1028D&orgName=yuff1023DesonOrg&name=yffZone001",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"schedules",
+								"schedule",
+								"get"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "yuff1028D"
+								},
+								{
+									"key": "orgName",
+									"value": "yuff1023DesonOrg"
+								},
+								{
+									"key": "name",
+									"value": "yffZone001"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Profile-Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"name\": \"dasdada\",\r\n        \"description\": \"123\",\r\n        \"peakRatePps\": null,\r\n        \"peakRateKbps\": null,\r\n        \"peakBurstSize\": null,\r\n        \"forwardingClass\": \"fc5\",\r\n        \"lossPriority\": \"low\",\r\n        \"dot1pRwEnable\": \"no\",\r\n        \"dscpRwEnable\": \"no\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/profiles"
+					},
+					"response": []
+				},
+				{
+					"name": "Profile-Modify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"name\": \"dasdada\",\r\n        \"description\": \"234\",\r\n        \"peakRatePps\": 1111,\r\n        \"peakRateKbps\": null,\r\n        \"peakBurstSize\": null,\r\n        \"forwardingClass\": \"fc5\",\r\n        \"lossPriority\": \"low\",\r\n        \"dot1pRwEnable\": \"no\",\r\n        \"dscpRwEnable\": \"yes\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/profiles/profile/modify"
+					},
+					"response": []
+				},
+				{
+					"name": "Profile-Query",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/profiles?deviceName=yuff1028D&orgName=yuff1023DesonOrg&offset=0&pageSize=25",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"profiles"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "yuff1028D"
+								},
+								{
+									"key": "orgName",
+									"value": "yuff1023DesonOrg"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "25"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile-Delete",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": \"dasdada\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/profiles/profile/delete"
+					},
+					"response": []
+				},
+				{
+					"name": "ProfileDetail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/profiles/profile/get?deviceName=yuff1028D&orgName=yuff1023DesonOrg&name=dasdada",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"profiles",
+								"profile",
+								"get"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "yuff1028D"
+								},
+								{
+									"key": "orgName",
+									"value": "yuff1023DesonOrg"
+								},
+								{
+									"key": "name",
+									"value": "dasdada"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "qosPolicy",
+			"item": [
+				{
+					"name": "QosPolicy-Query",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/qosPolicies?deviceName=ShanghaiF310&orgName=cmcc_shanghai&offset=0&pageSize=25",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"qosPolicies"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "ShanghaiF310"
+								},
+								{
+									"key": "orgName",
+									"value": "cmcc_shanghai"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "25"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "QosPolicy-Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"name\": \"sxyPolicy02\",\r\n        \"description\": \"12456\",\r\n        \"tag\": [\r\n            \"11\",\r\n            \"22\"\r\n        ],\r\n        \"setAction\": \"allow\",\r\n        \"setQosProfile\": \"sxyProfile\",\r\n        \"setSessionTimeout\": null,\r\n        \"setPermitExistingFlow\": null,\r\n        \"destinationMacAddressType\": \"broadcast\",\r\n        \"destinationRegion\": null,\r\n        \"destinationZoneList\": [\r\n            \"Intf-LTE-Zone\"\r\n        ],\r\n        \"destinationNegate\": null,\r\n        \"destinationAddressList\": null,\r\n        \"destinationAddressGroupList\": null,\r\n        \"dscp\": null,\r\n        \"etherType\": null,\r\n        \"ieee802Value\": null,\r\n        \"ipFlags\": \"DF\",\r\n        \"ipVersion\": \"ipv4\",\r\n        \"schedule\": \"yffZone001\",\r\n        \"predefinedServicesList\": [\r\n            \"tcpmux\"\r\n        ],\r\n        \"sourceNegate\": null,\r\n        \"sourceAddressList\": null,\r\n        \"sourceAddressGroupList\": null,\r\n        \"sourceZoneList\": [\r\n            \"Intf-LTE-Zone\"\r\n        ],\r\n        \"sourceRegion\": null,\r\n        \"ge\": \"25\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/qosPolicies"
+					},
+					"response": []
+				},
+				{
+					"name": "QosPolicy-Modify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": {\r\n        \"name\": \"sxyPolicy02\",\r\n        \"description\": \"334556\",\r\n        \"tag\": [\r\n            \"11\",\r\n            \"22\"\r\n        ],\r\n        \"setAction\": \"allow\",\r\n        \"setQosProfile\": \"sxyProfile\",\r\n        \"setSessionTimeout\": null,\r\n        \"setPermitExistingFlow\": null,\r\n        \"destinationMacAddressType\": \"broadcast\",\r\n        \"destinationRegion\": null,\r\n        \"destinationZoneList\": [\r\n            \"Intf-LTE-Zone\"\r\n        ],\r\n        \"destinationNegate\": null,\r\n        \"destinationAddressList\": null,\r\n        \"destinationAddressGroupList\": null,\r\n        \"dscp\": null,\r\n        \"etherType\": null,\r\n        \"ieee802Value\": null,\r\n        \"ipFlags\": \"DF\",\r\n        \"ipVersion\": \"ipv4\",\r\n        \"schedule\": \"yffZone001\",\r\n        \"predefinedServicesList\": [\r\n            \"tcpmux\"\r\n        ],\r\n        \"sourceNegate\": null,\r\n        \"sourceAddressList\": null,\r\n        \"sourceAddressGroupList\": null,\r\n        \"sourceZoneList\": [\r\n            \"Intf-LTE-Zone\"\r\n        ],\r\n        \"sourceRegion\": null,\r\n        \"ge\": \"25\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/qosPolicies/qosPolicy/modify"
+					},
+					"response": []
+				},
+				{
+					"name": "QosPolicy-Delete",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"deviceName\": \"yuff1028D\",\r\n    \"orgName\": \"yuff1023DesonOrg\",\r\n    \"data\": \"sxyPolicy02\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{ip}}/controller/sdwan/v1/qosPolicies/qosPolicy/delete"
+					},
+					"response": []
+				},
+				{
+					"name": "Policy-QueryDetail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "access-token",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJFZCIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.ObBG8HMnpD_KqjCZRyHzzIjJGjNePG8vpyzIfPRsVXc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ip}}/controller/sdwan/v1/qosPolicies/qosPolicy/get?deviceName=yuff1028D&orgName=yuff1023DesonOrg&name=sxyPolicy",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"controller",
+								"sdwan",
+								"v1",
+								"qosPolicies",
+								"qosPolicy",
+								"get"
+							],
+							"query": [
+								{
+									"key": "deviceName",
+									"value": "yuff1028D"
+								},
+								{
+									"key": "orgName",
+									"value": "yuff1023DesonOrg"
+								},
+								{
+									"key": "name",
+									"value": "sxyPolicy"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

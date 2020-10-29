@@ -252,7 +252,7 @@ export default {
         transform: '',
         pfsGroup: '',
         mode: '',
-        pfsGroups: '',
+        pfsGroups: [],
         hashAlgorithms: [],
         encryptionAlgorithms: [],
         antiReplay: '',

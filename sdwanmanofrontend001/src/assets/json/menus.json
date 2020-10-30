@@ -7,14 +7,9 @@
     {
       "title": "IP-SLA",
       "key": "IP-SLA"
-
     }
   ],
   "secondMenus": [
-    {
-      "title": "CGNAT",
-      "key": "CGNAT"
-    },
     {
       "title": "IPSec",
       "key": "IPSec",
@@ -22,39 +17,11 @@
         {
           "title": "VPN配置文件",
           "key": "VPNConfigFile"
-        },
-        {
-          "title": "分支SDWAN配置文件",
-          "key": "BranchSDWANCfgFile"
         }
       ]
     }
   ],
   "thirdMenus": [
-    {
-      "title": "Objects",
-      "key": "Objects",
-      "children": [
-        {
-          "title": "Address",
-          "key": "Address"
-        },
-        {
-          "title": "Schedules",
-          "key": "Schedules"
-        },
-        {
-          "title": "Pre-defined",
-          "key": "Pre-defined",
-          "children": [
-            {
-              "title": "defined",
-              "key": "defined"
-            }
-          ]
-        }
-      ]
-    },
     {
       "title": "Connectors",
       "key": "Connectors"
@@ -66,28 +33,10 @@
       "key": "Objects2",
       "children": [
         {
-          "title": "Address",
-          "key": "Address2"
-        },
-        {
           "title": "Schedules",
-          "key": "Schedules2"
-        },
-        {
-          "title": "Pre-defined",
-          "key": "Pre-defined2",
-          "children": [
-            {
-              "title": "defined",
-              "key": "defined2"
-            }
-          ]
+          "key": "Schedules"
         }
       ]
-    },
-    {
-      "title": "Connectors",
-      "key": "Connectors2"
     }
   ]
 }

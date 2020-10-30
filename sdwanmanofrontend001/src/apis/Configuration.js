@@ -16,6 +16,13 @@ export const ScheduleQuery = ({ deviceName, orgName, offset, limit }) =>
     `/controller/sdwan/v1/schedules?deviceName=${deviceName}&orgName=${orgName}&offset=${offset}&pageSize=${limit}`
   );
 
+
+// 查询单个Schedule
+export const ScheduleSingleQuery = ({ deviceName, orgName, name }) =>
+  $http.get(
+    `/controller/sdwan/v1/schedules/schedule/get?deviceName=${deviceName}&orgName=${orgName}&name=${name}`
+  );
+
 // 添加Schedule
 export const ScheduleAdd = params =>
   $http.post('/controller/sdwan/v1/schedules', params);

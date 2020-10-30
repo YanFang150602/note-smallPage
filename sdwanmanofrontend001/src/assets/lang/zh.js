@@ -99,5 +99,7 @@ module.exports = {
   VPNIPsecKeepActiveTimeout: '保持活动超时',
   VPNIPsecRestartTime: 'IPsec重新启动时间',
   VPNIPsecRestatVolumne: 'IPsec重新启动卷',
-  VPNIPsecForwardSecretMode: '转发保密模式'
+  VPNIPsecForwardSecretMode: '转发保密模式',
+  IKE_ERROR: '输入有误',
+  IKE_IDTYPE_EMAIL: '请输入邮件格式'
 };

@@ -6,7 +6,7 @@
       :rules="rules"
       ref="strategyForm"
     >
-      <a-row type="flex" justify="start" align="middle">
+      <a-row type="flex" justify="start" align="top">
         <a-col>
           <a-form-model-item :label="$t('VPNStrategyName')" prop="name">
             <a-input
@@ -20,12 +20,19 @@
         </a-col>
         <a-col>
           <a-form-model-item :label="$t('VPNStrategyAgreement')">
-            <a-input
+            <a-select
               size="small"
-              v-model="cStrategy.agreement"
-              prop="name"
+              v-model="cStrategy.protocol"
               style="width:250px;"
-            />
+            >
+              <a-select-option
+                :value="item.value"
+                v-for="(item, index) in httpOptions"
+                :key="index"
+              >
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
           </a-form-model-item>
         </a-col>
       </a-row>
@@ -35,10 +42,9 @@
           <a-col>
             <a-form-model-item :label="$t('VPNStrategeAddress')">
               <a-select
-                v-model="cStrategy.source.type"
-                placeholder="please select your zone"
                 size="small"
                 style="width:250px;"
+                default-value="ipv4"
                 @change="change"
               >
                 <a-select-option
@@ -52,13 +58,11 @@
             </a-form-model-item>
           </a-col>
           <a-col>
-            <a-form-model-item
-              :label="$t('VPNStrategeFront')"
-              prop="source.address"
-            >
+            <a-form-model-item :label="$t('VPNStrategeFront')" prop="src.inet">
               <a-input
                 size="small"
-                v-model="cStrategy.source.address"
+                v-model="cStrategy.src.inet"
+                placeholder="0.0.0.0/0"
                 prop="name"
                 style="width:250px;"
               />
@@ -68,7 +72,7 @@
             <a-form-model-item :label="$t('VPNStrategePort')">
               <a-input
                 size="small"
-                v-model="cStrategy.source.port"
+                v-model="cStrategy.src.port"
                 prop="name"
                 style="width:250px;"
               />
@@ -82,10 +86,9 @@
           <a-col>
             <a-form-model-item :label="$t('VPNStrategeAddress')">
               <a-select
-                v-model="cStrategy.dest.type"
-                placeholder="please select your zone"
                 size="small"
                 style="width:250px;"
+                default-value="ipv4"
                 @change="change"
               >
                 <a-select-option
@@ -99,13 +102,11 @@
             </a-form-model-item>
           </a-col>
           <a-col>
-            <a-form-model-item
-              :label="$t('VPNStrategeFront')"
-              prop="dest.address"
-            >
+            <a-form-model-item :label="$t('VPNStrategeFront')" prop="dst.inet">
               <a-input
                 size="small"
-                v-model="cStrategy.dest.address"
+                v-model="cStrategy.dst.inet"
+                placeholder="0.0.0.0/0"
                 prop="name"
                 style="width:250px;"
               />
@@ -115,7 +116,7 @@
             <a-form-model-item :label="$t('VPNStrategePort')">
               <a-input
                 size="small"
-                v-model="cStrategy.dest.port"
+                v-model="cStrategy.dst.port"
                 prop="name"
                 style="width:250px;"
               />
@@ -132,7 +133,33 @@ export default {
   props: ['strategy'],
   data() {
     return {
-      cStrategy: {},
+      cStrategy: {
+        protocol: 'any'
+      },
+      optionList: [
+        {
+          label: 'IPv4',
+          value: 'ipv4'
+        }
+      ],
+      httpOptions: [
+        {
+          label: 'Any',
+          value: 'any'
+        },
+        {
+          label: 'UDP',
+          value: 'udp'
+        },
+        {
+          label: 'ICMP',
+          value: 'icmp'
+        },
+        {
+          label: 'TCP',
+          value: 'tcp'
+        }
+      ],
       rules: {
         name: [
           { required: true, message: 'Name is required', trigger: 'blur' }
@@ -152,15 +179,13 @@ export default {
     } else {
       this.cStrategy = {
         name: '',
-        agreement: '',
-        source: {
-          type: '',
-          address: '',
+        protocol: '',
+        src: {
+          inet: '',
           port: ''
         },
-        dest: {
-          type: '',
-          address: '',
+        dst: {
+          inet: '',
           port: ''
         }
       };

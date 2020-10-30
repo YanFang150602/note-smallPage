@@ -8,12 +8,13 @@
       align="middle"
     >
       <!--搜索栏-->
-      <a-col :style="{ width: 'calc(100%-465px)' }">
+      <a-col  :style="{ width: 'calc(100%-475px)' }">
         <a-input
           size="small"
           ref="searchInput"
           v-model="keywords"
           placeholder="Search"
+          :style="{ width: '425px' }"
           @keyup="search"
         >
           <a-icon slot="prefix" type="search" />
@@ -83,7 +84,6 @@
         :table-data="tableDataList"
         :select-all="selectALL"
         :select-change="selectChange"
-        :height="550"
         style="width:100%;"
         @on-custom-comp="customTableFunc"
       ></v-table>
@@ -476,6 +476,7 @@ export default {
           break;
         }
       }
+      this.removeNullProperty(this.curEditVPNProfile);
       this.operType = 'edit';
       this.curEditVPNProfile.tempDisabledName = true;
       this.title = 'Edit IPsec VPN';
@@ -525,7 +526,7 @@ export default {
           );
           this.tableDataList.push(vpnProFile);
         });
-        this.totalCount = res.result.totalCount;
+        this.totalCount = Number(res.result.totalCount);
       } else {
         this.tableDataList = [];
         this.totalCount = 0;
@@ -590,8 +591,6 @@ export default {
       let isOK = this.satisfyValidation();
       if (isOK) {
         this.addOrEditLoading = true;
-        this.vpnProfile.orgName = this.organization;
-        this.vpnProfile.deviceName = this.deviceName;
         let params = { vpnProfile: this.vpnProfile };
         let res = {};
         let curVPNProfile = {};
@@ -600,7 +599,12 @@ export default {
             curVPNProfile[key] = this.curAddVPNProfile[key];
           }
         }
+        curVPNProfile.orgName = this.organization;
+        curVPNProfile.deviceName = this.deviceName;
         Object.assign(this.vpnProfile, curVPNProfile);
+        this.removeNullProperty(this.vpnProfile);
+        
+        console.log('this.params = ', params);
         if (this.operType === 'add') {
           res = await VPNProfileCreate(params);
         } else {
@@ -610,6 +614,17 @@ export default {
         if (res.message === 'Success') {
           this.addOrEditWinVisible = false;
           this.queryTableDataList();
+        }
+      }
+    },
+    removeNullProperty(obj) {
+      for (let key in obj) {
+        if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
+          this.removeNullProperty(obj[key]);
+        } else {
+          if (obj[key] === '' || (obj[key] && obj[key].length === 0) || obj[key] == null) {
+            delete obj[key];
+          }
         }
       }
     },
@@ -625,6 +640,18 @@ export default {
     satisfyValidation() {
       let isOK = true;
       this.$refs.vpnProfileAddOrEditRef.$refs.normalRef.validate(valid => {
+        if (!valid) {
+          isOK = false;
+          return false;
+        }
+      });
+      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.localAuthRef.validate(valid => {
+        if (!valid) {
+          isOK = false;
+          return false;
+        }
+      });
+      this.$refs.vpnProfileAddOrEditRef.$refs.ikeRef.$refs.peerAuthRef.validate(valid => {
         if (!valid) {
           isOK = false;
           return false;

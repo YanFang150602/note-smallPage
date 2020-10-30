@@ -218,7 +218,7 @@ export default {
     customTableFunc(params) {
       this.operType = 'edit';
       this.curEditSchedule = params.rowData;
-      this.curEditSchedule.disabled = true;
+      this.curEditSchedule.tempDisabled = true;
       this.title = 'Edit Schedule';
       this.addOrEditWinVisible = true;
     },
@@ -249,7 +249,7 @@ export default {
         limit: this.pageSize
       });
       if (res.message === 'Success') {
-        this.tableDataList = res.result;
+        this.tableDataList = res.result ? res.result : null;
         this.totalCount = res.totalCount;
       } else {
         this.tableDataList = [{}];
@@ -271,14 +271,7 @@ export default {
     // Schedule Add start
     showAddWinModal() {
       this.operType = 'add';
-      this.curEditSchedule = {
-        name: '',
-        description: '',
-        tags: '',
-        time: '',
-        recurrence: 'Non-Recurring',
-        disabled: false
-      };
+      this.curEditSchedule = {};
       this.title = 'Add Schedule';
       this.addOrEditWinVisible = true;
     },
@@ -291,6 +284,12 @@ export default {
           deviceName: this.deviceName
         };
         let res = {};
+        
+        for (let key in this.curAddSchedule) {
+          if (key.indexOf('temp') == 0) {
+            delete this.curAddSchedule[key];
+          }
+        }
         params.data = this.curAddSchedule;
         if (this.operType === 'add') {
           res = await ScheduleAdd(params);

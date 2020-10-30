@@ -105,7 +105,10 @@
                       </a-select-option>
                     </a-select>
                   </a-form-model-item>
-                  <a-form-model-item :label="$t('VPNRouteInstance')" prop="routingInstance">
+                  <a-form-model-item
+                    :label="$t('VPNRouteInstance')"
+                    prop="routingInstance"
+                  >
                     <a-select
                       v-model="cVPNProfile.routingInstance"
                       style="width:250px;"
@@ -113,8 +116,8 @@
                       @change="changeRouteIns"
                     >
                       <a-select-option
-                        :value="item.value"
                         v-for="(item, index) in routeOptions"
+                        :value="item.value"
                         :key="index"
                       >
                         {{ item.label }}
@@ -206,7 +209,6 @@
                       <a-input
                         size="small"
                         v-model="cVPNProfile.peer.hostname"
-                        prop="name"
                         style="width:250px;"
                         :disabled="disablePeerHost"
                       />
@@ -230,7 +232,6 @@
                       <a-input
                         size="small"
                         v-model="cVPNProfile.local.address"
-                        prop="name"
                         style="width:250px;"
                         :disabled="disableLocalIP"
                       />
@@ -252,8 +253,8 @@
                         :disabled="disableLocalInterface"
                       >
                         <a-select-option
-                          :value="item.value"
                           v-for="(item, index) in localInterfaceOptions"
+                          :value="item.value"
                           :key="index"
                         >
                           {{ item.label }}
@@ -281,7 +282,7 @@
                 </a-row>
               </div>
               <div style="padding-top:10px;">
-                <a-row type="flex" justify="start" align="middle">
+                <a-row type="flex" justify="start" align="top">
                   <a-col :span="8">
                     <a-form-model-item>
                       <a-radio-group
@@ -295,22 +296,21 @@
                 <a-row
                   type="flex"
                   justify="start"
-                  align="middle"
+                  align="top"
                   v-show="showBaseRoute"
                 >
                   <a-col>
                     <a-form-model-item :label="$t('VPNTunnelRoutingInstance')">
                       <a-select
                         v-model="cVPNProfile.tunnelRoutingInstance"
-                        placeholder="--Select--"
                         style="width:250px;"
                         size="small"
+                        @change="changeTunnelRouteIns"
                       >
                         <a-select-option
-                          :value="item.value"
                           v-for="(item, index) in tunnelRouteInsOptions"
+                          :value="item.value"
                           :key="index"
-                          @change="changeTunnelRouteIns"
                         >
                           {{ item.label }}
                         </a-select-option>
@@ -318,16 +318,17 @@
                     </a-form-model-item>
                   </a-col>
                   <a-col>
-                    <a-form-model-item :label="$t('VPNTunnelInterface')" prop="tunnelInterface">
+                    <a-form-model-item
+                      :label="$t('VPNTunnelInterface')"
+                    >
                       <a-select
                         v-model="cVPNProfile.tunnelInterface"
-                        placeholder="--Select--"
                         style="width:250px;"
                         size="small"
                       >
                         <a-select-option
-                          :value="item.value"
                           v-for="(item, index) in tunnelInterfaceOptions"
+                          :value="item.value"
                           :key="index"
                         >
                           {{ item.label }}
@@ -339,14 +340,13 @@
                 <a-row
                   type="flex"
                   justify="start"
-                  align="middle"
+                  align="top"
                   v-show="showBaseStrategy"
                 >
                   <a-col v-show="showP2PStrategy">
                     <a-form-model-item :label="$t('VPNTunnelRoutingInstance')">
                       <a-select
                         v-model="cVPNProfile.tunnelRoutingInstance"
-                        placeholder="--Select--"
                         style="width:250px;"
                         size="small"
                       >
@@ -658,18 +658,18 @@ export default {
       cVPNProfile: {
         name: '',
         vpnType: 'branch-sdwan',
-        tunnelInitiate: '',
-        hardwareAccelerator: '',
+        tunnelInitiate: 'automatic',
+        hardwareAccelerator: 'any',
         routingInstance: '',
         branchSdwanProfile: '',
         tunnelRoutingInstance: '',
         tunnelInterface: '',
         alarms: {
-          ipsecStateChange: 'disable',
-          ikeStateChange: 'disable',
-          ikeAuthFailure: 'disable'
+          ipsecStateChange: 'enable',
+          ikeStateChange: 'enable',
+          ikeAuthFailure: 'enable'
         },
-        tempAlarms: [],
+        tempAlarms: ['ikeAuthFailure', 'ikeStateChange', 'ipsecStateChange'],
         local: {
           address: '',
           inet: '',
@@ -706,7 +706,8 @@ export default {
         {
           label: this.$t('VPNTypeP2P'),
           value: 'site-to-site'
-        },
+        }
+        /*,
         {
           label: this.$t('VPNTypeConSDW'),
           value: 'controller-sdwan'
@@ -718,7 +719,7 @@ export default {
         {
           label: this.$t('VPNTypeRemoteVisitServer'),
           value: 'remote-access-server'
-        }
+        } */
       ],
       tunnelOptions: [
         {
@@ -790,8 +791,8 @@ export default {
       disablePeerFQDNRadio: false,
       disablePeerIPRadio: false,
       disablePeerHostsRadio: false,
-      peerFQDNChecked: '1',
-      peerIPChecked: '',
+      peerFQDNChecked: '',
+      peerIPChecked: '2',
       peerHostChecked: '',
       peerOptions: [
         [
@@ -873,10 +874,11 @@ export default {
           { required: true, message: 'VPN Type is required', trigger: 'blur' }
         ],
         routingInstance: [
-          { required: true, message: `${this.$t('VPNRouteInstance')} is required`, trigger: 'blur' }
-        ],
-        tunnelInterface: [
-          { required: true, message: `${this.$t('VPNTunnelInterface')} is required`, trigger: 'blur' }
+          {
+            required: true,
+            message: `${this.$t('VPNRouteInstance')} is required`,
+            trigger: 'change'
+          }
         ],
         addressFrom: [
           {
@@ -946,21 +948,21 @@ export default {
           componentName: 'strategy-opration'
         },
         {
-          field: 'agreement',
+          field: 'protocol',
           title: this.$t('VPNStrategyAgreement'),
           width: 120,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'source',
+          field: 'src',
           title: this.$t('VPNStrategySource'),
           width: 120,
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'dest',
+          field: 'dst',
           title: this.$t('VPNStrategyDest'),
           width: 120,
           columnAlign: 'left',
@@ -1045,9 +1047,8 @@ export default {
     },
     ...mapState(['organization', 'deviceName'])
   },
-  created() {},
-  mounted() {
-    console.log('add mounted...');
+  created() {
+    console.log('addoredit created...', this.vpnProfile);
     if (this.vpnProfile.name) {
       this.cVPNProfile = { ...this.vpnProfile };
       this.peerFQDNList = [];
@@ -1067,7 +1068,7 @@ export default {
         for (let key in this.cVPNProfile.alarms) {
           this.cVPNProfile.alarms[key] === 'enable'
             ? this.cVPNProfile.tempAlarms.push(key)
-            : null;
+            : '';
         }
       }
     } else {
@@ -1083,7 +1084,10 @@ export default {
     this.queryTunnelInterfaceOptions();
   },
   updated() {
-    console.log('addOrEdit vpnProfile = ', this.cVPNProfile);
+    if (this.showBaseStrategy) {
+      this.cVPNProfile.precedence = Number(this.cVPNProfile.precedence) || 0;
+    }
+    console.log('updated cvpnprofile = ', this.cVPNProfile);
     this.$emit('passChildContent', this.cVPNProfile);
   },
   methods: {
@@ -1096,13 +1100,14 @@ export default {
     async queryRouteInsOptions() {
       const res = await RouteInstanceQuery({ deviceName: this.deviceName });
       if (res.message === 'Success') {
-        console.log('routing-instance = ', res['routing-instance']);
-        this.existLocalInterface = new Map();
-        this.nExistLocalInterface = new Map();
-        res['routing-instance'].forEach(item => {
+        console.log('routing-instance = ', res.result['routing-instance']);
+        this.existInterfaceRoute = new Map();
+        this.nExistInterfaceRoute = new Map();
+        res.result['routing-instance'].forEach(item => {
           if (item.name) {
             let option = {
-              label: item.name
+              label: item.name,
+              value: item.name
             };
             this.routeOptions.push(option);
             if (item.interfaces) {
@@ -1112,9 +1117,9 @@ export default {
                   value: item
                 };
               });
-              this.existLocalInterface.set(item.name, interfaces);
+              this.existInterfaceRoute.set(item.name, interfaces);
             } else {
-              this.this.nExistLocalInterface.set(item.name, item.networks);
+              this.nExistInterfaceRoute.set(item.name, item.networks);
             }
           }
         });
@@ -1161,7 +1166,8 @@ export default {
         this.allTunnelRouteInsNames = res.result['available-routing-instances'];
         this.allTunnelRouteInsNames.forEach(item => {
           let obj = {
-            label: item
+            label: item,
+            value: item
           };
           this.tunnelRouteInsOptions.push(obj);
         });
@@ -1170,8 +1176,8 @@ export default {
     async queryLocalInterfaceOptions() {
       const res = await LocalInterfaceQuery({ deviceName: this.deviceName });
       if (res.message === 'Success') {
-        console.log('networks = ', res['networks']);
-        this.allLocalInterfaceList = res['networks'];
+        console.log('networks = ', res.result['network']);
+        this.allLocalInterfaceList = res.result['network'];
       }
     },
     async queryTunnelInterfaceOptions() {
@@ -1179,19 +1185,18 @@ export default {
         deviceName: this.deviceName
       });
       if (res.message === 'Success') {
-        console.log('interfaces = ', res['interfaces']);
-        this.allTunnelInterfaceList = res['interfaces'];
+        console.log('interfaces = ', res.result['interfaces']);
+        this.allTunnelInterfaceList = res.result['interfaces'];
       }
     },
     changeTunnelRouteIns(value) {
-      if (this.existLocalInterface.get(value)) {
-        this.tunnelInterfaceOptions = this.existLocalInterface.get(value);
-        this.tunnelInterfaceOptions.unshift({
-          label: this.$t('SelectNull'),
-          value: ''
+      if (this.existInterfaceRoute.get(value)) {
+        this.tunnelInterfaceOptions = [...this.existInterfaceRoute.get(value)];
+        this.tunnelInterfaceOptions = this.tunnelInterfaceOptions.filter(item => {
+          return item.label.indexOf('tvi') === 0;
         });
       } else {
-        let networks = this.nExistLocalInterface.get(value);
+        let networks = this.nExistInterfaceRoute.get(value);
         this.tunnelInterfaceOptions = [];
         networks.forEach(item => {
           for (let i = 0; i < this.allLocalInterfaceList.length; i++) {
@@ -1201,56 +1206,59 @@ export default {
                   label: item2,
                   value: item2
                 };
-                this.localInterfaceOptions.push(option);
+                item2.indexOf('tvi') === 0 ? this.tunnelInterfaceOptions.push(option) : 0;
               });
               break;
             }
           }
         });
-        this.localInterfaceOptions.unshift({
-          label: this.$t('SelectNull'),
-          value: ''
-        });
       }
+      this.tunnelInterfaceOptions.unshift({
+        label: this.$t('SelectNull'),
+        value: ''
+      });
     },
     changeRouteIns(value) {
-      if (this.existLocalInterface.get(value)) {
-        this.localInterfaceOptions = this.existLocalInterface.get(value);
+      if (this.existInterfaceRoute.get(value)) {
+        this.localInterfaceOptions = [...this.existInterfaceRoute.get(value)];
         this.localInterfaceOptions.unshift({
           label: this.$t('SelectNull'),
           value: ''
         });
       } else {
-        let networks = this.nExistLocalInterface.get(value);
+        let networks = this.nExistInterfaceRoute.get(value);
         this.localInterfaceOptions = [];
-        networks.forEach(item => {
-          for (let i = 0; i < this.allLocalInterfaceList.length; i++) {
-            if (item === this.allLocalInterfaceList[i].name) {
-              this.allLocalInterfaceList[i].interfaces.forEach(item2 => {
-                let option = {
-                  label: item2,
-                  value: item2
-                };
-                this.localInterfaceOptions.push(option);
-              });
-              break;
+        networks &&
+          networks.forEach(item => {
+            for (let i = 0; i < this.allLocalInterfaceList.length; i++) {
+              if (item === this.allLocalInterfaceList[i].name) {
+                this.allLocalInterfaceList[i].interfaces.forEach(item2 => {
+                  let option = {
+                    label: item2,
+                    value: item2
+                  };
+                  this.localInterfaceOptions.push(option);
+                });
+                break;
+              }
             }
-          }
-        });
+          });
         this.localInterfaceOptions.unshift({
           label: this.$t('SelectNull'),
           value: ''
         });
       }
+      this.cVPNProfile.local.interfaceName = '';
     },
     changeAlarms(checkedValues) {
       for (let key in this.cVPNProfile.alarms) {
         this.cVPNProfile.alarms[key] = 'disable';
       }
+      let _that = this;
       checkedValues.forEach(checked => {
-        for (let key in this.cVPNProfile.alarms) {
+        for (let key in _that.cVPNProfile.alarms) {
           if (key === checked) {
-            this.cVPNProfile.alarms[key] = 'enable';
+            _that.cVPNProfile.alarms[key] = 'enable';
             break;
           }
         }
@@ -1447,14 +1455,19 @@ export default {
         if (ref === curRef) {
           this.showTabObj[ref] = true;
           this.$refs[ref][0].style.backgroundColor = '#aac0d5';
-          console.log('curRef = ', curRef);
           if (curRef == 'secondTabRef') {
-            this.$refs.ikeRef.cVPNProfile.tempIkeNewOrOld = 'New';
-            this.$refs.ikeRef.peerAuthInfo.authType = 'cert';
-            this.$refs.ikeRef.changeConPeerAuthType('cert');
+            if (!this.secondClickCount) {
+              this.secondClickCount = 1;
+              this.$refs.ikeRef.cVPNProfile.tempIkeNewOrOld = 'New';
+              this.$refs.ikeRef.peerAuthInfo.authType = 'psk';
+              this.$refs.ikeRef.changeConPeerAuthType('psk');
+            }
           } else if (curRef == 'thirdTabRef') {
-            this.$refs.ipsecRef.cVPNProfile.tempIpsecNewOrOld = 'New';
-          }
+            if (!this.thirdClickCount) {
+              this.thirdClickCount = 1;
+              this.$refs.ipsecRef.cVPNProfile.tempIpsecNewOrOld = 'New';
+            }
+          } 
         } else {
           this.showTabObj[ref] = false;
           this.$refs[ref][0].style.backgroundColor = '#8d9fb3';
@@ -1626,12 +1639,15 @@ export default {
         case '7':
           this.showBaseRoute = true;
           this.showBaseStrategy = false;
+          delete this.cVPNProfile.precedence;
+          delete this.cVPNProfile.rule;
           break;
         // 基于策略
         case '8':
           this.showBaseRoute = false;
           this.showBaseStrategy = true;
-          this.queryStrategyList();
+          this.strategyList = this.cVPNProfile.rule ? this.cVPNProfile.rule : [];
+          this.cVPNProfile.precedence = Number(this.cVPNProfile.precedence) || 0;
           break;
         default:
           break;
@@ -1693,11 +1709,6 @@ export default {
       this.cVPNProfile.peer.inet = this.peerIPList.length
         ? this.peerIPList[this.peerIPList.length - 1].peerIp
         : '';
-      // 隐藏store里下拉框已被使用的option
-      this.vpnTableSelectsMinus({
-        key: 'vpnPeerIP',
-        label: params.label
-      });
     },
     selectAllNetwork(checkdList) {
       this.delNetworkList = [];
@@ -1766,6 +1777,7 @@ export default {
       });
     },
     showAddWinModal() {
+      this.operType = 'add';
       this.strategyTitle = 'Add Strategy';
       this.curEditStrategy = {};
       this.curAddStrategy = {};
@@ -1779,6 +1791,14 @@ export default {
     },
     async delOK() {
       this.delWinVisible = false;
+      this.delStrategyList.forEach(item => {
+        for (let i = 0; i < this.strategyList.length; i++) {
+          if (item === this.strategyList[i].name) {
+            this.strategyList.splice(i, 1);
+          }
+        }
+      });
+      this.cVPNProfile.rule = this.strategyList;
     },
     delCancel() {
       this.delWinVisible = false;
@@ -1787,16 +1807,12 @@ export default {
       let isOK = this.satisfyValidation();
       if (isOK) {
         this.addOrEditLoading = true;
-        let params = this.curAddStrategy.name
-          ? this.curAddStrategy
-          : this.curEditStrategy;
-        // await ScheduleInterface.ScheduleAdd(params);
-        const res = await this.mockList(params);
-        if (res.message === 'Success') {
-          this.addOrEditLoading = false;
-          this.addOrEditWinVisible = false;
-          this.queryStrategyList();
-        }
+        let params =
+          this.operType === 'add' ? this.curAddStrategy : this.curEditStrategy;
+        this.addOrEditLoading = false;
+        this.addOrEditWinVisible = false;
+        this.strategyList.push(params);
+        this.cVPNProfile.rule = this.strategyList;
       }
     },
     satisfyValidation() {
@@ -1822,57 +1838,7 @@ export default {
       this.pageSize = pageSize;
       this.queryStrategyList();
     },
-    async queryStrategyList() {
-      /* await ScheduleInterface.ScheduleQuery({
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
-      }); */
-      // 前端死数据
-      const res = await this.mockList();
-      if (res.message === 'Success') {
-        this.strategyList = res.result;
-        this.totalCount = res.totalCount;
-      } else {
-        this.tableDataList = [];
-        this.totalCount = 0;
-      }
-    },
-    async mockList() {
-      const res = {
-        message: 'Success',
-        totalCount: 30,
-        result: []
-      };
-      for (let i = 0; i < 10; i++) {
-        let obj = {};
-        if (i % 3 == 0) {
-          obj = {
-            name: `name${(i + 10).toString(36)}`,
-            description: `description${(i + 10).toString(36)}`,
-            tag: '',
-            recurrence: 'Daily',
-            time: ''
-          };
-        } else if (i % 5 == 0) {
-          obj = {
-            name: `name${(i + 10).toString(36)}`,
-            description: `description${(i + 10).toString(36)}`,
-            tag: '',
-            recurrence: 'Weekly',
-            time: ''
-          };
-        } else {
-          obj = {
-            name: `name${(i + 10).toString(36)}`,
-            description: `description${(i + 10).toString(36)}`,
-            tag: '',
-            recurrence: 'Non-Recurring',
-            time: ''
-          };
-        }
-        res.result.push(obj);
-      }
-      return res;
+    queryStrategyList() {
     },
     selectALLStrategy(checkdList) {
       this.delStrategyList = [];
@@ -1887,6 +1853,7 @@ export default {
       });
     },
     customStrategyFunc(params) {
+      this.operType = 'edit';
       this.curEditStrategy = params.rowData;
       this.curEditStrategy.disabledName = true;
       this.strategyTitle = 'Edit Strategy';

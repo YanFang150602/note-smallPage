@@ -4,12 +4,7 @@
       <a-row type="flex" justify="start" align="top">
         <a-col>
           <a-form-model-item :label="$t('VPNIPsecModel')">
-            <a-select
-              v-model="ipsec.mode"
-              placeholder="--Select--"
-              style="width:250px"
-              size="small"
-            >
+            <a-select v-model="ipsec.mode" style="width:250px" size="small">
               <a-select-option
                 :value="item.value"
                 v-for="(item, index) in modeList"
@@ -81,6 +76,7 @@
             <a-input
               size="small"
               v-model="ipsec.keepaliveTimeout"
+              :placeholder="placeholders.keepaliveTimeout"
               style="width:250px;"
             />
           </a-form-model-item>
@@ -89,7 +85,7 @@
       <a-row type="flex" justify="start" align="top">
         <a-col>
           <a-form-model-item :label="$t('VPNIPsecRestartTime')">
-            <a-select style="width:170px" size="small" default-value="hours">
+            <a-select style="width:90px" size="small" default-value="seconds">
               <a-select-option
                 :value="item.value"
                 v-for="(item, index) in restartTimeTypeOptions"
@@ -100,14 +96,15 @@
             </a-select>
             <a-input
               size="small"
-              v-model="ipsec.duration"
-              style="width:80px;"
+              v-model="ipsec.life.duration"
+              :placeholder="placeholders.duration"
+              style="width:160px;"
             />
           </a-form-model-item>
         </a-col>
         <a-col>
           <a-form-model-item :label="$t('VPNIPsecRestatVolumne')">
-            <a-select style="width:170px" size="small" default-value="MB">
+            <a-select style="width:90px" size="small" default-value="MB">
               <a-select-option
                 :value="item.value"
                 v-for="(item, index) in restartVolumneTypeOptions"
@@ -116,7 +113,12 @@
                 {{ item.label }}
               </a-select-option>
             </a-select>
-            <a-input size="small" v-model="ipsec.volume" style="width:80px;" />
+            <a-input
+              size="small"
+              v-model="ipsec.life.volume"
+              :placeholder="placeholders.volume"
+              style="width:160px;"
+            />
           </a-form-model-item>
         </a-col>
       </a-row>
@@ -127,6 +129,7 @@
             <a-radio-group
               v-model="cVPNProfile.tempIpsecNewOrOld"
               :options="newOrOldOptions"
+              @change="changeRadio"
             />
           </a-col>
         </a-row>
@@ -198,7 +201,6 @@
             <a-form-model-item :label="$t('VPNIKEChange')">
               <a-select
                 v-model="ipsec.transform"
-                placeholder="--Select--"
                 style="width:320px"
                 size="small"
               >
@@ -216,12 +218,11 @@
             <a-form-model-item :label="$t('VPNIPsecForwardSecretMode')">
               <a-select
                 v-model="ipsec.pfsGroup"
-                placeholder="--Select--"
                 style="width:320px"
                 size="small"
               >
                 <a-select-option
-                  :value="item.label"
+                  :value="item.value"
                   v-for="(item, index) in forwardModeOptions"
                   :key="index"
                 >
@@ -247,20 +248,25 @@ export default {
         tempIpsecNewOrOld: 'Old'
       },
       ipsec: {
-        forceNatT: '',
-        fragmentation: '',
+        forceNatT: 'disable',
+        fragmentation: 'pre-fragmentation',
         transform: '',
         pfsGroup: '',
-        mode: '',
+        mode: 'tunnel',
         pfsGroups: [],
         hashAlgorithms: [],
         encryptionAlgorithms: [],
-        antiReplay: '',
-        keepaliveTimeout: '',
+        antiReplay: 'enable',
+        keepaliveTimeout: '10',
         life: {
-          duration: '',
+          duration: '28800',
           volume: ''
         }
+      },
+      placeholders: {
+        keepaliveTimeout: '3-30',
+        duration: '120-28800',
+        volume: '512-4294967295'
       },
       modeList: [
         {
@@ -281,7 +287,7 @@ export default {
       fragmentList: [
         {
           label: this.$t('VPNIPsecPreFrag'),
-          value: 'pre'
+          value: 'pre-fragmentation'
         },
         {
           label: this.$t('VPNIPsecBackFrag'),
@@ -328,11 +334,11 @@ export default {
       ],
       newOrOldOptions: [
         {
-          label: 'New',
+          label: this.$t('VPNIKENew'),
           value: 'New'
         },
         {
-          label: 'Old',
+          label: this.$t('VPNIKEOld'),
           value: 'Old'
         }
       ],
@@ -523,6 +529,18 @@ export default {
       'vpnTableSelectsMinus',
       'vpnTableSelectsAll'
     ]),
+    changeRadio(e) {
+      if (e.target.value === 'New') {
+        this.ipsec.transform = '';
+        this.ipsec.pfsGroup = '';
+      } else {
+        this.ipsec.hashAlgorithms = [];
+        this.ipsec.encryptionAlgorithms = [];
+        this.ipsec.pfsGroups = [];
+        this.ipsec.transform = 'esp-aes128-sha1';
+        this.ipsec.pfsGroup = 'mod-none';
+      }
+    },
     hashTitleClick(title) {
       if (/class="plus"/.test(title)) {
         this.hashList.push({});
@@ -809,11 +827,19 @@ Vue.component('forward-opration', {
           {{ item.label }}
         </a-select-option>
       </a-select>
-      <label>{{ rowData['forward'] }} </label>
+      <label>{{ showValue }} </label>
     </span>`,
   props,
   computed: {
-    ...mapState(['vpnTableSelects'])
+    ...mapState(['vpnTableSelects']),
+    showValue() {
+      for (let i = 0; i < this.vpnTableSelects.vpnIPsecForward.length; i++) {
+        if (this.rowData['forward'] == this.vpnTableSelects.vpnIPsecForward[i].value) {
+          return this.vpnTableSelects.vpnIPsecForward[i].label;
+        }
+      }
+      return '';
+    }
   },
   methods: {
     change(label) {

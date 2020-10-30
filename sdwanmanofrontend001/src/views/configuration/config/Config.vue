@@ -30,7 +30,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 #device_config_page {
-  background-color: #d0dce4;
   /deep/.ant-layout-sider {
     background: #f0f2f5;
   }
@@ -46,7 +45,6 @@ export default {
   }
   /deep/.ant-layout-content {
     min-height: 200px;
-    background-color: #d0dce4;
   }
 }
 </style>

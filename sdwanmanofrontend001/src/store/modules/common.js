@@ -7,11 +7,10 @@ import {
   UPGRADE_USER_INFO
 } from '@/store/mutation-types';
 import { getUserInfo } from 'apis/common';
-
 const state = {
   token: localStorage.getItem('user-token') || '',
   userInfo: JSON.parse(localStorage.getItem('user-info')) || {},
-  accountId: localStorage.getItem('accountId') || '',
+  accountId: localStorage.getItem('account-id') || '',
   treeData: ''
 };
 
@@ -23,8 +22,9 @@ const getters = {
 
 const mutations = {
   [SET_USER_INFO](state, payload) {
+    console.log(payload);
     const userInfo = {};
-    const userInfoData = payload.result;
+    const userInfoData = payload.userInfoRes.result;
     userInfo.id = userInfoData.id;
     userInfo.username = userInfoData.username;
     userInfo.parentId = userInfoData.parentId;
@@ -36,7 +36,7 @@ const mutations = {
     userInfo.level = userInfoData.level;
     state.userInfo = userInfo;
     state.accountId = payload.accountId;
-    localStorage.setItem('accountId', payload.accountId);
+    localStorage.setItem('account-id', payload.accountId);
     localStorage.setItem('user-info', JSON.stringify(userInfo));
   },
   [SET_TOKEN](state, payload) {
@@ -103,17 +103,12 @@ const mutations = {
 };
 
 const actions = {
-  async setUserInfo({ commit }, accountId) {
-    if (!state.token) return;
-    const { result } = await getUserInfo(accountId);
-    commit(SET_USER_INFO, { result, accountId });
-  },
   async updateUserInfo({ commit, state }) {
     if (!state.token) return;
-    const { success, data } = await getUserInfo(state.token);
-    if (!success) return;
-
-    commit(SET_USER_INFO, data);
+    const userInfoRes = await getUserInfo(state.accountId);
+    if (userInfoRes.status !== '0000')
+      return this.$message.error(userInfoRes.message);
+    commit(SET_USER_INFO, userInfoRes);
   }
 };
 

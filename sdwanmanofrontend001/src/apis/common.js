@@ -28,7 +28,10 @@ export const login = userData => {
   // } else {
   //   password = userPassword;
   // }
-  return $http.post('/login/v0-snapshot/gateway/api/login', userData);
+  return $http.post(
+    'http://oscargw.dev.cmiov.virtueit.net:81/v0-snapshot/gateway/api/login',
+    userData
+  );
 };
 /**
  * @desc 获取用户信息

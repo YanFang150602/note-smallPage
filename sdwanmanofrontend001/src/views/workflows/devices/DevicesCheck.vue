@@ -3,62 +3,53 @@
     <!--  三个切换tab -->
     <div class="switchover">
       <div ref="basicTabRef" class="basic" @click="handleClick">Basic</div>
-      <div ref="locationTabRef" class="location" @click="ShowClick">
-        Location information
-      </div>
+      <div ref="locationTabRef" class="location" @click="ShowClick">Location information</div>
       <div ref="bindTabRef" class="bid" @click="bindClick">Bid Data</div>
     </div>
     <!-- basic -->
     <div v-if="show.isShow" class="form_basic">
-      <a-form-model
-        layout="inline"
-        :model="fromFormCheck"
-        :rules="rules"
-        ref="ruleForm"
-      >
+      <a-form-model layout="inline" :model="fromFormCheck" :rules="rules" ref="ruleForm">
         <a-row>
           <a-col :span="8">
             <a-form-model-item label="Name" required>
-              <a-input disabled v-model="fromFormCheck.deviceName" />
+              <a-input disabled v-model="fromFormCheck.deviceName"/>
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item label="Global Device ID" required prop="siteId">
-              <a-input v-model.number="fromFormCheck.siteId" />
+              <a-input v-model.number="fromFormCheck.siteId"/>
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item label="Organization" required>
-              <a-input disabled v-model="fromFormCheck.orgName" />
+              <a-input disabled v-model="fromFormCheck.orgName"/>
             </a-form-model-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="8">
             <a-form-model-item label="Depoyment Type">
-              <a-input v-model="fromFormCheck.showDeploymentType" />
+              <a-input v-model="fromFormCheck.showDeploymentType"/>
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
-            <a-form-model-item label="Serial Number">
+            <!-- <a-form-model-item label="Serial Number">
               <a-select disabled v-model="fromFormCheck.serialNumber">
                 <a-select-option value="shanghai">Zone one</a-select-option>
               </a-select>
+            </a-form-model-item>-->
+            <a-form-model-item label="Serial Number">
+              <a-input v-model="fromFormCheck.serialNumber"/>
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
-            <a-form-model-item
-              label="Device Groups"
-              required
-              prop="deviceGroup"
-            >
+            <a-form-model-item label="Device Groups" required prop="deviceGroup">
               <a-select v-model="fromFormCheck.deviceGroup">
                 <a-select-option
                   v-for="(item, index) in group"
                   :key="index"
                   :value="item"
-                  >{{ item }}</a-select-option
-                >
+                >{{ item }}</a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -66,14 +57,14 @@
         <a-row>
           <a-col :span="8"></a-col>
           <a-col :span="8"></a-col>
-          <a-col :span="8">
+          <!-- <a-col :span="8">
             <span
               class="deviceGroup"
               @click="showModalGroup"
               style="color:#fff;cursor:pointer;"
               >+Device Group</span
             >
-          </a-col>
+          </a-col>-->
         </a-row>
 
         <!-- 方框 -->
@@ -94,12 +85,11 @@
                 v-for="option in bandwidthOptions"
                 :value="option.value"
                 :key="option.label"
-                >{{ option.label }}</a-select-option
-              >
+              >{{ option.label }}</a-select-option>
             </a-select>
           </a-form-model-item>
           <a-form-model-item label="Aggregate Bandwith">
-            <a-input disabled :value="num" />
+            <a-input disabled :value="num"/>
           </a-form-model-item>
         </div>
       </a-form-model>
@@ -118,12 +108,12 @@
             <a-row>
               <a-col :span="12">
                 <a-form-model-item label="Address 1">
-                  <a-input v-model="fromFormCheck.locationInfo.address1" />
+                  <a-input v-model="fromFormCheck.locationInfo.address1"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="12">
                 <a-form-model-item label="Address 2">
-                  <a-input v-model="fromFormCheck.locationInfo.address2" />
+                  <a-input v-model="fromFormCheck.locationInfo.address2"/>
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -132,22 +122,22 @@
             <a-row>
               <a-col :span="6">
                 <a-form-model-item label="City">
-                  <a-input v-model="fromFormCheck.locationInfo.city" />
+                  <a-input v-model="fromFormCheck.locationInfo.city"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
                 <a-form-model-item label="State">
-                  <a-input v-model="fromFormCheck.locationInfo.state" />
+                  <a-input v-model="fromFormCheck.locationInfo.state"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
                 <a-form-model-item label="Country" required prop="country">
-                  <a-input v-model="fromFormCheck.locationInfo.country" />
+                  <a-input v-model="fromFormCheck.locationInfo.country"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
                 <a-form-model-item label="Zip">
-                  <a-input v-model="fromFormCheck.locationInfo.zip" />
+                  <a-input v-model="fromFormCheck.locationInfo.zip"/>
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -156,12 +146,12 @@
             <a-row>
               <a-col :span="6">
                 <a-form-model-item label="Latitude">
-                  <a-input v-model="fromFormCheck.locationInfo.latitude" />
+                  <a-input v-model="fromFormCheck.locationInfo.latitude"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
                 <a-form-model-item label="Longitude">
-                  <a-input v-model="fromFormCheck.locationInfo.longitude" />
+                  <a-input v-model="fromFormCheck.locationInfo.longitude"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
@@ -186,28 +176,20 @@
                   v-for="(item, index) in tableDataArr"
                   :key="index + '_tableTitle'"
                   style="padding:12px 0"
-                >
-                  {{ item.name }}
-                </th>
+                >{{ item.name }}</th>
                 <th></th>
               </tr>
               <tr>
-                <td
-                  v-for="(item, index) in tableDataArr"
-                  :key="index + '_tableInput'"
-                >
+                <td v-for="(item, index) in tableDataArr" :key="index + '_tableInput'">
                   <a-form-model-item>
-                    <a-input placeholder v-model="item.value" />
+                    <a-input placeholder disabled v-model="item.value"/>
                   </a-form-model-item>
                 </td>
                 <td></td>
               </tr>
             </table>
 
-            <table
-              v-for="(group, index) in autoGenGroups"
-              :key="index + '_tableGroups'"
-            >
+            <table v-for="(group, index) in autoGenGroups" :key="index + '_tableGroups'">
               <tr>
                 <th :colspan="group[1].length">{{ group[0] }}</th>
               </tr>
@@ -215,20 +197,12 @@
                 <td
                   v-for="(variable, index2) in group[1]"
                   :key="index2 + '_variableName'"
-                >
-                  {{ variable.showName }}
-                </td>
+                >{{ variable.showName }}</td>
               </tr>
               <tr>
-                <td
-                  v-for="(variable, index3) in group[1]"
-                  :key="index3 + '_variableValue'"
-                >
+                <td v-for="(variable, index3) in group[1]" :key="index3 + '_variableValue'">
                   <a-form-model-item>
-                    <a-input
-                      :placeholder="variable.type"
-                      v-model="variable.value"
-                    />
+                    <a-input :placeholder="variable.type" v-model="variable.value"/>
                   </a-form-model-item>
                 </td>
               </tr>
@@ -262,28 +236,20 @@
                   v-for="(item, index) in tableDataArr"
                   :key="index + '_tableTitle'"
                   style="padding:12px 0"
-                >
-                  {{ item.name }}
-                </th>
+                >{{ item.name }}</th>
                 <th></th>
               </tr>
               <tr>
-                <td
-                  v-for="(item, index) in tableDataArr"
-                  :key="index + '_tableInput'"
-                >
+                <td v-for="(item, index) in tableDataArr" :key="index + '_tableInput'">
                   <a-form-model-item>
-                    <a-input placeholder v-model="item.value" />
+                    <a-input placeholder v-model="item.value"/>
                   </a-form-model-item>
                 </td>
                 <td></td>
               </tr>
             </table>
 
-            <table
-              v-for="(group, index) in notAutoGenGroups"
-              :key="index + '_tableGroups'"
-            >
+            <table v-for="(group, index) in notAutoGenGroups" :key="index + '_tableGroups'">
               <tr>
                 <th :colspan="group[1].length">{{ group[0] }}</th>
               </tr>
@@ -291,17 +257,12 @@
                 <td
                   v-for="(variable, index2) in group[1]"
                   :key="index2 + '_variableName'"
-                >
-                  {{ variable.showName }}
-                </td>
+                >{{ variable.showName }}</td>
               </tr>
               <tr>
-                <td
-                  v-for="(variable, index3) in group[1]"
-                  :key="index3 + '_variableValue'"
-                >
+                <td v-for="(variable, index3) in group[1]" :key="index3 + '_variableValue'">
                   <a-form-model-item>
-                    <a-input placeholder="auto" v-model="variable.value" />
+                    <a-input placeholder="auto" v-model="variable.value"/>
                   </a-form-model-item>
                 </td>
               </tr>
@@ -309,31 +270,6 @@
           </div>
         </a-tab-pane>
       </a-tabs>
-      <!-- <a-row>
-        <a-col :span="8">Service Template Variable</a-col>
-        <a-col :span="8">Template:Icst1</a-col>
-        <a-col :span="8">Device Group:Icsdevg1</a-col>
-      </a-row>
-      <a-tabs default-active-key="1" @change="callback">
-        <a-tab-pane key="1" tab="User Input">
-          <v-table
-            is-horizontal-resize
-            column-width-drag
-            :columns="columnsUnder"
-            :table-data="tableData"
-            :select-all="selectALL"
-            :select-change="selectChange"
-            :select-group-change="selectGroupChange"
-            :height="350"
-            style="width:1266px;"
-            isFrozen="true"
-            @on-custom-comp="customCompFunc"
-          ></v-table>
-        </a-tab-pane>
-        <a-tab-pane key="2" tab="Auto-Generated" force-render
-          >Content of Tab Pane 2</a-tab-pane
-        >
-      </a-tabs>-->
     </div>
     <div>
       <a-modal
@@ -349,7 +285,7 @@
         </template>
         <DeviceGroup
           @createGroupEdit="createGroupEdit"
-          ref="createGroupEditRf"
+          ref="createGroupRf"
           :fromFormCheck="formCheck"
         ></DeviceGroup>
       </a-modal>
@@ -575,7 +511,7 @@ export default {
           value: ''
         },
         {
-          name: this.$t('WFSerialNumber'),
+          name: this.$t('SerialNumber'),
           value: ''
         }
       ],
@@ -665,16 +601,17 @@ export default {
           this.visibleGroup = false;
           this.$message.success('Create device group successfully.');
           this.$refs.createGroupRf.$refs.ruleForm.resetFields();
-          this.dev.deviceGroup = res.result.name;
+          // this.dev.deviceGroup = res.result.name;
+          this.fromFormCheck.deviceGroup = res.result.name;
         } else {
           this.$message.error(res.message);
         }
       }
-      const res = await DeviceGroupAdd(this.createGrp);
-      console.log(res.result.name);
-      this.fromFormCheck.deviceGroup = res.result.name;
-      this.$refs.createGroupEditRf.$refs.ruleForm.resetFields();
-      localStorage.ogn = '';
+      // const res = await DeviceGroupAdd(this.createGrp);
+      // console.log(res.result.name);
+      // this.fromFormCheck.deviceGroup = res.result.name;
+      // this.$refs.createGroupEditRf.$refs.ruleForm.resetFields();
+      // localStorage.ogn = '';
     },
     handleCancel() {
       this.visibleGroup = false;
@@ -787,10 +724,10 @@ export default {
     deviceGroups() {
       console.log(111);
     },
-    showModalGroup() {
-      localStorage.ogn = this.formCheck.orgName || '';
-      this.visibleGroup = true;
-    },
+    // showModalGroup() {
+    //   localStorage.ogn = this.formCheck.orgName || '';
+    //   this.visibleGroup = true;
+    // },
     // 标签页的方法
     callback(key) {
       console.log(key);
@@ -856,8 +793,10 @@ export default {
     // 给Device Groups下拉框赋值
     async DeviceGroups() {
       const res = await devicesGroup(this.fromFormCheck.orgName);
-      console.log(res);
-      this.group = res.result['device-group'];
+      console.log(res.result);
+      if (res.result !== null) {
+        this.group = res.result['device-group'];
+      }
     },
     satisfyDeviceGroupValidation() {
       let isOK = true;
@@ -911,6 +850,9 @@ Vue.component('table-cell-merge', {
 });
 </script>
 <style lang="scss" scoped>
+/deep/.ant-form-item-label > label::after {
+  display: none !important;
+}
 /deep/.ant-form-explain {
   display: none !important;
 }
@@ -988,6 +930,7 @@ Vue.component('table-cell-merge', {
     border: solid 3px #456880;
     position: relative;
     padding-top: 5px;
+    margin-top: 10px;
     .subscrition {
       width: 80px;
       height: 21px;

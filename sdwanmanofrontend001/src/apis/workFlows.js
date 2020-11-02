@@ -63,7 +63,7 @@ export const DeviceGropAssociation = param =>
 
 // 设备查看获取信息
 export const DeviceCheck = name => {
-  return $http.get(`//controller/sdwan/v1/device/modify/${name}`);
+  return $http.get(`/controller/sdwan/v1/device/modify/${name}`);
 };
 
 // 设备编辑

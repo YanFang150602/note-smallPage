@@ -16,7 +16,8 @@ import {
   VPN_ALL_OPTIONS,
   DEVICE_NAME_SAVE,
   ORGANIZATION_SAVE,
-  VPN_PEERFQDN_OPTIONS
+  VPN_PEERFQDN_OPTIONS,
+  SPOKEGROUP_FORM
 } from '@/store/mutation-types';
 
 export default {
@@ -114,6 +115,16 @@ export default {
       state.deviceGroupResult = [];
     }
   },
+  [SPOKEGROUP_FORM](state, { result }) {
+    console.log(state);
+    if (result.totalCount) {
+      state.spoke = result;
+      console.log(state.spoke);
+    } else {
+      state.spoke = [];
+    }
+  },
+
   UpdateLoading(state, status = 0) {
     console.log(state.isLoading, status);
     if (status) state.isLoading += status;
@@ -142,6 +153,7 @@ export default {
   },
   [DEVICE_NAME_SAVE](state, { deviceName }) {
     state.deviceName = deviceName;
+    localStorage.setItem('deviceName', deviceName);
   },
   [ORGANIZATION_SAVE](state, { organization }) {
     state.organization = organization;

@@ -33,7 +33,7 @@ export const DEVICE_NAME_LIST = 'queryDeviceNameList';
 // 记录deviceName
 export const DEVICE_NAME_SAVE = 'saveDeviceName';
 export const ORGANIZATION_SAVE = 'saveOrganization';
-
+export const SPOKEGROUP_FORM = 'spoke_form';
 // 更新VPN相关下拉框数据
 export const VPN_PEERFQDN_OPTIONS = 'savePeerFQDNOptions';
 export const VPN_PLUS_OPTIONS = 'vpnTableSelectsPlus';

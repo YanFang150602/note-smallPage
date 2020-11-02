@@ -38,9 +38,8 @@
   </a-spin>
 </template>
 <script>
-//import { login } from 'apis/common';
-import { mapMutations, mapActions } from 'vuex';
-import axios from 'axios';
+import { login, getUserInfo } from 'apis/common';
+import { mapMutations } from 'vuex';
 export default {
   data() {
     const validatorUserName = (rule, value, callback) => {
@@ -74,11 +73,9 @@ export default {
     };
   },
   methods: {
-    ...mapMutations('common', ['set_token'], ['clear']),
-    ...mapActions('common', ['setUserInfo']),
-    async userlogin() {
-      this.$refs.loginRef.validate((valid, messages) => {
-        console.log(valid, messages);
+    ...mapMutations('common', ['set_token', 'set_user_info']),
+    userlogin() {
+      this.$refs.loginRef.validate(async (valid, messages) => {
         switch (true) {
           case Object.prototype.hasOwnProperty.call(messages, 'username'):
             this.tipMessage = messages.username[0].message;
@@ -96,30 +93,22 @@ export default {
             evidence: this.loginData.password,
             encrypted: false
           };
-          axios
-            .post(
-              'http://oscargw.dev.cmiov.virtueit.net:81/v0-snapshot/gateway/api/login',
-              userData,
-              {
-                headers: {
-                  Accept: 'application/json',
-                  ['Content-Type']: 'application/json'
-                }
-              }
-            )
-            .then(res => {
-              console.log(res);
-              const token = res.data.result.accessToken;
-              const { accountId } = res.data.result;
-              this.set_token(token);
-              this.setUserInfo(accountId);
-              this.$message.success('登陆成功!');
-              this.$router.replace('/');
-            })
-            .catch(() => {
-              this.tipMessage = 'Invalid user name or password.';
-            });
-          this.spinning = false;
+          const loginRes = await login(userData);
+          if (loginRes.status !== '000_0000_0000')
+            return (this.tipMessage = 'Invalid user name or password.');
+          const token = loginRes.result.accessToken;
+          this.set_token(token);
+          const { accountId } = loginRes.result;
+          if (accountId) {
+            const userInfoRes = await getUserInfo(accountId);
+            this.spinning = false;
+            if (userInfoRes.status !== '0000')
+              return this.$message.error(userInfoRes.message);
+            this.set_user_info({ userInfoRes, accountId });
+            userInfoRes.result.level === 3
+              ? this.$router.replace('/configuration')
+              : this.$router.replace('/administration');
+          }
         }
       });
     }

@@ -25,9 +25,6 @@
                 <a-col class="task-iconbtn" title="Tasks">
                   <a-icon type="profile" />
                 </a-col>
-                <a-col class="info-iconbtn" pull="2" title="Information">
-                  <a-icon type="info-circle" />
-                </a-col>
                 <!-- 导航下拉组件内容 -->
                 <a-col>
                   <a-dropdown>
@@ -45,6 +42,7 @@
                       <a-menu-item @click="visible = true"
                         >Change Password</a-menu-item
                       >
+
                       <a-sub-menu title="Language">
                         <a-menu-item
                           class="change-btn"
@@ -100,7 +98,7 @@
           justify="space-between"
           align="middle"
         >
-          <a-col class="select-wrap">
+          <a-col>
             <a-row type="flex" justify="start" align="middle">
               <a-col
                 v-show="showDevcieConfig"
@@ -111,9 +109,8 @@
                   key="back_device"
                   type="primary"
                   @click="backDevicePage"
+                  >Back</a-button
                 >
-                  Back
-                </a-button>
               </a-col>
               <!-- v-model="curDeviceName" -->
               <a-col
@@ -133,7 +130,7 @@
                   >
                     {{ deviceName }}
                   </a-select-option>
-                </a-select> -->
+                </a-select>-->
                 <a-input
                   v-model="curDeviceName"
                   size="small"
@@ -142,15 +139,14 @@
               </a-col>
               <a-col
                 v-show="organShow"
-                style="color: #626c82;
-    margin-right: 5px;font-size:14px"
-                >Organization:</a-col
-              >
+                style="color: #626c82; margin-right: 5px;font-size:14px"
+                >Organization:
+              </a-col>
               <a-col v-show="organShow">
                 <a-select
                   size="small"
                   placeholder="select"
-                  style="width: 350px;"
+                  style="width: 375px;"
                   @change="handleChange"
                 >
                   <a-select-option
@@ -163,7 +159,7 @@
               </a-col>
             </a-row>
           </a-col>
-          <a-col style="color: #838b9c;font-size:18px; cursor:pointer">
+          <a-col :style="{ marginLeft: 'auto' }">
             <a-icon @click="key = Math.random()" type="redo" />
           </a-col>
         </a-row>
@@ -197,8 +193,7 @@
         title="Change  Password"
         @ok="handleOk"
         :bodyStyle="{
-          backgroundColor: 'rgb(54, 83, 107)',
-          padding: '0 10px 10px'
+          padding: '0 10px'
         }"
         :width="300"
         wrapClassName="from-wrap"
@@ -206,7 +201,13 @@
         okText="Ok"
         :afterClose="cleanData"
       >
-        <a-form-model ref="passWordChange" :model="passWordData" :rules="rules">
+        <a-form-model
+          ref="passWordChange"
+          :model="passWordData"
+          :rules="rules"
+          layout="vertical"
+          @validate="validate"
+        >
           <a-form-model-item>
             <a-input size="small" type="hidden" v-model="passWordData.userId" />
           </a-form-model-item>
@@ -251,11 +252,11 @@
       </a-modal>
       <!-- 修改密码悬浮提示框 -->
       <div
-        v-show="changePassword.flag"
-        class="change-passwrod"
-        :style="changePassword.positionStyle"
+        v-show="formTips.flag"
+        class="form-tips"
+        :style="formTips.positionStyle"
       >
-        {{ changePassword.tipText }}
+        {{ formTips.tipText }}
       </div>
     </div>
   </div>
@@ -277,14 +278,10 @@ export default {
     let newPassword = (rule, value, callback) => {
       if (value === '') {
         callback('Field required');
-      } else {
-        if (
-          this.passWordData.newPassword.length < 8 ||
-          this.passWordData.newPassword.length > 16
-        ) {
-          callback();
-        }
+      } else if (!/^[\S\n\s]{8,16}$/.test(value)) {
         callback('Password length should be 8 to 16 characters');
+      } else {
+        callback();
       }
     };
     let confirm = (rule, value, callback) => {
@@ -306,7 +303,15 @@ export default {
         'Devices',
         'Device',
         'VPNConfigFile',
-        'Schedules'
+        'Schedules',
+        'DeviceGroup',
+        'SpokeGroups',
+        'Zones',
+        'QosProfiles',
+        'QosPolicies',
+        'AppQosPolicies',
+        'AssociateInterfaceNetwork',
+        'Address'
       ],
       // 弹框开关
       visible: false,
@@ -326,11 +331,17 @@ export default {
         newPassword: [{ validator: newPassword }],
         confirm: [{ validator: confirm }]
       },
+      // 修改密码提示信息
+      message: {
+        oldPassword: '',
+        newPassword: '',
+        confirm: ''
+      },
       key: 1,
       // 修改密码表单悬浮框
-      changePassword: {
+      formTips: {
         flag: false,
-        tipText: 'czzczcxzczcxzczcxzczxczxczc',
+        tipText: '',
         x: 0,
         y: 0,
         positionStyle: { top: '20px', left: '20px' }
@@ -363,10 +374,8 @@ export default {
   created() {
     // 页面创建判断是否要显示组织下拉框
     this.organShow = this.rotuerName.includes(this.$route.name);
-    // home页组织下拉数据获取
-    if (this.organShow) {
-      this.getNameList();
-    }
+    // 获取组织列表数据
+    this.getNameList();
   },
   mounted() {
     // 表单高度屏幕缩放自适应
@@ -386,7 +395,9 @@ export default {
       'adminUsersList',
       'templateList',
       'TableForm',
-      'Tabledevice'
+      'Tabledevice',
+      'DeviceGroups',
+      'SPTableForm'
     ]),
     // 右上角国际化切换
     changeLanguage(language) {
@@ -397,64 +408,85 @@ export default {
     },
     changeDevice(value) {
       console.log('changeDevice', value);
+      localStorage.getItem('deviceName') || '';
     },
     // 组织对应查询数据列表
     async handleChange(name) {
-      if (this.$route.name === 'OrganizationUsers') {
-        // 下拉组织对于租户列表jw
-        this.adminUsersList({
-          organization: name,
-          offset: 0,
-          limit: 100
-        });
-      } else if (this.$route.name === 'Templates') {
-        // 下拉组织对于模板列表jw
-        this.templateList({
-          orgname: name,
-          offset: 0,
-          limit: 100
-        });
-      } else if (this.$route.name === 'Devices') {
-        // 下拉组织对于Devices列表zwj
-        this.TableForm({
-          organization: name,
-          offset: 0,
-          limit: 100,
-          name
-        });
-      } else if (this.$route.name === 'Device') {
-        // 下拉组织对于Device列表zwj
-        this.Tabledevice({
-          deep: true,
-          orgname: name,
-          offset: 0,
-          limit: 100,
-          name
-        });
+      localStorage.setItem('organization', name);
+      switch (this.$route.name) {
+        case 'OrganizationUsers': // 下拉组织对于租户列表jw
+          this.adminUsersList({
+            organization: name,
+            offset: 0,
+            limit: 20
+          });
+          break;
+        case 'Templates': // 下拉组织对于模板列表jw
+          this.templateList({
+            orgname: name,
+            offset: 0,
+            limit: 20
+          });
+          break;
+        case 'Zones': // 下拉组织对于模板列表jw
+          this.templateList({
+            orgname: name,
+            offset: 0,
+            limit: 20
+          });
+          break;
+        case 'Devices': // 下拉组织对于Devices列表zwj
+          this.TableForm({
+            organization: name,
+            offset: 0,
+            limit: 100,
+            name
+          });
+          break;
+        case 'Device': // 下拉组织对于Device列表zwj
+          this.Tabledevice({
+            deep: true,
+            orgname: name,
+            offset: 0,
+            limit: 100,
+            name
+          });
+          break;
+        case 'DeviceGroup': // 下拉组织对于DeviceGroup列表zwj
+          this.DeviceGroups({
+            organization: name,
+            offset: 0,
+            limit: 100
+          });
+          break;
+        case 'SpokeGroups':
+          this.SPTableForm({
+            orgname: name,
+            offset: 0,
+            limit: 100
+          });
+          break;
+      }
+    },
+    // 修改密码输入同步提示信息
+    validate(field, valid, message) {
+      if (valid) {
+        this.message[field] = '';
       } else {
-        this.saveOrganization({ organization: name });
-        return false;
+        this.message[field] = message;
       }
     },
     // 修改密码提交事件
     handleOk() {
       this.passWordData.systemId = this.userInfo.systemId;
       this.passWordData.userId = this.accountId;
-      this.$refs.passWordChange.validate(async (valid, res) => {
+      this.$refs.passWordChange.validate(async valid => {
         if (valid) {
           const changePassWordRes = await passWordEdt(this.passWordData);
           if (changePassWordRes.status !== '0000')
             return this.$message.error(changePassWordRes.message);
           this.$message.success('密码修改成功！');
           this.visible = false;
-        } else {
-          if (res.oldPassword) {
-            this.$message.error(res.oldPassword[0].message);
-          } else if (res.newPassword) {
-            this.$message.error(res.newPassword[0].message);
-          } else {
-            this.$message.error(res.confirm[0].message);
-          }
         }
       });
     },
@@ -470,18 +502,30 @@ export default {
     },
     // 修改密码悬浮提示
     enter(field) {
-      if (field === 'oldPassword') {
-        console.log(111);
+      if (this.message) {
+        this.formTips.tipText = '';
+        switch (field) {
+          case 'oldPassword':
+            this.formTips.tipText = this.message.oldPassword;
+            break;
+          case 'newPassword':
+            this.formTips.tipText = this.message.newPassword;
+            break;
+          case 'confirm':
+            this.formTips.tipText = this.message.confirm;
+            break;
+        }
+
+        this.formTips.flag = true;
       }
-      this.changePassword.flag = true;
     },
     leave() {
-      this.changePassword.flag = false;
+      this.formTips.flag = false;
     },
     updateXY(event) {
       this.x = event.pageX;
       this.y = event.pageY;
-      this.changePassword.positionStyle = {
+      this.formTips.positionStyle = {
         top: this.y + 14 + 'px',
         left: this.x - 2 + 'px'
       };
@@ -498,17 +542,6 @@ export default {
           that.timer = false;
         }, 400);
       }
-    },
-    // 用户信息监视 根据level 获取权限页面 并跳转
-    userInfo: {
-      handler(data) {
-        if (data.level) {
-          data.level === 3
-            ? this.$router.replace('/configuration')
-            : this.$router.replace('/administration');
-        }
-      },
-      deep: true
     },
     // 监视路由变化通过路由name判断是否显示下拉框
     $route: {
@@ -547,25 +580,11 @@ export default {
   }
   .pull-right {
     width: 305px;
-    .task-iconbtn,
-    .info-iconbtn {
+    .task-iconbtn {
       width: 30px;
       height: 21px;
       text-align: center;
       color: #fff;
-    }
-    .info-iconbtn {
-      width: 46px;
-      position: relative;
-      &::before {
-        position: absolute;
-        content: '';
-        border-right: 1px solid #5b636e;
-        height: 14px;
-        width: 1px;
-        top: 4px;
-        left: -3px;
-      }
     }
     .ant-dropdown-link {
       font-size: 12px;
@@ -647,88 +666,5 @@ export default {
   background-color: #d0dce4;
   overflow: hidden;
   padding: 0 24px 0 36px;
-  .select-wrap {
-    min-width: 475px;
-  }
-}
-/deep/ .from-wrap {
-  .ant-modal-header {
-    color: rgb(13, 73, 106);
-    background-color: rgb(233, 244, 252);
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    padding: 6px 10px;
-    .ant-modal-title {
-      font-size: 12px;
-    }
-  }
-  .ant-modal-close {
-    color: rgb(13, 73, 106);
-    font-weight: 700;
-    .ant-modal-close-x {
-      width: 30px;
-      height: 34px;
-      .anticon {
-        vertical-align: 0.5em;
-      }
-    }
-  }
-  .ant-modal-footer {
-    background-color: rgb(220, 237, 248);
-    .ant-btn {
-      line-height: 30px;
-      padding: 0px 12px;
-      background: rgb(63, 74, 91);
-      color: rgb(255, 255, 255);
-      transition: all 0.5s ease-out 0s;
-      border-radius: 4px;
-      font-size: 12px;
-      border: 0;
-      min-width: 70px;
-      &:hover {
-        background: rgb(153, 190, 77) rgb(79, 93, 114);
-      }
-    }
-    .ant-btn-primary {
-      background: rgb(167, 208, 84);
-      &:hover {
-        background: rgb(153, 190, 77);
-      }
-    }
-  }
-  .ant-modal-body {
-    .ant-form-item {
-      margin: 0;
-      .ant-form-item-label {
-        line-height: 20px;
-        padding: 0;
-        label {
-          color: rgb(249, 249, 249);
-          font-size: 12px;
-          line-height: 18px;
-          &::after {
-            content: '*';
-            color: #ee6978;
-            font-size: 14px;
-            padding-left: 1px;
-            vertical-align: top;
-          }
-        }
-      }
-      .ant-form-item-control {
-        line-height: normal;
-      }
-    }
-  }
-}
-.change-passwrod {
-  position: fixed;
-  background: #ffffb1;
-  line-height: 26px;
-  padding: 0 10px;
-  border-radius: 6px;
-  left: 50%;
-  top: 45%;
-  z-index: 9999;
 }
 </style>

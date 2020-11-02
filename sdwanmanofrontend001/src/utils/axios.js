@@ -18,8 +18,6 @@ const Axios = axios.create({
   headers: {
     Accept: 'application/json',
     ['Content-Type']: 'application/json'
-    // ['access-token']:
-    //   'eyJhbGciOiJIUzI1NiJ9.eyJvcCI6IiIsImMiOiJiciIsInQiOiIiLCJpIjoiMTA2MTIzOTA0In0.srwsj4v26ug1zsDQ8hdnbSYUalMM3FJLe5pJnM7x-eQ'
   }
 });
 
@@ -107,10 +105,8 @@ Axios.interceptors.request.use(
 // 添加响应拦截器
 Axios.interceptors.response.use(
   response => {
-    console.log(response);
     // 请求成功后1s后移除请求里面的列表
     setTimeout(() => {
-      console.log(response.status);
       allowRequest(reqList, response.config.url);
     }, duration);
     switch (response.data.status) {
@@ -177,12 +173,25 @@ Axios.interceptors.response.use(
 const calcUrlPrefix = api => {
   let url = '';
   if (api.includes('/login') && axiosBaseUrl.url.length) {
-    url = axiosBaseUrl.url + '/login';
+    //url = axiosBaseUrl.url + '/v0-snapshot/gateway/api';
+    url = '';
   } else {
-    url = axiosBaseUrl.url.length ? axiosBaseUrl.url + '/openapi/sdwan' : '';
+    url = axiosBaseUrl.url.length
+      ? axiosBaseUrl.url + '/v0-snapshot/gateway/api/openapi/sdwan'
+      : '';
   }
   return url;
 };
+
+// const calcUrlPrefix = api => {
+//   let url = axiosBaseUrl.url.length ? axiosBaseUrl.url : '';
+//   if (api.includes('/market/') && !axiosBaseUrl.delPrefix) {
+//     url += '/market';
+//   } else {
+//     url += '';
+//   }
+//   return url;
+// };
 
 const $http = {
   post(api, params, opts = {}) {

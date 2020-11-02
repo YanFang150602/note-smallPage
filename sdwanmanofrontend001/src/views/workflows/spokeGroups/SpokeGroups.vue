@@ -72,7 +72,7 @@
       is-horizontal-resize
       column-width-drag
       :columns="columns"
-      :table-data="tableData"
+      :table-data="spoke.data"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
@@ -132,8 +132,7 @@ import {
   spokeCheck,
   spokeEdit
 } from 'apis/spokeGroups';
-
-// 列表
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -283,6 +282,18 @@ export default {
     this.tableForm();
     // spoke组查询
     // this.customCompFunc();
+    // this.$store.dispatch('SPTableForm', {
+    //   orgname: this.organization,
+    //   offset: 0,
+    //   limit: this.pageSize
+    // });
+    if (this.organization == '') {
+      this.tableForm();
+    }
+    // this.queryDeviceGrops();
+  },
+  computed: {
+    ...mapState(['spoke', 'organization'])
   },
   methods: {
     // 分页
@@ -299,25 +310,26 @@ export default {
     showModal() {
       this.visible = true;
     },
-    async handleOk(e) {
-      console.log(e);
-      // this.tableForm();
+    async handleOk() {
       const res = await spokeAdd(this.spokeAdd);
       console.log(res);
-      if (res.message === 'Success') {
-        this.$message.success('创建轮询组成功!');
-        this.spokeAdd = {};
-      } else {
-        this.$message.error(res.message);
-        this.visible = true;
-      }
+
       this.tableForm();
       this.$refs.spokeAdd.$refs.ruleForm.validate(valid => {
         if (valid) {
           // this.$message.success('创建轮询组成功!');
           // this.visible = false;
           // this.spokeAdd = {};
-          this.$refs.spokeAdd.showX();
+          if (res.message === 'Success') {
+            this.$message.success('创建轮询组成功!');
+            this.spokeAdd = {};
+            this.visible = false;
+            this.$refs.spokeAdd.showX();
+            this.$refs.spokeAdd.$refs.ruleForm.resetFields();
+          } else {
+            this.$message.error(res.message);
+            this.visible = true;
+          }
         } else {
           // this.$message.error(res.message);
           console.log('error submit!!');
@@ -326,8 +338,8 @@ export default {
       });
 
       // this.$refs.spokeAdd.spokeAdd.name = '';
-      this.$refs.spokeAdd.$refs.ruleForm.resetFields();
-      this.spokeAdd.vrfs = [];
+      // this.$refs.spokeAdd.$refs.ruleForm.resetFields();
+      // this.spokeAdd.vrfs = [];
     },
     handleCancel() {
       this.$refs.spokeAdd.$refs.ruleForm.resetFields();
@@ -353,6 +365,13 @@ export default {
     // 表格方法
     selectALL(selection) {
       console.log('select-aLL1111111111111', selection);
+      selection.forEach(item => {
+        console.log(item.deviceName);
+        this.dele.ids.push(item.deviceName);
+      });
+      const newArr = Array.from(new Set(this.dele.ids));
+      this.dele.ids = newArr;
+      console.log(this.dele);
     },
 
     selectChange(selection, rowData) {
@@ -395,11 +414,22 @@ export default {
     async tableForm() {
       const offset = (this.pageIndex - 1) * this.pageSize;
       const limit = this.pageSize;
-      const res = await SPTableForm(offset, limit);
+      const orgname = '';
+      const res = await SPTableForm(orgname, offset, limit);
       console.log(res.result.totalCount);
+      this.spoke.data = res.result.data;
       this.totalCount = res.result.totalCount;
       this.tableData = res.result.data;
     },
+    // 选取了组织
+    queryDeviceGrops() {
+      this.$store.dispatch('spoke', {
+        orgname: this.organization,
+        offset: (this.pageIndex - 1) * this.pageSize,
+        limit: this.pageSize
+      });
+    },
+
     // 表格数据删除
     async groupDel() {
       const res = await SPDelete(this.dele);
@@ -492,6 +522,6 @@ Vue.component('table-operationSpoke', {
 
 // 查看弹框
 /deep/.ant-modal-content {
-  height: 300px;
+  height: 100%;
 }
 </style>

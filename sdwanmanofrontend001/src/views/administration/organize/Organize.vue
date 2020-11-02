@@ -78,12 +78,12 @@
     <!-- 表单主体内容 -->
     <v-table
       is-horizontal-resize
+      is-vertical-resize
       column-width-drag
       :columns="columns"
       :table-data="tableData"
       :select-change="delItem"
-      :height="525"
-      style="width:100%"
+      style="width:100%;"
       isFrozen="true"
       @on-custom-comp="edtAdm"
     ></v-table>
@@ -91,12 +91,8 @@
     <a-modal
       v-model="visible"
       :title="modalTitle"
-      :bodyStyle="{
-        backgroundColor: 'rgb(54, 83, 107)',
-        padding: '0 10px 10px'
-      }"
       :width="865"
-      wrapClassName="from-wrap"
+      wrapClassName="form-wrap"
       :afterClose="cleanData"
     >
       <!-- 提交表单 -->
@@ -105,11 +101,12 @@
         ref="organization"
         :rules="rules"
         layout="vertical"
+        @validate="validate"
         hideRequiredMark
       >
         <a-row type="flex" justify="space-between" align="top">
           <!-- 组织名称 -->
-          <a-col>
+          <a-col :style="{ width: '270px' }">
             <a-form-model-item
               @blur.native.capture="routeAdd"
               label="Name"
@@ -119,36 +116,25 @@
                 size="small"
                 :disabled="modalType === 'edt'"
                 v-model="organization.orgName"
+                @mouseenter="enter('orgName')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
               />
             </a-form-model-item>
           </a-col>
           <!-- 全局组织ID -->
-          <a-col>
+          <a-col :style="{ width: '270px' }">
             <a-form-model-item label="Global Organization ID">
               <a-input size="small" disabled v-model="organization.globalId" />
             </a-form-model-item>
           </a-col>
-          <!-- 父级组织名称 -->
-          <a-col>
-            <a-form-model-item label="Parent Organization" prop="parentOrg">
-              <a-select
-                size="small"
-                placeholder="select"
-                :disabled="modalType === 'edt'"
-                @change="organChange"
-                v-model="organization.parentOrg"
-              >
-                <a-select-option
-                  v-for="(item, index) in admNameList"
-                  :key="index"
-                  :value="item"
-                  >{{ item }}</a-select-option
-                >
-              </a-select>
-            </a-form-model-item>
-          </a-col>
           <!-- 设备部署类型 -->
-          <a-col>
+          <a-col
+            :style="{ width: '270px' }"
+            @mouseenter="enter('cpeDeploymentType')"
+            @mouseleave="leave"
+            @mousemove="updateXY"
+          >
             <a-form-model-item
               label="CPE Deployment Type"
               prop="cpeDeploymentType"
@@ -164,19 +150,46 @@
               </a-select>
             </a-form-model-item>
           </a-col>
+          <!-- 父级组织名称 -->
+          <a-col
+            :style="{ width: '413px' }"
+            @mouseenter="enter('parentOrg')"
+            @mouseleave="leave"
+            @mousemove="updateXY"
+          >
+            <a-form-model-item label="Parent Organization" prop="parentOrg">
+              <a-select
+                size="small"
+                :disabled="modalType === 'edt'"
+                @change="organChange"
+                v-model="organization.parentOrg"
+              >
+                <a-select-option
+                  v-for="(item, index) in admNameList"
+                  :key="index"
+                  :value="item"
+                  >{{ item }}</a-select-option
+                >
+              </a-select>
+            </a-form-model-item>
+          </a-col>
           <!-- 控制器选择 -->
-          <a-col>
-            <a-form-model-item
-              style="width:400px"
-              label="Controllers"
-              prop="controllers"
-            >
+          <a-col
+            :style="{ width: '413px' }"
+            @mouseenter="enter('controllers')"
+            @mouseleave="leave"
+            @mousemove="updateXY"
+          >
+            <a-form-model-item label="Controllers" prop="controllers">
               <a-select
                 size="small"
                 mode="multiple"
-                placeholder="Inserted are removed"
-                :value="organization.controllers"
+                placeholder="Organizations must exist"
+                v-model="organization.controllers"
                 @change="contrChange"
+                @mouseenter="enter('controllers')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
               >
                 <a-select-option
                   v-for="(item, index) in controllerList"
@@ -196,7 +209,6 @@
               <thead>
                 <tr>
                   <th style="width:199px">Name</th>
-
                   <th style="width:199px">ID</th>
                   <th style="width:199px">VPN</th>
                   <th style="width:48px"></th>
@@ -255,28 +267,38 @@
               </tbody>
             </table>
           </a-tab-pane>
-          <!-- 角色路由添加 -->
-          <!-- <a-tab-pane key="2" tab="Supported User Roles">
-            <Transf :transfData="transfData" @add-right="addRight" />
-          </a-tab-pane> -->
         </a-tabs>
       </a-form-model>
       <template slot="footer">
-        <a-button key="back" type="primary" @click="visible = false">
+        <a-button key="back" @click="visible = false">
           Cancel
         </a-button>
-        <a-button v-if="userInfo.level === 1" key="submit" @click="handleOk">
+        <a-button
+          type="primary"
+          v-if="userInfo.level === 1"
+          key="submit"
+          @click="handleOk"
+        >
           Ok
         </a-button>
       </template>
     </a-modal>
+    <!-- task 提示信息 -->
+    <TaskNotice :taskinfo="taskinfo" @task-complete="taskComplete" />
+    <!-- 表单验证悬浮提示框 -->
+    <div
+      v-show="formTips.flag"
+      class="form-tips"
+      :style="formTips.positionStyle"
+    >
+      {{ formTips.tipText }}
+    </div>
   </div>
 </template>
 
 <script>
 import {
   adminList,
-  //admRightList,
   controllerWrap,
   adminAdd,
   adminDel,
@@ -286,20 +308,75 @@ import {
   adminedit
 } from 'apis/administration';
 import { mapState, mapActions } from 'vuex';
+import TaskNotice from '@/views/components/TaskNotice';
 export default {
   data() {
+    // 自定义表单验证
+    let orgName = (rule, value, callback) => {
+      if (value === '') {
+        callback('Field required');
+      } else if (value.length > 50) {
+        callback('Length must not be greater than 50.');
+      } else if (!/^[A-Za-z0-9_-]{1,}$/.test(value)) {
+        callback(
+          'Name cannot contain special characters or spaces except "_","-","."'
+        );
+      } else {
+        callback();
+      }
+    };
+    let parentOrg = (rule, value, callback) => {
+      if (value === '') {
+        callback('Select Organization');
+      } else {
+        callback();
+      }
+    };
+    let cpeDeploymentType = (rule, value, callback) => {
+      if (value === '') {
+        callback('Select Type');
+      } else {
+        callback();
+      }
+    };
+    let controllers = (rule, value, callback) => {
+      if (value.length === 0) {
+        callback('Field required');
+      } else {
+        callback();
+      }
+    };
     return {
       //分页
-      pageIndex: 1,
-      pageSize: 20,
-      totalCount: 0,
+      pageIndex: 1, //当前分页
+      pageSize: 20, //分页条数
+      totalCount: 0, //分页总数
       keyworks: '', //搜索关键字
       modalTitle: '', //弹出层标题
       modalType: '', //弹出层类型 编辑or添加
       tableData: [], //表单数据源
       visible: false, //弹出层开关
+      //任务进度查询
+      taskinfo: {
+        taskId: '',
+        type: ''
+      },
       controllerList: [],
-      //transfData: [], //角色添加删除转换
+      // 修改密码表单悬浮框
+      formTips: {
+        flag: false,
+        tipText: '',
+        x: 0,
+        y: 0,
+        positionStyle: { top: '20px', left: '20px' }
+      },
+      //表单提示信息
+      message: {
+        orgName: '',
+        parentOrg: '',
+        cpeDeploymentType: '',
+        controllers: ''
+      },
       //表单列数据模型
       columns: [
         {
@@ -378,24 +455,10 @@ export default {
       },
       // 表单校验规则
       rules: {
-        orgName: [
-          {
-            required: true,
-            trigger: 'blur'
-          }
-        ],
-        parentOrg: [
-          {
-            required: true,
-            trigger: 'change'
-          }
-        ],
-        cpeDeploymentType: [
-          {
-            required: true,
-            trigger: 'change'
-          }
-        ]
+        orgName: [{ validator: orgName }],
+        parentOrg: [{ validator: parentOrg }],
+        cpeDeploymentType: [{ validator: cpeDeploymentType }],
+        controllers: [{ validator: controllers }]
       }
     };
   },
@@ -424,47 +487,57 @@ export default {
 
     // 头部搜索框
     search() {},
-    // 组织添加
-    async addAdm() {
-      this.modalTitle = 'Add Organization';
-      this.modalType = 'add';
-      // 获取组织名称列表
-      if (!this.admNameList.length) {
-        this.getNameList();
+
+    // 输入框同步提示信息
+    validate(field, valid, message) {
+      if (valid) {
+        this.message[field] = '';
+      } else {
+        this.message[field] = message;
       }
-      //获取全局ID 10个
-      const { result } = await adminId();
-      //获取角色权限列表
-      this.organization.globalId = result;
-      this.visible = true;
     },
+    // 表单提示悬浮框
+    enter(field) {
+      if (this.message) {
+        this.formTips.tipText = '';
+        switch (field) {
+          case 'orgName':
+            this.formTips.tipText = this.message.orgName;
+            break;
+          case 'parentOrg':
+            this.formTips.tipText = this.message.parentOrg;
+            break;
+          case 'cpeDeploymentType':
+            this.formTips.tipText = this.message.cpeDeploymentType;
+            break;
+          case 'controllers':
+            this.formTips.tipText = this.message.controllers;
+            break;
+        }
+
+        this.formTips.flag = true;
+      }
+    },
+    leave() {
+      this.formTips.flag = false;
+    },
+    updateXY(event) {
+      this.x = event.pageX;
+      this.y = event.pageY;
+      this.formTips.positionStyle = {
+        top: this.y + 14 + 'px',
+        left: this.x - 2 + 'px'
+      };
+    },
+
+    // 组织下拉框控制器查询
     async organChange(value) {
-      //控制器查询
-      console.log(value);
-      this.controllerList = [];
-      const { result } = await controllerWrap({
-        organization: value
-      });
-      result['appliance-list'].forEach(item => {
-        this.controllerList.push(item.name);
-      });
-      console.log(this.controllerList);
+      this.getController(value);
     },
+    // 控制器选择
     contrChange(selectedItems) {
       this.organization.controllers = selectedItems;
     },
-    //组织角色列表
-    // async rightList() {
-    //   this.transfData = [];
-    //   const { result } = await admRightList();
-    //   result.roleNames.forEach(item => {
-    //     this.transfData.push({ title: item, type: 0 });
-    //   });
-    // },
-    // supportedRoles角色路由添加
-    // addRight(right) {
-    //   this.admRight.roleNames = right;
-    // },
     // 路由添加
     async routeAdd() {
       const { result } = await adminRouerId();
@@ -481,7 +554,7 @@ export default {
         this.vrfsData.id = result.SdwanGlobalIds.globalIds[1];
         console.log(this.vrfsData.id);
       }
-      this.organization.vrfs[0].name = this.organization.name + '-LAN-VR';
+      this.organization.vrfs[0].name = this.organization.orgName + '-LAN-VR';
     },
     //routing Instance 添加
     async addVrfs() {
@@ -520,6 +593,21 @@ export default {
       const newArr = Array.from(new Set(this.admDel.ids));
       this.admDel.ids = newArr;
     },
+
+    // 组织添加t弹出框
+    async addAdm() {
+      this.modalTitle = 'Add Organization';
+      this.modalType = 'add';
+      // 获取组织名称列表
+      if (!this.admNameList.length) {
+        this.getNameList();
+      }
+      //获取全局ID 10个
+      const { result } = await adminId();
+      //获取角色权限列表
+      this.organization.globalId = result;
+      this.visible = true;
+    },
     // 删除组织项
     async delAdm() {
       const res = await adminDel(this.admDel);
@@ -527,20 +615,22 @@ export default {
         ids: []
       };
       if (res.status !== '0000') return this.$message.error(res.message);
-      this.$message.success('组织删除成功！');
-
-      this.admList();
-      // 更新home页下拉组织列表
-      this.getNameList();
+      // 任务进度
+      this.taskinfo = {
+        taskId: res.result.TaskResponse['task-id'],
+        type: 'del'
+      };
     },
     // 编辑查看
     async edtAdm(params) {
       this.modalTitle = 'Edit Organization';
       this.modalType = 'edt';
       const { orgName } = params.rowData;
+      // 查询当前组织信息
       const { result } = await adminSearch(orgName);
+      //控制器查询
+      this.getController(orgName);
       this.organization = result;
-      console.log(this.organization);
       this.organization.vrfs.forEach(item => {
         item.enableVpn = item.enableVpn === 'true' ? true : false;
       });
@@ -548,36 +638,57 @@ export default {
       this.vrfsData.id = RouerIdRes.result.SdwanGlobalIds.globalIds[0];
       this.visible = true;
     },
+
     //组织创建更新提交
     async handleOk() {
       // 组织添加
       if (this.modalType === 'add') {
-        const res = await adminAdd(this.organization);
-        if (res.status !== '0000') return this.$message.error(res.message);
-        this.$message.success('组织创建成功！');
-        this.visible = false;
-        // 跟新表单界面
-        this.admList();
-        // 更新home页下拉组织列表
-        this.getNameList();
-        //this.$refs.organization.resetFields();
+        this.$refs.organization.validate(async valid => {
+          if (valid) {
+            const res = await adminAdd(this.organization);
+            if (res.status !== '0000') return this.$message.error(res.message);
+
+            // 任务进度
+            this.taskinfo = {
+              taskId: res.result.TaskResponse['task-id'],
+              type: 'add'
+            };
+            this.visible = false;
+          }
+        });
       }
       // 组织编辑查看
       if (this.modalType === 'edt') {
-        const res = await adminedit(
-          this.organization.orgName,
-          this.organization
-        );
+        this.$refs.organization.validate(async valid => {
+          if (valid) {
+            const res = await adminedit(
+              this.organization.orgName,
+              this.organization
+            );
 
-        if (res.status !== '0000') return this.$message.error(res.message);
-        this.$message.success('组织更新成功！');
+            if (res.status !== '0000') return this.$message.error(res.message);
 
-        this.visible = false;
-        this.admList();
-        //this.$refs.organization.resetFields();
+            // 任务进度
+            this.taskinfo = {
+              taskId: res.result.TaskResponse['task-id'],
+              type: 'edt'
+            };
+            this.visible = false;
+          }
+        });
       }
     },
+
+    // tasknotice 关闭
+    taskComplete() {
+      this.admList();
+      // 更新home页下拉组织列表
+      this.getNameList();
+    },
+
+    // 弹出关闭清空表单和验证规则
     cleanData() {
+      this.$refs.organization.clearValidate();
       this.organization = {
         globalId: '',
         ikeAuthType: 'psk',
@@ -594,9 +705,25 @@ export default {
         name: '',
         enableVpn: false
       };
+      this.message = {
+        orgName: '',
+        parentOrg: '',
+        cpeDeploymentType: '',
+        controllers: ''
+      };
+    },
+    // 获取控制器
+    async getController(value) {
+      this.controllerList = [];
+      const { result } = await controllerWrap({
+        organization: value
+      });
+      result['appliance-list'].forEach(item => {
+        this.controllerList.push(item.name);
+      });
     }
-  }
-  // components: { Transf }
+  },
+  components: { TaskNotice }
 };
 import Vue from 'vue';
 Vue.component('organize-name', {
@@ -642,69 +769,6 @@ Vue.use(FormModel);
     }
   }
 }
-
-/deep/ .from-wrap {
-  .ant-modal-header {
-    color: rgb(13, 73, 106);
-    background-color: rgb(233, 244, 252);
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    padding: 6px 10px;
-    .ant-modal-title {
-      font-size: 12px;
-    }
-  }
-  .ant-modal-close {
-    color: rgb(13, 73, 106);
-    font-weight: 700;
-    .ant-modal-close-x {
-      width: 30px;
-      height: 34px;
-      .anticon {
-        vertical-align: 0.5em;
-      }
-    }
-  }
-  .ant-modal-footer {
-    background-color: rgb(220, 237, 248);
-    .ant-btn {
-      line-height: 30px;
-      padding: 0px 12px;
-      background: rgb(167, 208, 84);
-      color: rgb(255, 255, 255);
-      transition: all 0.5s ease-out 0s;
-      border-radius: 4px;
-      font-size: 12px;
-      border: 0;
-      min-width: 70px;
-      &:hover {
-        background: rgb(153, 190, 77);
-      }
-    }
-    .ant-btn-primary {
-      background: rgb(63, 74, 91);
-      &:hover {
-        background: rgb(79, 93, 114);
-      }
-    }
-  }
-  .ant-modal-body {
-    .ant-form-item {
-      width: 270px;
-      margin: 0;
-      .ant-form-item-label {
-        width: 100%;
-        padding: 0;
-        label {
-          color: rgb(249, 249, 249);
-          font-size: 12px;
-          line-height: 18px;
-        }
-      }
-    }
-  }
-}
-
 /deep/ .ant-tabs {
   .ant-tabs-bar {
     margin: 0 0 5px 0;

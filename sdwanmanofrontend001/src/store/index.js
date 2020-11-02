@@ -9,7 +9,7 @@ Vue.use(Vuex);
 
 const state = {
   // 当前组织名称
-  organization: '',
+  organization: localStorage.getItem('organization') || '',
   // home页下拉宽数据
   admNameList: [],
   // 租户列表数据
@@ -33,7 +33,8 @@ const state = {
   deviceFrom: [],
   device: {},
   deviceGroupResult: {},
-  deviceName: [],
+  spoke: {},
+  deviceName: localStorage.getItem('deviceName') || '',
   isLoading: 0,
   vpnTableSelects: {
     vpnPeerFQDN: [],

@@ -33,14 +33,14 @@
           justify="end"
           align="middle"
         >
-          <!-- <a-col
+          <a-col
             :style="{
               fontSize: '18px',
               cursor: 'pointer',
               marginRight: '20px'
             }"
           >
-            <a-icon type="plus" />
+            <a-icon @click="showModal" type="plus" />
           </a-col>
           <a-col
             :style="{
@@ -49,11 +49,11 @@
               marginRight: '20px'
             }"
           >
-            <a-icon type="minus" />
-          </a-col>-->
+            <a-icon @click="showModalDelete" type="minus" />
+          </a-col>
           <a-col>
             <v-pagination
-              :total="deviceFrom.length"
+              :total="totalCount"
               size="small"
               :page-size="pageSize"
               :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
@@ -67,150 +67,162 @@
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
-      column-width-drag
       is-horizontal-resize
+      column-width-drag
       :columns="columns"
-      :table-data="deviceFrom"
+      :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="350"
+      :height="540"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
     ></v-table>
+    <!-- 新增弹框 -->
+    <AddressAdd ref="AddressAddRef"></AddressAdd>
+    <!-- 删除的弹框 -->
+    <AddressDelete ref="AddressDeleteRef" :addressDele="idDele"></AddressDelete>
+    <!-- 查看弹框 -->
+    <AddressEdit
+      ref="AddressEditRef"
+      :addressEdit="addressCheck"
+      :addressDele="idDele"
+    ></AddressEdit>
   </div>
 </template>
-
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
-// import { CfTableForm } from 'apis/Configuration';
+import AddressAdd from './AddressAdd';
+import AddressDelete from './AddressDelete';
+import AddressEdit from './AddressEdit';
+import { addressForm } from 'apis/address';
+import { mapState } from 'vuex';
 
 export default {
+  name: 'QosProfiles',
+  components: {
+    AddressAdd,
+    AddressDelete,
+    AddressEdit
+  },
   data() {
     return {
-      //分页
-      pageIndex: 1,
-      pageSize: 20,
-      totalCount: 100,
+      // 搜索框
       keyworks: '',
+      // 新增弹框
+      visible: false,
+      // 删除弹框
+      visibleDelete: false,
+      // 查看弹框
+      visibleCheck: false,
       // 表格
       tableData: [],
       columns: [
         {
           width: 36,
-          titleAlign: 'center',
           columnAlign: 'center',
+          titleAlign: 'center',
           type: 'selection'
         },
         {
-          field: 'name',
+          field: 'deviceName',
           title: 'Name',
-          width: 90,
+          width: 150,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true,
-          componentName: 'table-operation'
-        },
-        {
-          field: 'ipAddress',
-          title: 'Mgmt.Address',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
+          componentName: 'table-operationDevice'
         },
         {
           field: 'type',
           title: 'Type',
-          width: 90,
+          width: 150,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'createdAt',
-          title: 'Time Created',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'startTime',
-          title: 'Service Start Time',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'softwareVersion',
-          title: 'Software Version',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'branchId',
-          title: 'Site ID',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'ownerOrg',
-          title: 'Organizations',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'syncStatus',
-          title: 'Config Synchronized',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'pingStatus',
-          title: 'Reachability',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'servicesStatus',
-          title: 'Service',
-          width: 90,
+          field: 'value',
+          title: 'Value',
+          width: 150,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         }
-      ]
+      ],
+      addressCheck: {},
+      // 删除传递参数
+      idDele: '',
+      //分页
+      pageIndex: 1,
+      pageSize: 20,
+      totalCount: 100
     };
   },
   created() {
-    this.$store.dispatch('getNameList');
-    console.log(this.deviceFrom);
+    this.tableForm();
+  },
+  computed: {
+    ...mapState(['organization', 'deviceName'])
   },
   methods: {
-    // 分页
-    queryDevice() {
-      this.$store.dispatch('getNameList', {
-        organization: this.organization,
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
-      });
+    // 新增弹框
+    showModal() {
+      this.$refs.AddressAddRef.showModalAdd();
     },
+    // 删除弹框
+    showModalDelete() {
+      this.$refs.AddressDeleteRef.showModalDelete();
+    },
+    // 表格方法
+    selectALL(selection) {
+      console.log('select-aLL', selection);
+    },
+    selectChange(selection, rowData) {
+      console.log('select-change', selection, rowData);
+      console.log(rowData.name);
+      this.idDele = rowData.name;
+      console.log(this.idDele);
+      // selection.forEach(item => {
+      //   console.log(item.deviceName);
+      //   this.dele.ids.push(item.deviceName);
+      //   // this.dele.id = item.deviceName;
+      // });
+      // const newArr = Array.from(new Set(this.dele.ids));
+      // this.dele.ids = newArr;
+      // console.log(this.dele);
+    },
+    selectGroupChange(selection) {
+      console.log('select-group-change', selection);
+    },
+    async customCompFunc(params) {
+      console.log(params);
+      this.addressCheck = params.rowData;
+      this.addressCheck.tags = this.addressCheck.tags || [];
+      if (this.addressCheck.description === 'null') {
+        this.addressCheck.description = '';
+      }
+      console.log(this.addressCheck);
+      this.$refs.AddressEditRef.showModalEdit();
+    },
+    async tableForm() {
+      const res = await addressForm({
+        deviceName: this.deviceName,
+        userName: this.organization,
+        offset: 0,
+        limit: 25,
+        name: ''
+      });
+      console.log(res.result);
+      res.result.forEach(item => {
+        console.log(item);
+      });
+      this.tableData = res.result;
+    },
+    // 分页
     pageChange(pageIndex) {
       this.pageIndex = pageIndex;
-      this.$store.dispatch('getNameList', {
+      this.$store.dispatch('Tabledevice', {
         organization: this.organization,
         offset: (this.pageIndex - 1) * this.pageSize,
         limit: this.pageSize
@@ -219,57 +231,17 @@ export default {
     pageSizeChange(pageSize) {
       this.pageIndex = 1;
       this.pageSize = pageSize;
-      this.$store.dispatch('getNameList', {
+      this.$store.dispatch('Tabledevice', {
         organization: this.organization,
         offset: (this.pageIndex - 1) * this.pageSize,
         limit: this.pageSize
       });
-    },
-    // 表格方法
-    selectALL(selection) {
-      console.log('select-aLL', selection);
-      selection.forEach(item => {
-        console.log(item.deviceName);
-        this.dele.push(item.deviceName);
-      });
-      const newArr = Array.from(new Set(this.dele));
-      this.dele = newArr;
-      console.log(this.dele);
-    },
-    selectChange(selection, rowData) {
-      console.log('select-change', selection, rowData);
-      selection.forEach(item => {
-        console.log(item.deviceName);
-        this.dele.push(item.deviceName);
-      });
-      const newArr = Array.from(new Set(this.dele));
-      this.dele = newArr;
-      console.log(this.dele);
-    },
-    selectGroupChange(selection) {
-      console.log('select-group-change', selection);
-    },
-    customCompFunc(params) {
-      if (params.type === 'jump') {
-        //记录deviceName
-        this.saveDeviceName({ deviceName: params.rowData.name });
-        // device 对于的home组织名称列表
-        this.getNameListDevice(params.rowData.name);
-        this.$router.push({
-          name: 'DeviceConfig',
-          params: { name: params.rowData.name }
-        });
-      }
-    },
-    ...mapMutations(['saveDeviceName']),
-    ...mapActions(['getNameListDevice'])
-  },
-  computed: {
-    ...mapState(['deviceFrom', 'organization'])
+    }
   }
 };
 import Vue from 'vue';
-Vue.component('table-operation', {
+// import { import } from '@babel/types';
+Vue.component('table-operationDevice', {
   props: {
     rowData: {
       type: Object
@@ -287,7 +259,7 @@ Vue.component('table-operation', {
   methods: {
     update() {
       // 参数根据业务场景随意构造
-      let params = { type: 'jump', index: this.index, rowData: this.rowData };
+      let params = { type: 'edit', index: this.index, rowData: this.rowData };
       this.$emit('on-custom-comp', params);
     }
   }
@@ -297,12 +269,9 @@ Vue.component('table-operation', {
 <style lang="scss" scoped>
 .devices {
   padding: 5px 20px 30px 15px;
-  /deep/.v-table-rightview {
-    right: unset;
-  }
   /deep/.search-bar {
     .ant-input {
-      width: 400%;
+      width: 700px;
       color: #6a6f75;
       border: 1px solid #b0c7d5;
       height: 20px;

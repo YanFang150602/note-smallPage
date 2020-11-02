@@ -168,10 +168,11 @@ export const spokeSeach = ({ orgname, deviceType }) =>
  * @param {String} deviceType
  */
 
-export const spokeList = ({ offset, limit }) =>
+export const spokeList = ({ offset, limit, orgname }) =>
   $http.get('/controller/sdwan/v1/spokegroup', {
     offset,
-    limit
+    limit,
+    orgname
   });
 
 /**
@@ -222,7 +223,7 @@ export const templateEdt = (name, param) =>
  */
 
 export const networkName = param =>
-  $http.post('/controller/sdwan/v1/template/template/network', param);
+  $http.get('/controller/sdwan/v1/template/template/network', param);
 
 /**
  * @desc 模板部署
@@ -238,7 +239,7 @@ export const templateCrt = param =>
  */
 
 export const netWrokNameCre = param =>
-  $http.post('/controller/sdwan/v1/template/template/wannetwork', param);
+  $http.post('/controller/sdwan/v1/template/template/network', param);
 
 /**
  * @desc 模板networkname Transport Domain查询
@@ -246,7 +247,7 @@ export const netWrokNameCre = param =>
  */
 
 export const TraDomain = () =>
-  $http.post('/controller/sdwan/v1/template/template/domains');
+  $http.get('/controller/sdwan/v1/template/template/domains');
 
 /**
  * @desc 租户密码修改
@@ -255,3 +256,11 @@ export const TraDomain = () =>
 
 export const passWordEdt = param =>
   $http.post('/controller/sdwan/v1/tenant/tenant/password', param);
+
+/**
+ * @desc 任务进度
+ * @param {Object} param
+ */
+
+export const taskNotice = param =>
+  $http.get('/controller/sdwan/v1/organizations/organization/task', param);

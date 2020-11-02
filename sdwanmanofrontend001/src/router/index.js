@@ -57,6 +57,14 @@ const routes = [
         component: () => import('views/configuration/config/Config'),
         children: [
           {
+            path: '/configuration/deviceConfig/zones',
+            name: 'Zones',
+            meta: {
+              title: '区'
+            },
+            component: () => import('views/configuration/zones/Zones')
+          },
+          {
             path: '/configuration/deviceConfig/schedule',
             name: 'Schedules',
             meta: {
@@ -71,6 +79,52 @@ const routes = [
               title: 'VPN Config File'
             },
             component: () => import('views/configuration/vpn/VPNConfigFile')
+          },
+          {
+            path: '/configuration/deviceConfig/QosProfiles',
+            name: 'QosProfiles',
+            meta: {
+              title: '概要文件'
+            },
+            component: () =>
+              import('views/configuration/QosProfiles/QosProfiles')
+          },
+          {
+            path: '/configuration/deviceConfig/QosPolicies',
+            name: 'QosPolicies',
+            meta: {
+              title: '青年'
+            },
+            component: () =>
+              import('views/configuration/qosPolices/QosPolicies')
+          },
+          {
+            path: '/configuration/deviceConfig/AppQosPolicies',
+            name: 'AppQosPolicies',
+            meta: {
+              title: '应用策略'
+            },
+            component: () =>
+              import('views/configuration/appQosPolicies/AppQosPolicies')
+          },
+          {
+            path: '/configuration/deviceConfig/AssociateInterfaceNetwork',
+            name: 'AssociateInterfaceNetwork',
+            meta: {
+              title: '网络接口'
+            },
+            component: () =>
+              import(
+                'views/configuration/AssociateInterfaceNetwork/AssociateInterfaceNetwork'
+              )
+          },
+          {
+            path: '/configuration/deviceConfig/Address',
+            name: 'Address',
+            meta: {
+              title: '地址'
+            },
+            component: () => import('views/configuration/address/Address')
           }
         ]
       },
@@ -144,17 +198,6 @@ const routes = [
               title: '设备组'
             },
             component: () => import('views/workflows/deviceGroup/deviceGroup')
-          },
-          {
-            path: '/workflows/Associate Interface Network',
-            name: 'Associate Interface Network',
-            meta: {
-              title: '网络接口'
-            },
-            component: () =>
-              import(
-                'views/workflows/Associate Interface Network/Associate Interface Network'
-              )
           }
         ]
       },

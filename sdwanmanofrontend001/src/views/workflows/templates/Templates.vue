@@ -1,5 +1,5 @@
 <template>
-  <div id="templates">
+  <div class="main-con">
     <!-- 头部信息 -->
     <div class="list-action">
       <a-row
@@ -69,12 +69,12 @@
     </div>
     <!-- 表单主体内容 -->
     <v-table
+      is-vertical-resize
       is-horizontal-resize
       column-width-drag
       :columns="columns"
       :table-data="tempList['versanms.sdwan-template-list']"
       :select-change="delItem"
-      :height="520"
       style="width:100%"
       isFrozen="true"
       @on-custom-comp="edtTemplate"
@@ -84,12 +84,8 @@
     <a-modal
       v-model="visible"
       :title="modalTitle"
-      :bodyStyle="{
-        backgroundColor: 'rgb(54, 83, 107)',
-        padding: '0 10px 10px'
-      }"
       :width="1250"
-      wrapClassName="from-wrap"
+      wrapClassName="form-wrap"
       cancelText="Cancel"
       okText="Ok"
       :afterClose="cleanData"
@@ -99,6 +95,7 @@
         :rules="rules"
         :model="templateData.template"
         layout="vertical"
+        @validate="validate"
         hideRequiredMark
       >
         <a-tabs
@@ -110,6 +107,7 @@
           <!-- Base -->
           <a-tab-pane key="1" tab="Basic">
             <a-row type="flex" justify="space-between" align="middle">
+              <!-- 模板名称 -->
               <a-col>
                 <a-form-model-item
                   style="width:392px"
@@ -120,9 +118,13 @@
                     size="small"
                     :disabled="modalType === 'edt'"
                     v-model="templateData.template.templateName"
+                    @mouseenter="enter('templateName')"
+                    @mouseleave="leave"
+                    @mousemove="updateXY"
                   />
                 </a-form-model-item>
               </a-col>
+              <!-- 模板风格 -->
               <a-col>
                 <a-form-model-item
                   size="small"
@@ -140,7 +142,12 @@
                   </a-select>
                 </a-form-model-item>
               </a-col>
-              <a-col>
+              <!-- 模板父级组织 -->
+              <a-col
+                @mouseenter="enter('providerOrg.name')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
+              >
                 <a-form-model-item
                   style="width:392px"
                   label="Organization"
@@ -170,6 +177,7 @@
               align="middle"
               class="device-type"
             >
+              <!-- device类型 -->
               <a-col>
                 <a-form-model-item prop="deviceType">
                   <a-radio-group
@@ -190,6 +198,7 @@
                   </a-radio-group>
                 </a-form-model-item>
               </a-col>
+              <!-- spoke组列表 -->
               <a-col>
                 <a-form-model-item style="width:292px" label="Spoke Group">
                   <a-select
@@ -215,7 +224,11 @@
               justify="space-between"
               align="top"
             >
-              <a-col>
+              <a-col
+                @mouseenter="enter('controllers')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
+              >
                 <a-form-model-item
                   style="width:252px"
                   label="Controllers"
@@ -225,8 +238,8 @@
                     size="small"
                     mode="multiple"
                     @change="contrChange"
-                    placeholder="Inserted are removed"
-                    :value="templateData.template.controllers"
+                    placeholder="Organizations must exist"
+                    v-model="templateData.template.controllers"
                   >
                     <a-select-option
                       v-for="(item, index) in controllerList"
@@ -238,7 +251,11 @@
                   </a-select>
                 </a-form-model-item>
               </a-col>
-              <a-col>
+              <a-col
+                @mouseenter="enter('serviceBandwidth')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
+              >
                 <a-form-model-item
                   style="width: 185px"
                   label="Service Bandwidth"
@@ -633,12 +650,23 @@
         </a-button>
       </template>
     </a-modal>
+    <!-- task 提示信息 -->
+    <TaskNotice :taskinfo="taskinfo" @task-complete="taskComplete" />
+    <!-- 表单验证悬浮提示框 -->
+    <div
+      v-show="formTips.flag"
+      class="form-tips"
+      :style="formTips.positionStyle"
+    >
+      {{ formTips.tipText }}
+    </div>
   </div>
 </template>
 
 <script>
 import FactorSelect from './factorSelect';
 import WanRowData from './wanRowData';
+import TaskNotice from '@/views/components/TaskNotice';
 import { mapState, mapActions } from 'vuex';
 import {
   spokeList,
@@ -647,7 +675,6 @@ import {
   templateDel,
   templateSearch,
   templateEdt,
-  adminSearch,
   networkName,
   templateCrt,
   TraDomain,
@@ -655,12 +682,62 @@ import {
 } from 'apis/administration';
 export default {
   data() {
+    // 自定义表单验证
+    let templateName = (rule, value, callback) => {
+      if (value === '') {
+        callback('Field required');
+      } else if (value.length > 50) {
+        callback('Length must not be greater than 50.');
+      } else if (!/^[A-Za-z0-9_-]{1,}$/.test(value)) {
+        callback(
+          'Name cannot contain special characters or spaces except "_","-","."'
+        );
+      } else {
+        callback();
+      }
+    };
+    let providerOrgName = (rule, value, callback) => {
+      if (value === '') {
+        callback('Select Organization');
+      } else {
+        callback();
+      }
+    };
+    let controllers = (rule, value, callback) => {
+      if (value.length === 0) {
+        callback('Select Controllers');
+      } else {
+        callback();
+      }
+    };
+    let serviceBandwidth = (rule, value, callback) => {
+      if (value.length === 0) {
+        callback('Field required');
+      } else {
+        callback();
+      }
+    };
     return {
       //分页
       pageIndex: 1,
       pageSize: 20,
       totalCount: 100,
       keyworks: '',
+      // 修改密码表单悬浮框
+      formTips: {
+        flag: false,
+        tipText: '',
+        x: 0,
+        y: 0,
+        positionStyle: { top: '20px', left: '20px' }
+      },
+      //表单提示信息
+      message: {
+        templateName: '',
+        ['providerOrg.name']: '',
+        controllers: '',
+        serviceBandwidth: ''
+      },
       columns: [
         {
           width: 36,
@@ -671,7 +748,7 @@ export default {
         {
           field: 'templateName',
           title: 'Name',
-          width: 246,
+          width: 50,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true,
@@ -680,7 +757,7 @@ export default {
         {
           field: 'workflowStatus',
           title: 'Status',
-          width: 246,
+          width: 50,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -688,7 +765,7 @@ export default {
         {
           field: 'lastModifiedTime',
           title: 'Last Modified By',
-          width: 246,
+          width: 50,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -696,7 +773,7 @@ export default {
         {
           field: 'lastModifiedBy',
           title: 'Last Modified By',
-          width: 246,
+          width: 50,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
@@ -704,6 +781,18 @@ export default {
       ],
       visible: false,
       factorNum: 0,
+      networkNames: [],
+      spokeOption: [],
+      spokeSelect: '',
+      spockOff: true,
+      controllerList: [], //表单标题
+      modalTitle: '', //表单类型
+      modalType: '', //模板删除参数
+      //任务进度查询
+      taskinfo: {
+        taskId: '',
+        type: ''
+      },
       //模板表单内容
       templateData: {
         template: {
@@ -727,16 +816,6 @@ export default {
           isPrimary: true
         }
       },
-      networkNames: [],
-      spokeOption: [],
-      spokeSelect: '',
-      spockOff: true,
-      controllerList: [],
-      //表单标题
-      modalTitle: '',
-      //表单类型
-      modalType: '',
-      //模板删除参数
       templDel: {
         ids: []
       },
@@ -745,26 +824,10 @@ export default {
 
       //表单校验
       rules: {
-        templateName: [
-          {
-            required: true
-          }
-        ],
-        ['providerOrg.name']: [
-          {
-            required: true
-          }
-        ],
-        controllers: [
-          {
-            required: true
-          }
-        ],
-        serviceBandwidth: [
-          {
-            required: true
-          }
-        ]
+        templateName: [{ validator: templateName }],
+        ['providerOrg.name']: [{ validator: providerOrgName }],
+        controllers: [{ validator: controllers }],
+        serviceBandwidth: [{ validator: serviceBandwidth }]
       },
       //tab当前页
       actKey: '1',
@@ -815,22 +878,21 @@ export default {
         offset: this.pageIndex
       });
     } else {
+      //获取组织对应模板
+      this.getNameList();
       this.templateList({
         offset: (this.pageIndex - 1) * this.pageSize,
         limit: this.pageSize
       });
     }
-    //获取组织对应模板
-    this.$store.dispatch('getNameList');
-    //获取组织对应模板
-    this.spokeOpt();
   },
-  components: {
-    FactorSelect,
-    WanRowData
-  },
+
   methods: {
-    ...mapActions(['templateList']),
+    ...mapActions(['getNameList', 'templateList']),
+    // 搜索框事件
+    search() {
+      console.log(this.keyworks);
+    },
     // networkname Transport Domain选项
     handleNetWorkName() {},
     // networkname弹出关闭
@@ -848,10 +910,8 @@ export default {
       this.$refs.netWorkNameRef.validate(async valid => {
         if (valid) {
           //组织详细信息 获取uuid
-          const resOra = await adminSearch(
-            this.templateData.template.providerOrg.name
-          );
-          this.netWorkNameData.orguuid = resOra.result.uuid;
+
+          this.netWorkNameData.orguuid = this.templateData.template.providerOrg.name;
 
           const resNetWorkName = await netWrokNameCre(this.netWorkNameData);
           if (resNetWorkName.status !== '0000')
@@ -869,6 +929,7 @@ export default {
         limit: this.pageSize
       });
     },
+    // 分页切换操作
     pageSizeChange(pageSize) {
       this.pageIndex = 1;
       this.pageSize = pageSize;
@@ -881,66 +942,7 @@ export default {
     handleReset() {
       this.templateData.template.serviceBandwidth = [];
     },
-    // 模板部署
-    async createTem() {
-      if (this.modalType === 'add') {
-        const wanInfo = [];
-        if (this.$refs.rowWan) {
-          this.$refs.rowWan.forEach(item => {
-            wanInfo.push(item.wandata);
-          });
-        }
-        this.templateData.template.wanInterfaces = wanInfo;
-        // 模板新建
-        const res = await templateAdd(this.templateData);
-        if (res.status !== '0000') return this.$message.error(res.message);
-        //this.$message.success('模板创建成功！');
-        // 模板部署
-        const resCrt = await templateCrt({
-          id: this.templateData.template.templateName,
-          verifyDiff: true
-        });
-
-        if (resCrt.status !== '0000')
-          return this.$message.error(resCrt.message);
-        this.$message.success('模板部署成功！');
-
-        if (this.organization) {
-          this.templateList({
-            orgname: this.organization,
-            limit: this.pageSize,
-            offset: this.pageIndex
-          });
-        } else {
-          this.templateList({
-            offset: (this.pageIndex - 1) * this.pageSize,
-            limit: this.pageSize
-          });
-        }
-
-        this.visible = false;
-      }
-      if (this.modalType === 'edt') {
-        // 模板更新
-        const res = await templateEdt(
-          this.templateData.template.templateName,
-          this.templateData
-        );
-        if (res.status !== '0000') return this.$message.error(res.message);
-        this.$message.success('模板更新成功！');
-        // 模板部署
-        const resCrt = await templateCrt({
-          id: this.templateData.template.templateName,
-          verifyDiff: true
-        });
-
-        if (resCrt.status !== '0000')
-          return this.$message.error(resCrt.message);
-        this.$message.success('模板部署成功！');
-        this.visible = false;
-      }
-    },
-    // tab 返回上一步
+    // tab 按钮切换效果 返回上一步
     tabPrev() {
       if (this.actKey !== '1') {
         this.actKey = String(Number(this.actKey) - 1);
@@ -973,39 +975,11 @@ export default {
         });
       }
     },
-    //获取模板名称
-    delItem(selection) {
-      selection.forEach(item => {
-        this.templDel.ids.push(item.templateName);
-      });
-      const newArr = Array.from(new Set(this.templDel.ids));
-      this.templDel.ids = newArr;
-    },
-    //删除模板
-    async delTemplate() {
-      const res = await templateDel(this.templDel);
-      this.templDel = {
-        ids: []
-      };
-      if (res.status !== '0000') return this.$message.error(res.message);
-      this.$message.success('模板删除成功！');
-      if (this.organization) {
-        this.templateList({
-          orgname: this.organization,
-          limit: this.pageSize,
-          offset: this.pageIndex
-        });
-      } else {
-        this.templateList({
-          offset: (this.pageIndex - 1) * this.pageSize,
-          limit: this.pageSize
-        });
-      }
-    },
     //controller 获取
     contrChange(selectedItems) {
       this.templateData.template.controllers = selectedItems;
     },
+    // 组织列表下拉事件
     async organChange(value) {
       //控制器查询
       this.controllerList = [];
@@ -1015,37 +989,26 @@ export default {
       result['appliance-list'].forEach(item => {
         this.controllerList.push(item.name);
       });
-      console.log(this.controllerList);
-      //组织详细信息 获取uuid
-      const res = await adminSearch(value);
-      if (res.result.uuid) {
-        //组织对应network 信息
-        const netRes = await networkName({ id: res.result.uuid });
-        this.networkNames = [];
-        if (netRes.result[0].wanNetworkGroups) {
-          netRes.result[0].wanNetworkGroups.forEach(item => {
-            this.networkNames.push(item.name);
-          });
-        }
-      }
-    },
-    // spoke名称
-    async spokeOpt() {
-      const { result } = await spokeList({ offset: 0, limit: 25 });
-      result.forEach(item => {
-        this.spokeOption.push(item.name);
+      // spoke列表
+      const spokeRes = await spokeList({
+        offset: 0,
+        limit: 25,
+        orgname: value
       });
-    },
-    search() {
-      console.log(this.keyworks);
-    },
-    customCompFunc(params) {
-      if (params.type === 'delete') {
-        // do delete operation
-        this.$delete(this.tableData, params.index);
-      } else if (params.type === 'edit') {
-        // do edit operation
-        alert(`行号：${params.index} 姓名：${params.rowData['name']}`);
+      if (spokeRes) {
+        spokeRes.result.data.forEach(item => {
+          this.spokeOption.push(item.name);
+        });
+      }
+      //组织对应network 信息
+      const netRes = await networkName({
+        id: this.templateData.template.providerOrg.name
+      });
+      this.networkNames = [];
+      if (netRes.result[0].wanNetworkGroups) {
+        netRes.result[0].wanNetworkGroups.forEach(item => {
+          this.networkNames.push(item.name);
+        });
       }
     },
     //添加模板
@@ -1053,82 +1016,6 @@ export default {
       this.modalTitle = 'Create Template';
       this.modalType = 'add';
       this.visible = true;
-    },
-    //编辑模板
-    async edtTemplate(params) {
-      this.modalTitle = 'Edit Template - ' + params.rowData.templateName;
-      this.modalType = 'edt';
-      const { result } = await templateSearch(params.rowData.templateName);
-      this.templateData = result;
-      this.templateData.template.bandwidthNew = this.num;
-      console.log(this.templateData.template);
-      this.templateData.template.wanInterfaces.forEach(item => {
-        item.portid = item.interfaceName.charAt(item.interfaceName.length - 1);
-      });
-
-      //控制器查询
-      this.controllerList = [];
-      const resOrgan = await controllerWrap({
-        organization: this.templateData.template.providerOrg.name
-      });
-      resOrgan.result['appliance-list'].forEach(item => {
-        this.controllerList.push(item.name);
-      });
-      //  port 下拉对应图标
-      this.factorNum = this.templateData.template.deviceFirmfactor - 1;
-      //组织详细信息 获取uuid
-      const res = await adminSearch(
-        this.templateData.template.providerOrg.name
-      );
-      if (res.result.uuid) {
-        //组织对应network 信息
-        const netRes = await networkName({ id: res.result.uuid });
-        this.networkNames = [];
-        netRes.result[0].wanNetworkGroups.forEach(item => {
-          this.networkNames.push(item.name);
-        });
-      }
-      this.visible = true;
-    },
-    // 提交
-    async handleOk() {
-      if (this.modalType === 'add') {
-        const wanInfo = [];
-        if (this.$refs.rowWan) {
-          this.$refs.rowWan.forEach(item => {
-            wanInfo.push(item.wandata);
-          });
-        }
-        this.templateData.template.wanInterfaces = wanInfo;
-        const res = await templateAdd(this.templateData);
-        if (res.status !== '0000') return this.$message.error(res.message);
-        this.$message.success('模板创建成功！');
-        this.visible = false;
-        if (this.organization) {
-          this.templateList({
-            orgname: this.organization,
-            limit: this.pageSize,
-            offset: this.pageIndex
-          });
-        } else {
-          this.templateList({
-            offset: (this.pageIndex - 1) * this.pageSize,
-            limit: this.pageSize
-          });
-        }
-      }
-      if (this.modalType === 'edt') {
-        const res = await templateEdt(
-          this.templateData.template.templateName,
-          this.templateData
-        );
-        if (res.status !== '0000') return this.$message.error(res.message);
-        this.$message.success('模板更新成功！');
-        this.visible = false;
-      }
-    },
-    callback(key) {
-      console.log(key);
     },
     // 计算带宽
     handleChange(value) {
@@ -1155,37 +1042,6 @@ export default {
       e.target.value === 'spoke'
         ? (this.spockOff = false)
         : (this.spockOff = true);
-    },
-    // 关闭弹出清楚数据
-    cleanData() {
-      this.templateData = {
-        template: {
-          templateName: '',
-          templateType: 'sdwan-post-staging',
-          controllers: [],
-          providerOrg: {
-            name: ''
-          },
-          deviceFirmfactor: '0',
-          //wan端口数据
-          wanInterfaces: [],
-          deviceType: 'hub',
-          solutionTier: 'advanced-sdwan-plus-utm',
-          bandwidthNew: '',
-          bandwidth: '',
-          isAnalyticsEnabled: true,
-          isPrimary: true
-        }
-      };
-      // model 切换到第一页
-      this.actKey = '1';
-      //this.$refs.portnum.value = 0;
-      this.factorNum = 0;
-      this.handleReset();
-      // 删错数据清空提交表单
-      this.templDel = {
-        ids: []
-      };
     },
     // 添加创建设备表格栏
     addport(val) {
@@ -1224,8 +1080,285 @@ export default {
         }
         this.templateData.template.wanInterfaces.push(wRowData);
       }
+    },
+    // 输入框同步提示信息
+    validate(field, valid, message) {
+      if (valid) {
+        this.message[field] = '';
+      } else {
+        this.message[field] = message;
+      }
+    },
+    // 表单提示悬浮框
+    enter(field) {
+      console.log(field);
+      if (this.message) {
+        this.formTips.tipText = '';
+        switch (field) {
+          case 'templateName':
+            this.formTips.tipText = this.message.templateName;
+            break;
+          case 'providerOrg.name':
+            this.formTips.tipText = this.message['providerOrg.name'];
+            break;
+          case 'controllers':
+            this.formTips.controllers = this.message.controllers;
+            break;
+          case 'serviceBandwidth':
+            this.formTips.tipText = this.message.serviceBandwidth;
+            break;
+        }
+        console.log(this.message);
+        this.formTips.flag = true;
+      }
+    },
+    leave() {
+      this.formTips.flag = false;
+    },
+    updateXY(event) {
+      this.x = event.pageX;
+      this.y = event.pageY;
+      this.formTips.positionStyle = {
+        top: this.y + 14 + 'px',
+        left: this.x - 2 + 'px'
+      };
+    },
+    //编辑模板
+    async edtTemplate(params) {
+      this.modalTitle = 'Edit Template - ' + params.rowData.templateName;
+      this.modalType = 'edt';
+      const { result } = await templateSearch(params.rowData.templateName);
+      this.templateData = result;
+      this.templateData.template.bandwidthNew = this.num;
+      this.templateData.template.wanInterfaces.forEach(item => {
+        item.portid = item.interfaceName.charAt(item.interfaceName.length - 1);
+      });
+
+      //控制器查询
+      this.controllerList = [];
+      const resOrgan = await controllerWrap({
+        organization: this.templateData.template.providerOrg.name
+      });
+      resOrgan.result['appliance-list'].forEach(item => {
+        this.controllerList.push(item.name);
+      });
+      //  port 下拉对应图标
+      this.factorNum = this.templateData.template.deviceFirmfactor - 1;
+
+      //组织对应network 信息
+      const netRes = await networkName({
+        id: this.templateData.template.providerOrg.name
+      });
+      this.networkNames = [];
+      netRes.result[0].wanNetworkGroups.forEach(item => {
+        this.networkNames.push(item.name);
+      });
+
+      this.visible = true;
+    },
+    // 表单提交更新
+    async handleOk() {
+      if (this.modalType === 'add') {
+        this.$refs.tempForm.validate(async valid => {
+          if (valid) {
+            const wanInfo = [];
+            if (this.$refs.rowWan) {
+              this.$refs.rowWan.forEach(item => {
+                wanInfo.push(item.wandata);
+              });
+            }
+            this.templateData.template.wanInterfaces = wanInfo;
+            const res = await templateAdd(this.templateData);
+            if (res.status !== '0000') return this.$message.error(res.message);
+            this.$message.success('模板创建成功！');
+            this.visible = false;
+            if (this.organization) {
+              this.templateList({
+                orgname: this.organization,
+                limit: this.pageSize,
+                offset: this.pageIndex
+              });
+            } else {
+              this.templateList({
+                offset: (this.pageIndex - 1) * this.pageSize,
+                limit: this.pageSize
+              });
+            }
+            // 任务进度
+            this.taskinfo = {
+              taskId: res.result.TaskResponse['task-id'],
+              visible: true
+            };
+            this.visible = false;
+          }
+        });
+      }
+      if (this.modalType === 'edt') {
+        this.$refs.tempForm.validate(async valid => {
+          if (valid) {
+            const res = await templateEdt(
+              this.templateData.template.templateName,
+              this.templateData
+            );
+            console.log(res);
+            if (res.status !== '0000') return this.$message.error(res.message);
+            this.$message.success('模板更新成功！');
+            this.visible = false;
+            // 任务进度
+            this.taskinfo = {
+              taskId: res.result.TaskResponse['task-id'],
+              visible: true
+            };
+            this.visible = false;
+          }
+        });
+      }
+    },
+    // 模板部署
+    async createTem() {
+      if (this.modalType === 'add') {
+        const wanInfo = [];
+        if (this.$refs.rowWan) {
+          this.$refs.rowWan.forEach(item => {
+            wanInfo.push(item.wandata);
+          });
+        }
+        this.templateData.template.wanInterfaces = wanInfo;
+        // 模板新建
+        const res = await templateAdd(this.templateData);
+        if (res.status !== '0000') return this.$message.error(res.message);
+        //this.$message.success('模板创建成功！');
+        // 模板部署
+        const resCrt = await templateCrt({
+          id: this.templateData.template.templateName,
+          verifyDiff: true
+        });
+
+        if (resCrt.status !== '0000')
+          return this.$message.error(resCrt.message);
+        // 刷新表格数据
+        if (this.organization) {
+          this.templateList({
+            orgname: this.organization,
+            limit: this.pageSize,
+            offset: this.pageIndex
+          });
+        } else {
+          this.templateList({
+            offset: (this.pageIndex - 1) * this.pageSize,
+            limit: this.pageSize
+          });
+        }
+
+        this.visible = false;
+      }
+      if (this.modalType === 'edt') {
+        // 模板更新
+        const res = await templateEdt(
+          this.templateData.template.templateName,
+          this.templateData
+        );
+        if (res.status !== '0000') return this.$message.error(res.message);
+        this.$message.success('模板更新成功！');
+        // 模板部署
+        const resCrt = await templateCrt({
+          id: this.templateData.template.templateName,
+          verifyDiff: true
+        });
+
+        if (resCrt.status !== '0000')
+          return this.$message.error(resCrt.message);
+        // 刷新表格数据
+        if (this.organization) {
+          this.templateList({
+            orgname: this.organization,
+            limit: this.pageSize,
+            offset: this.pageIndex
+          });
+        } else {
+          this.templateList({
+            offset: (this.pageIndex - 1) * this.pageSize,
+            limit: this.pageSize
+          });
+        }
+        this.visible = false;
+      }
+    },
+
+    //获取选中模板名称
+    delItem(selection) {
+      selection.forEach(item => {
+        this.templDel.ids.push(item.templateName);
+      });
+      const newArr = Array.from(new Set(this.templDel.ids));
+      this.templDel.ids = newArr;
+    },
+    //删除模板操作
+    async delTemplate() {
+      const res = await templateDel(this.templDel);
+      this.templDel = {
+        ids: []
+      };
+      if (res.status !== '0000') return this.$message.error(res.message);
+      this.taskinfo = {
+        taskId: res.result.TaskResponse['task-id'],
+        type: 'del'
+      };
+    },
+    // tasknotice 关闭
+    taskComplete() {
+      if (this.organization) {
+        this.templateList({
+          orgname: this.organization,
+          limit: this.pageSize,
+          offset: this.pageIndex
+        });
+      } else {
+        this.templateList({
+          offset: (this.pageIndex - 1) * this.pageSize,
+          limit: this.pageSize
+        });
+      }
+    }, // 关闭弹出清楚数据
+    cleanData() {
+      this.$refs.tempForm.clearValidate();
+      this.templateData = {
+        template: {
+          templateName: '',
+          templateType: 'sdwan-post-staging',
+          controllers: [],
+          providerOrg: {
+            name: ''
+          },
+          deviceFirmfactor: '0',
+          //wan端口数据
+          wanInterfaces: [],
+          deviceType: 'hub',
+          solutionTier: 'advanced-sdwan-plus-utm',
+          bandwidthNew: '',
+          bandwidth: '',
+          isAnalyticsEnabled: true,
+          isPrimary: true
+        }
+      };
+      // model 切换到第一页
+      this.actKey = '1';
+      //this.$refs.portnum.value = 0;
+      this.factorNum = 0;
+      this.handleReset();
+      // 删错数据清空提交表单
+      this.templDel = {
+        ids: []
+      };
+      this.message = {
+        templateName: '',
+        ['providerOrg.name']: '',
+        controllers: '',
+        serviceBandwidth: ''
+      };
     }
-  }
+  },
+  components: { TaskNotice, FactorSelect, WanRowData }
 };
 import Vue from 'vue';
 Vue.component('templates-name', {
@@ -1256,97 +1389,6 @@ Vue.use(FormModel);
 <style lang="scss" scoped>
 /deep/.ant-form-explain {
   display: none !important;
-}
-#templates {
-  padding: 5px 20px 30px 15px;
-  height: 100%;
-  overflow: hidden;
-  min-height: 503px;
-  .list-action {
-    line-height: 18px;
-    color: #0f2c3e;
-    font-size: 12px;
-    margin-bottom: 10px;
-    .table-header {
-      margin-bottom: 10px;
-      height: 22px;
-    }
-  }
-}
-/deep/ .search-bar {
-  .ant-input {
-    color: #6a6f75;
-    border: 1px solid #b0c7d5;
-    height: 20px;
-    border-radius: 4px;
-    font-size: 12px;
-    line-height: 18px;
-    &:focus {
-      box-shadow: none;
-      border-color: #b0c7d5;
-    }
-  }
-}
-
-/deep/ .from-wrap {
-  .ant-modal-header {
-    color: rgb(13, 73, 106);
-    background-color: rgb(233, 244, 252);
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    padding: 6px 10px;
-    .ant-modal-title {
-      font-size: 12px;
-    }
-  }
-  .ant-modal-close {
-    color: rgb(13, 73, 106);
-    font-weight: 700;
-    .ant-modal-close-x {
-      width: 30px;
-      height: 34px;
-      .anticon {
-        vertical-align: 0.5em;
-      }
-    }
-  }
-  .ant-modal-footer {
-    background-color: rgb(220, 237, 248);
-    .ant-btn {
-      line-height: 30px;
-      padding: 0px 12px;
-      background: rgb(167, 208, 84);
-      color: rgb(255, 255, 255);
-      transition: all 0.5s ease-out 0s;
-      border-radius: 4px;
-      font-size: 12px;
-      border: 0;
-      min-width: 70px;
-      &:hover {
-        background: rgb(153, 190, 77);
-      }
-    }
-    .ant-btn-primary {
-      background: rgb(63, 74, 91);
-      &:hover {
-        background: rgb(79, 93, 114);
-      }
-    }
-  }
-  .ant-modal-body {
-    .ant-form-item {
-      margin: 0;
-      .ant-form-item-label {
-        line-height: 20px;
-        padding: 0;
-        label {
-          color: rgb(249, 249, 249);
-          font-size: 12px;
-          line-height: 18px;
-        }
-      }
-    }
-  }
 }
 
 .ant-select {

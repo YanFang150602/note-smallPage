@@ -31,10 +31,6 @@ export default {
         {
           title: 'DeviceGroup',
           path: '/workflows/deviceGroup'
-        },
-        {
-          title: 'Associate Interface Network',
-          path: '/workflows/Associate Interface Network'
         }
       ]
     };
@@ -50,4 +46,11 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+/deep/.ant-spin-nested-loading {
+  height: 100%;
+  .ant-spin-container {
+    height: 100%;
+  }
+}
+</style>

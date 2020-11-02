@@ -35,7 +35,7 @@ export default {
 
 <style lang="scss">
 #app {
-  min-width: 1366px;
+  min-width: 1200px;
   overflow: auto;
 }
 </style>

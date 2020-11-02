@@ -371,7 +371,7 @@ export default {
       offset: 0,
       limit: this.pageSize
     });
-    this.queryDevice();
+    // this.queryDevice();
   },
   methods: {
     // 分页
@@ -405,6 +405,8 @@ export default {
     },
     async handleOk() {
       this.$refs.devicesAddRef.$refs.ruleForm.validate(async (valid, res) => {
+        console.log(this.$refs.devicesAddRef.$refs.ruleForm);
+        console.log(res);
         if (valid) {
           this.showMessage();
           const res = await addDevices(this.devAdd);
@@ -415,14 +417,14 @@ export default {
           this.$store.commit(DEVICES_HANDLEADD);
           this.clearAddDevice();
           this.$message.success('Add device successfully.');
+          this.$store.dispatch('Tabledevice', {
+            deep: true,
+            orgname: this.organization,
+            offset: 0,
+            limit: this.pageSize
+          });
         } else {
-          if (res.oldPassword) {
-            this.$message.error(res.oldPassword[0].message);
-          } else if (res.newPassword) {
-            this.$message.error(res.newPassword[0].message);
-          } else {
-            this.$message.error(res.confirm[0].message);
-          }
+          console.log(res);
         }
       });
     },
@@ -478,6 +480,14 @@ export default {
     // 表格方法
     selectALL(selection) {
       console.log('select-aLL', selection);
+      selection.forEach(item => {
+        console.log(item.deviceName);
+        this.dele.ids.push(item.deviceName);
+        // this.dele.id = item.deviceName;
+      });
+      const newArr = Array.from(new Set(this.dele.ids));
+      this.dele.ids = newArr;
+      console.log(this.dele);
     },
     selectChange(selection, rowData) {
       console.log('select-change', selection, rowData);

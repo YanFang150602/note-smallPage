@@ -3,9 +3,7 @@
     <!--  三个切换tab -->
     <div class="switchover">
       <div ref="basicTabRef" class="basic" @click="handleClick">Basic</div>
-      <div ref="locationTabRef" class="location" @click="ShowClick">
-        Location information
-      </div>
+      <div ref="locationTabRef" class="location" @click="ShowClick">Location information</div>
       <div ref="bindTabRef" class="bid" @click="bindClick">Bid Data</div>
     </div>
     <!-- basic -->
@@ -14,15 +12,12 @@
         <a-row>
           <a-col :span="8">
             <a-form-model-item label="Name" required prop="deviceName">
-              <a-input
-                v-model="dev.deviceName"
-                title="名称不能包含特殊字符，但“-”除外，至少包含一个字母。"
-              />
+              <a-input v-model="dev.deviceName" title="名称不能包含特殊字符，但“-”除外，至少包含一个字母。"/>
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item label="Global Device ID" required prop="siteId">
-              <a-input v-model.number="dev.siteId" />
+              <a-input v-model.number="dev.siteId"/>
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
@@ -36,8 +31,7 @@
                   :value="item.name"
                   v-for="(item, index) in organ"
                   :key="index"
-                  >{{ item.name }}</a-select-option
-                >
+                >{{ item.name }}</a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -50,30 +44,23 @@
                 placeholder="please select your zone"
                 default-value="physical"
               >
-                <a-select-option value="physical"
-                  >CPE-Baremetal Device</a-select-option
-                >
+                <a-select-option value="physical">CPE-Baremetal Device</a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
             <a-form-model-item label="Serial Number" prop="serialNumber">
-              <a-input v-model="dev.serialNumber" />
+              <a-input v-model="dev.serialNumber"/>
             </a-form-model-item>
           </a-col>
           <a-col :span="8">
-            <a-form-model-item
-              label="Device Groups"
-              required
-              prop="deviceGroup"
-            >
+            <a-form-model-item label="Device Groups" required prop="deviceGroup">
               <a-select v-model="dev.deviceGroup">
                 <a-select-option
                   :value="item"
                   v-for="(item, index) in group"
                   :key="index"
-                  >{{ item }}</a-select-option
-                >
+                >{{ item }}</a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -81,14 +68,14 @@
         <a-row>
           <a-col :span="8"></a-col>
           <a-col :span="8"></a-col>
-          <a-col :span="8">
+          <!-- <a-col :span="8">
             <span
               @click="showModalGroup"
               class="deviceGroup"
               style="color:#fff;cursor:pointer;"
               >+ Device Group</span
             >
-          </a-col>
+          </a-col>-->
         </a-row>
 
         <!-- 方框 -->
@@ -109,12 +96,11 @@
                 v-for="option in bandwidthOptions"
                 :value="option.value"
                 :key="option.label"
-                >{{ option.label }}</a-select-option
-              >
+              >{{ option.label }}</a-select-option>
             </a-select>
           </a-form-model-item>
           <a-form-model-item label="Aggregate Bandwith">
-            <a-input disabled :value="num" />
+            <a-input disabled :value="num"/>
           </a-form-model-item>
         </div>
       </a-form-model>
@@ -123,22 +109,17 @@
     <div class="form_location" v-if="showAdd.isDemonstrate">
       <div class="box">
         <div class="loca">Location</div>
-        <a-form-model
-          layout="inline"
-          :model="dev.locationInfo"
-          :rules="rules"
-          ref="ruleForm"
-        >
+        <a-form-model layout="inline" :model="dev.locationInfo" :rules="rules" ref="ruleForm">
           <div class="location_title">
             <a-row>
               <a-col :span="12">
                 <a-form-model-item label="Address 1" prop="address1">
-                  <a-input v-model="dev.locationInfo.address1" />
+                  <a-input v-model="dev.locationInfo.address1"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="12">
                 <a-form-model-item label="Address 2" prop="address2">
-                  <a-input v-model="dev.locationInfo.address2" />
+                  <a-input v-model="dev.locationInfo.address2"/>
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -147,25 +128,22 @@
             <a-row>
               <a-col :span="6">
                 <a-form-model-item label="City" prop="city">
-                  <a-input v-model="dev.locationInfo.city" />
+                  <a-input v-model="dev.locationInfo.city"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
                 <a-form-model-item label="State" prop="state">
-                  <a-input v-model="dev.locationInfo.state" />
+                  <a-input v-model="dev.locationInfo.state"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
                 <a-form-model-item label="Country" required prop="country">
-                  <a-input v-model="dev.locationInfo.country" />
+                  <a-input v-model="dev.locationInfo.country"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
                 <a-form-model-item label="Zip">
-                  <a-input
-                    v-model="dev.locationInfo.zip"
-                    placeholder="e.g.000001"
-                  />
+                  <a-input v-model="dev.locationInfo.zip" placeholder="e.g.000001"/>
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -174,18 +152,12 @@
             <a-row>
               <a-col :span="6">
                 <a-form-model-item label="Latitude" prop="latitude">
-                  <a-input
-                    v-model="dev.locationInfo.latitude"
-                    placeholder="e.g.32.000001"
-                  />
+                  <a-input v-model="dev.locationInfo.latitude" placeholder="e.g.32.000001"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
                 <a-form-model-item label="Longitude" prop="longitude">
-                  <a-input
-                    v-model="dev.locationInfo.longitude"
-                    placeholder="e.g.120.000001"
-                  />
+                  <a-input v-model="dev.locationInfo.longitude" placeholder="e.g.120.000001"/>
                 </a-form-model-item>
               </a-col>
               <a-col :span="6">
@@ -200,139 +172,112 @@
     </div>
     <!--Bind Data  -->
     <div class="form_bind" v-if="showAdd.isExhibition">
-      <a-tabs default-active-key="1" @change="callback">
-        <a-tab-pane key="1" tab="User Input">
-          <span>Post Staging Template - Shanghai-CMCC-D</span>
-          <div class="tableListBox">
-            <table>
-              <tr>
-                <th
-                  v-for="(item, index) in tableDataArr"
-                  :key="index + '_tableTitle'"
-                  style="padding:12px 0"
-                >
-                  {{ item.name }}
-                </th>
-                <th></th>
-              </tr>
-              <tr>
-                <td
-                  v-for="(item, index) in tableDataArr"
-                  :key="index + '_tableInput'"
-                >
-                  <a-form-model-item>
-                    <a-input placeholder v-model="item.value" />
-                  </a-form-model-item>
-                </td>
-                <td></td>
-              </tr>
-            </table>
+      <a-form-model layout="inline" :model="dev.locationInfo" :rules="rules" ref="ruleForm">
+        <a-tabs default-active-key="1" @change="callback">
+          <a-tab-pane key="1" tab="User Input">
+            <span>Post Staging Template - Shanghai-CMCC-D</span>
+            <div class="tableListBox">
+              <table>
+                <tr>
+                  <th
+                    v-for="(item, index) in tableDataArr"
+                    :key="index + '_tableTitle'"
+                    style="padding:12px 0"
+                  >{{ item.name }}</th>
+                  <th></th>
+                </tr>
+                <tr>
+                  <td v-for="(item, index) in tableDataArr" :key="index + '_tableInput'">
+                    <a-form-model-item>
+                      <a-input placeholder disabled v-model="item.value"/>
+                    </a-form-model-item>
+                  </td>
+                  <td></td>
+                </tr>
+              </table>
 
-            <table
-              v-for="(group, index) in autoGenGroups"
-              :key="index + '_tableGroups'"
-            >
-              <tr>
-                <th :colspan="group[1].length">{{ group[0] }}</th>
-              </tr>
-              <tr>
-                <td
-                  v-for="(variable, index2) in group[1]"
-                  :key="index2 + '_variableName'"
-                >
-                  {{ variable.showName }}
-                </td>
-              </tr>
-              <tr>
-                <td
-                  v-for="(variable, index3) in group[1]"
-                  :key="index3 + '_variableValue'"
-                >
-                  <a-form-model-item>
-                    <a-input
-                      :placeholder="variable.type"
-                      v-model="variable.value"
-                    />
-                  </a-form-model-item>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <a-row>
-            <a-col :span="8">Service Template Variable</a-col>
-            <a-col :span="8">Template:Icst1</a-col>
-            <a-col :span="8">Device Group:Icsdevg1</a-col>
-          </a-row>
-          <v-table
-            is-horizontal-resize
-            column-width-drag
-            :columns="columnsUnder"
-            :table-data="tableData"
-            :select-all="selectALL"
-            :select-change="selectChange"
-            :select-group-change="selectGroupChange"
-            :height="350"
-            style="width:1266px;"
-            isFrozen="true"
-            @on-custom-comp="customCompFunc"
-          ></v-table>
-        </a-tab-pane>
-        <a-tab-pane key="2" tab="Auto-Generated" force-render>
-          <span>Post Staging Template - Shanghai-CMCC-D</span>
-          <div class="tableListBox">
-            <table>
-              <tr>
-                <th
-                  v-for="(item, index) in tableDataArr"
-                  :key="index + '_tableTitle'"
-                  style="padding:12px 0"
-                >
-                  {{ item.name }}
-                </th>
-                <th></th>
-              </tr>
-              <tr>
-                <td
-                  v-for="(item, index) in tableDataArr"
-                  :key="index + '_tableInput'"
-                >
-                  <a-form-model-item>
-                    <a-input placeholder v-model="item.value" />
-                  </a-form-model-item>
-                </td>
-                <td></td>
-              </tr>
-            </table>
+              <table v-for="(group, index) in autoGenGroups" :key="index + '_tableGroups'">
+                <tr>
+                  <th :colspan="group[1].length">{{ group[0] }}</th>
+                </tr>
+                <tr>
+                  <td
+                    v-for="(variable, index2) in group[1]"
+                    :key="index2 + '_variableName'"
+                  >{{ variable.showName }}</td>
+                </tr>
+                <tr>
+                  <td v-for="(variable, index3) in group[1]" :key="index3 + '_variableValue'">
+                    <a-form-model-item>
+                      <a-input :placeholder="variable.type" v-model="variable.value"/>
+                    </a-form-model-item>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <a-row>
+              <a-col :span="8">Service Template Variable</a-col>
+              <a-col :span="8">Template:Icst1</a-col>
+              <a-col :span="8">Device Group:Icsdevg1</a-col>
+            </a-row>
+            <v-table
+              is-horizontal-resize
+              column-width-drag
+              :columns="columnsUnder"
+              :table-data="tableData"
+              :select-all="selectALL"
+              :select-change="selectChange"
+              :select-group-change="selectGroupChange"
+              :height="350"
+              style="width:1266px;"
+              isFrozen="true"
+              @on-custom-comp="customCompFunc"
+            ></v-table>
+          </a-tab-pane>
+          <a-tab-pane key="2" tab="Auto-Generated" force-render>
+            <span>Post Staging Template - Shanghai-CMCC-D</span>
+            <div class="tableListBox">
+              <table>
+                <tr>
+                  <th
+                    v-for="(item, index) in tableDataArr"
+                    :key="index + '_tableTitle'"
+                    style="padding:12px 0"
+                  >{{ item.name }}</th>
+                  <th></th>
+                </tr>
+                <tr>
+                  <td v-for="(item, index) in tableDataArr" :key="index + '_tableInput'">
+                    <a-form-model-item>
+                      <a-input placeholder v-model="item.value"/>
+                    </a-form-model-item>
+                  </td>
+                  <td></td>
+                </tr>
+              </table>
 
-            <table
-              v-for="(group, index) in notAutoGenGroups"
-              :key="index + '_tableGroups'"
-            >
-              <tr>
-                <th :colspan="group[1].length">{{ group[0] }}</th>
-              </tr>
-              <tr>
-                <td
-                  v-for="(variable, index2) in group[1]"
-                  :key="index2 + '_variableName'"
-                >
-                  {{ variable.showName }}
-                </td>
-              </tr>
-              <tr>
-                <td
-                  v-for="(variable, index3) in group[1]"
-                  :key="index3 + '_variableValue'"
-                >
-                  <a-form-model-item>
-                    <a-input placeholder="auto" v-model="variable.value" />
-                  </a-form-model-item>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </a-tab-pane>
-      </a-tabs>
+              <table v-for="(group, index) in notAutoGenGroups" :key="index + '_tableGroups'">
+                <tr>
+                  <th :colspan="group[1].length">{{ group[0] }}</th>
+                </tr>
+                <tr>
+                  <td
+                    v-for="(variable, index2) in group[1]"
+                    :key="index2 + '_variableName'"
+                  >{{ variable.showName }}</td>
+                </tr>
+                <tr>
+                  <td v-for="(variable, index3) in group[1]" :key="index3 + '_variableValue'">
+                    <a-form-model-item>
+                      <a-input placeholder="auto" v-model="variable.value"/>
+                    </a-form-model-item>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </a-tab-pane>
+        </a-tabs>
+      </a-form-model>
     </div>
     <!-- 组群弹框 -->
     <div>
@@ -344,19 +289,10 @@
         :destroyOnClose="true"
       >
         <template slot="footer">
-          <a-button
-            key="submit"
-            type="primary"
-            :loading="loading"
-            @click="handleOk"
-            >ok</a-button
-          >
+          <a-button key="submit" type="primary" :loading="loading" @click="handleOk">ok</a-button>
           <a-button key="back" @click="handleCancel">cancel</a-button>
         </template>
-        <DeviceGroup
-          @createGroup="createGroup"
-          ref="createGroupRf"
-        ></DeviceGroup>
+        <DeviceGroup @createGroup="createGroup" ref="createGroupRf"></DeviceGroup>
       </a-modal>
     </div>
   </div>
@@ -538,7 +474,7 @@ export default {
           value: ''
         },
         {
-          name: this.$t('WFSerialNumber'),
+          name: this.$t('SerialNumber'),
           value: ''
         }
       ],
@@ -573,7 +509,7 @@ export default {
   methods: {
     validateName(rule, value, callback) {
       if (!value) {
-        this.$message.error('Name is required');
+        // this.$message.error('Name is required');
         return callback(new Error('Name is required'));
       }
       // if (/^(?=.*[a-zA-Z])([A-Za-z0-9-]{1,127})$/.test(value)) {
@@ -592,7 +528,7 @@ export default {
     },
     validateDeviceId(rule, value, callback) {
       if (!value) {
-        this.$message.error('Global Device ID is required');
+        // this.$message.error('Global Device ID is required');
         return callback(new Error('Global Device ID is required'));
       } else {
         callback();
@@ -600,7 +536,7 @@ export default {
     },
     validateOrganization(rule, value, callback) {
       if (!value) {
-        this.$message.error('Organization is required');
+        // this.$message.error('Organization is required');
         return callback(new Error('Organization is required'));
       }
       callback();
@@ -615,7 +551,7 @@ export default {
     },
     validateDeviceGroup(rule, value, callback) {
       if (!value) {
-        this.$message.error('Device Group is required');
+        // this.$message.error('Device Group is required');
         callback(new Error('Device Group is required'));
       } else {
         callback();
@@ -838,9 +774,9 @@ export default {
     deviceGroups() {
       console.log(111);
     },
-    showModalGroup() {
-      this.visibleGroup = true;
-    },
+    // showModalGroup() {
+    //   this.visibleGroup = true;
+    // },
     // 标签页的方法
     callback(key) {
       console.log(key);
@@ -878,7 +814,9 @@ export default {
     async DeviceGroups() {
       const res = await devicesGroup(this.dev.orgName);
       console.log(res.result['device-group']);
-      this.group = res.result['device-group'];
+      if (res.result['device-group'] !== null) {
+        this.group = res.result['device-group'];
+      }
     },
     // Global Device ID输入框的赋值
     async GlobalID() {
@@ -981,6 +919,9 @@ Vue.component('table-cell-merge', {
 });
 </script>
 <style lang="scss" scoped>
+/deep/.ant-form-item-label > label::after {
+  display: none !important;
+}
 /deep/.ant-form-explain {
   display: none !important;
 }
@@ -1061,6 +1002,7 @@ Vue.component('table-cell-merge', {
     border: solid 3px #456880;
     position: relative;
     padding-top: 5px;
+    margin-top: 10px;
     .subscrition {
       width: 80px;
       height: 21px;

@@ -33,14 +33,14 @@
           justify="end"
           align="middle"
         >
-          <!-- <a-col
+          <a-col
             :style="{
               fontSize: '18px',
               cursor: 'pointer',
               marginRight: '20px'
             }"
           >
-            <a-icon type="plus" />
+            <a-icon @click="showModal" type="plus" />
           </a-col>
           <a-col
             :style="{
@@ -49,16 +49,13 @@
               marginRight: '20px'
             }"
           >
-            <a-icon type="minus" />
-          </a-col>-->
+            <a-icon @click="showModalDelete" type="minus" />
+          </a-col>
           <a-col>
             <v-pagination
-              :total="deviceFrom.length"
+              :total="100"
               size="small"
-              :page-size="pageSize"
               :layout="['prev', 'jumper', 'total', 'next', 'sizer']"
-              @page-change="pageChange"
-              @page-size-change="pageSizeChange"
             ></v-pagination>
           </a-col>
         </a-row>
@@ -67,209 +64,215 @@
     <!-- 列表 -->
     <!-- 表单主体内容 -->
     <v-table
-      column-width-drag
       is-horizontal-resize
+      column-width-drag
       :columns="columns"
-      :table-data="deviceFrom"
+      :table-data="tableData"
       :select-all="selectALL"
       :select-change="selectChange"
       :select-group-change="selectGroupChange"
-      :height="350"
+      :height="540"
       style="width:100%;"
       isFrozen="true"
       @on-custom-comp="customCompFunc"
     ></v-table>
+    <!-- 新增弹框 -->
+    <NetworkAdd ref="NetworkAddRef"></NetworkAdd>
+    <!-- 删除的弹框 -->
+    <NetworkDelete
+      ref="NetworkDeleteRef"
+      :AssociateNetwork="dele"
+    ></NetworkDelete>
+    <!-- 查看弹框 -->
+    <NetworkEdit
+      ref="NetworkEditRef"
+      :AssocNetworkCheck="netWorkCheck"
+    ></NetworkEdit>
   </div>
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
-// import { CfTableForm } from 'apis/Configuration';
+import NetworkAdd from './NetworkAdd';
+import NetworkDelete from './NetworkDelete';
+import NetworkEdit from './NetworkEdit';
+import { AssInterfaceForm, AssInterfaceCheck } from 'apis/AssInterface';
+import { mapState } from 'vuex';
 
 export default {
+  components: {
+    NetworkAdd,
+    NetworkDelete,
+    NetworkEdit
+  },
   data() {
     return {
-      //分页
-      pageIndex: 1,
-      pageSize: 20,
-      totalCount: 100,
+      // 搜索框
       keyworks: '',
       // 表格
       tableData: [],
       columns: [
         {
           width: 36,
-          titleAlign: 'center',
           columnAlign: 'center',
+          titleAlign: 'center',
           type: 'selection'
         },
         {
           field: 'name',
           title: 'Name',
-          width: 90,
+          width: 180,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true,
-          componentName: 'table-operation'
+          componentName: 'table-operationDevice'
         },
         {
-          field: 'ipAddress',
-          title: 'Mgmt.Address',
-          width: 90,
+          field: 'description',
+          title: 'Description',
+          width: 180,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'type',
-          title: 'Type',
-          width: 90,
+          field: 'tags',
+          title: 'Tag',
+          width: 180,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'createdAt',
-          title: 'Time Created',
-          width: 90,
+          field: 'burstSize',
+          title: 'Burst Size(Bytes)',
+          width: 180,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'startTime',
-          title: 'Service Start Time',
-          width: 90,
+          field: 'rate',
+          title: 'Rate(kbps)',
+          width: 180,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'softwareVersion',
-          title: 'Software Version',
-          width: 90,
+          field: 'loggingInterval',
+          title: 'Logging Interval(Secs)',
+          width: 180,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'branchId',
-          title: 'Site ID',
-          width: 90,
+          field: 'schedulerMap',
+          title: 'Scheduler Map',
+          width: 180,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         },
         {
-          field: 'ownerOrg',
-          title: 'Organizations',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'syncStatus',
-          title: 'Config Synchronized',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'pingStatus',
-          title: 'Reachability',
-          width: 90,
-          titleAlign: 'left',
-          columnAlign: 'left',
-          isResize: true
-        },
-        {
-          field: 'servicesStatus',
-          title: 'Service',
-          width: 90,
+          field: 'mode',
+          title: '',
+          width: 180,
           titleAlign: 'left',
           columnAlign: 'left',
           isResize: true
         }
-      ]
+      ],
+      // 查看数据
+      netWorkCheck: {},
+      // 删除的数据
+      dele: {
+        deviceName: '',
+        orgName: '',
+        data: {
+          name: '',
+          mode: ''
+        }
+      }
     };
   },
   created() {
-    this.$store.dispatch('getNameList');
-    console.log(this.deviceFrom);
+    this.tableForm();
+  },
+  computed: {
+    ...mapState(['organization', 'deviceName'])
   },
   methods: {
-    // 分页
-    queryDevice() {
-      this.$store.dispatch('getNameList', {
-        organization: this.organization,
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
-      });
+    // 新增弹框
+    showModal() {
+      this.$refs.NetworkAddRef.showModalAdd();
     },
-    pageChange(pageIndex) {
-      this.pageIndex = pageIndex;
-      this.$store.dispatch('getNameList', {
-        organization: this.organization,
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
-      });
-    },
-    pageSizeChange(pageSize) {
-      this.pageIndex = 1;
-      this.pageSize = pageSize;
-      this.$store.dispatch('getNameList', {
-        organization: this.organization,
-        offset: (this.pageIndex - 1) * this.pageSize,
-        limit: this.pageSize
-      });
+    // 删除弹框
+    showModalDelete() {
+      this.$refs.NetworkDeleteRef.showModalDelete();
     },
     // 表格方法
     selectALL(selection) {
       console.log('select-aLL', selection);
-      selection.forEach(item => {
-        console.log(item.deviceName);
-        this.dele.push(item.deviceName);
-      });
-      const newArr = Array.from(new Set(this.dele));
-      this.dele = newArr;
-      console.log(this.dele);
     },
     selectChange(selection, rowData) {
       console.log('select-change', selection, rowData);
+      console.log(selection, 1312313131312312);
+      console.log(rowData, 345678909876543);
+      this.dele.data.mode = rowData.mode;
       selection.forEach(item => {
-        console.log(item.deviceName);
-        this.dele.push(item.deviceName);
+        console.log(item.name);
+        this.dele.data.name = item.name;
+        console.log(this.dele);
       });
-      const newArr = Array.from(new Set(this.dele));
-      this.dele = newArr;
-      console.log(this.dele);
+      this.dele.deviceName = this.deviceName;
+      this.dele.orgName = this.organization;
     },
     selectGroupChange(selection) {
       console.log('select-group-change', selection);
     },
-    customCompFunc(params) {
-      if (params.type === 'jump') {
-        //记录deviceName
-        this.saveDeviceName({ deviceName: params.rowData.name });
-        // device 对于的home组织名称列表
-        this.getNameListDevice(params.rowData.name);
-        this.$router.push({
-          name: 'DeviceConfig',
-          params: { name: params.rowData.name }
-        });
-      }
+    async customCompFunc(params) {
+      console.log(params, 78766676768);
+      console.log(params.rowData.mode);
+      this.dele.data.mode = params.rowData.mode;
+      this.$refs.NetworkEditRef.showModal();
+
+      const res = await AssInterfaceCheck(
+        this.deviceName,
+        this.organization,
+        params.rowData.name,
+        params.rowData.mode
+      );
+      console.log(res.result);
+      this.netWorkCheck = res.result;
+      this.netWorkCheck.tags = this.netWorkCheck.tags || [];
+      console.log(this.netWorkCheck.tags);
+      // console.log(res.result);
+      // this.ProfilesCheck = res.result;
+      // console.log(this.ProfilesCheck);
+      // if (params.type === 'delete') {
+      //   this.$delete(this.tableData, params.index);
+      // } else if (params.type === 'edit') {
+      //   this.visibleCheck = true;
+      //   this.lastCheckDevice = this.curCheckDevice;
+      //   this.curCheckDevice = params.rowData.deviceName;
+      // }
     },
-    ...mapMutations(['saveDeviceName']),
-    ...mapActions(['getNameListDevice'])
-  },
-  computed: {
-    ...mapState(['deviceFrom', 'organization'])
+    // 表格
+    async tableForm() {
+      const res = await AssInterfaceForm({
+        deviceName: this.deviceName,
+        orgName: this.organization,
+        offset: 0,
+        pageSize: 25
+      });
+      // console.log(res.result.data);
+      this.tableData = res.result.data;
+    }
   }
 };
 import Vue from 'vue';
-Vue.component('table-operation', {
+Vue.component('table-operationDevice', {
   props: {
     rowData: {
       type: Object
@@ -287,7 +290,7 @@ Vue.component('table-operation', {
   methods: {
     update() {
       // 参数根据业务场景随意构造
-      let params = { type: 'jump', index: this.index, rowData: this.rowData };
+      let params = { type: 'edit', index: this.index, rowData: this.rowData };
       this.$emit('on-custom-comp', params);
     }
   }
@@ -296,13 +299,13 @@ Vue.component('table-operation', {
 
 <style lang="scss" scoped>
 .devices {
-  padding: 5px 20px 30px 15px;
   /deep/.v-table-rightview {
     right: unset;
   }
+  padding: 5px 20px 30px 15px;
   /deep/.search-bar {
     .ant-input {
-      width: 400%;
+      width: 700px;
       color: #6a6f75;
       border: 1px solid #b0c7d5;
       height: 20px;
@@ -314,23 +317,6 @@ Vue.component('table-operation', {
         border-color: #b0c7d5;
       }
     }
-  }
-}
-
-/deep/.ant-modal-content {
-  max-height: 325px;
-  .ant-modal-header {
-    background-color: #e9f4fc;
-    .ant-modal-title {
-      line-height: 8px;
-    }
-  }
-  .ant-modal-body {
-    padding: 3px;
-    background-color: #36536b;
-  }
-  .ant-modal-footer {
-    background-color: #e9f4fc;
   }
 }
 </style>

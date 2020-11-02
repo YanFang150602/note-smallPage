@@ -1,12 +1,26 @@
 {
   "firstMenus": [
     {
-      "title": "Interfaces",
-      "key": "Interfaces"
+      "title": "Zones",
+      "key": "Zones"
     },
     {
-      "title": "IP-SLA",
-      "key": "IP-SLA"
+      "title": "Class of Service",
+      "key": "Class of Service",
+      "children": [
+        {
+          "title": "Qos Profiles",
+          "key": "QosProfiles"
+        },
+        {
+          "title": "Qos Policies",
+          "key": "QosPolicies"
+        },
+        {
+          "title": "Associate Interface/Network",
+          "key": "AssociateInterfaceNetwork"
+        }
+      ]
     }
   ],
   "secondMenus": [
@@ -15,7 +29,7 @@
       "key": "IPSec",
       "children": [
         {
-          "title": "VPN配置文件",
+          "title": "VPN Profiles",
           "key": "VPNConfigFile"
         }
       ]
@@ -23,8 +37,14 @@
   ],
   "thirdMenus": [
     {
-      "title": "Connectors",
-      "key": "Connectors"
+      "title": "Objects",
+      "key": "Objects",
+      "children": [
+        {
+          "title": "Address",
+          "key": "Address"
+        }
+      ]
     }
   ],
   "fourthMenus": [

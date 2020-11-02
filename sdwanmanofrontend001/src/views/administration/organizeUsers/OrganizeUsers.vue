@@ -9,9 +9,8 @@
         align="middle"
       >
         <!-- 搜索栏 -->
-        <a-col :style="{ width: 'calc(100% - 475px) ' }">
+        <a-col class="search-bar" :style="{ width: 'calc(100% - 475px) ' }">
           <a-input
-            class="search-bar"
             ref="searchInput"
             v-model="keyworks"
             placeholder="Search"
@@ -74,11 +73,11 @@
     <!-- 表单主体内容 -->
     <v-table
       is-horizontal-resize
+      is-vertical-resize
       column-width-drag
       :columns="columns"
       :table-data="admUsersList.list"
       :select-change="delItem"
-      :height="350"
       style="width:100%"
       isFrozen="true"
       @on-custom-comp="edtAdmUser"
@@ -88,12 +87,8 @@
       v-model="visible"
       :title="modalTitle"
       @ok="handleOk"
-      :bodyStyle="{
-        backgroundColor: 'rgb(54, 83, 107)',
-        padding: '0 10px 10px'
-      }"
       :width="526"
-      wrapClassName="from-wrap"
+      wrapClassName="form-wrap"
       cancelText="Cancel"
       okText="Ok"
       :afterClose="cleanData"
@@ -104,64 +99,103 @@
         ref="orgUser"
         :rules="rules"
         layout="vertical"
+        @validate="validate"
         hideRequiredMark
       >
         <a-row type="flex" justify="space-between" align="top">
           <!-- 组织用户名 -->
-          <a-col>
+          <a-col :style="{ width: '162px' }">
             <a-form-model-item label="User Name" prop="name">
               <a-input
                 size="small"
                 :disabled="modalType === 'edt'"
                 v-model="formData.user.name"
+                @mouseenter="enter('name')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
               />
             </a-form-model-item>
           </a-col>
           <!-- First Name -->
-          <a-col>
+          <a-col :style="{ width: '162px' }">
             <a-form-model-item label="First Name" prop="firstname">
-              <a-input size="small" v-model="formData.user.firstname" />
+              <a-input
+                size="small"
+                v-model="formData.user.firstname"
+                @mouseenter="enter('firstname')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
+              />
             </a-form-model-item>
           </a-col>
           <!-- Last Name -->
-          <a-col>
+          <a-col :style="{ width: '162px' }">
             <a-form-model-item label="Last Name" prop="lastname">
-              <a-input size="small" v-model="formData.user.lastname" />
+              <a-input
+                size="small"
+                v-model="formData.user.lastname"
+                @mouseenter="enter('lastname')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
+              />
             </a-form-model-item>
           </a-col>
           <!-- 密码 -->
-          <a-col>
+          <a-col :style="{ width: '162px' }">
             <a-form-model-item label="Password" prop="password">
               <a-input
                 :disabled="modalType === 'edt'"
                 size="small"
                 type="password"
                 v-model="formData.user.password"
+                @mouseenter="enter('password')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
+              />
+            </a-form-model-item>
+          </a-col>
+          <!-- 确认密码 -->
+          <a-col :style="{ width: '162px' }">
+            <a-form-model-item label="Confirm Password" prop="confirm">
+              <a-input
+                :disabled="modalType === 'edt'"
+                size="small"
+                type="password"
+                v-model="formData.user.confirm"
+                @mouseenter="enter('confirm')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
               />
             </a-form-model-item>
           </a-col>
           <!-- 邮箱地址 -->
-          <a-col>
+          <a-col :style="{ width: '162px' }">
             <a-form-model-item label="Email Address" prop="email">
               <a-input
                 :disabled="modalType === 'edt'"
                 size="small"
                 v-model="formData.user.email"
+                @mouseenter="enter('email')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
               />
             </a-form-model-item>
           </a-col>
           <!-- 组织角色列表 -->
-          <a-col>
+          <a-col :style="{ marginTop: '10px' }">
             <a-form-model-item
               class="roles-select"
-              style="width:225px;padding:10px 10px 10px;border: 1px solid #456880;border-radius: 4px;margin-top:20px"
               label="Available Roles"
+              v-model="formData.user.primaryRole"
               prop="primaryRole"
             >
               <a-select
                 size="small"
                 placeholder="-select-"
                 v-model="formData.user.primaryRole"
+                @mouseenter="enter('primaryRole')"
+                @mouseleave="leave"
+                @mousemove="updateXY"
               >
                 <a-select-option
                   v-if="userInfo.level === 1"
@@ -179,6 +213,15 @@
         </a-row>
       </a-form-model>
     </a-modal>
+
+    <!-- 表单验证悬浮提示框 -->
+    <div
+      v-show="formTips.flag"
+      class="form-tips"
+      :style="formTips.positionStyle"
+    >
+      {{ formTips.tipText }}
+    </div>
   </div>
 </template>
 
@@ -187,6 +230,80 @@ import { mapState, mapActions } from 'vuex';
 import { adminUserAdd, adminUserDel, adminUserEdt } from 'apis/administration';
 export default {
   data() {
+    // 自定义表单验证
+    let name = (rule, value, callback) => {
+      if (value === '') {
+        callback('Field required');
+      } else if (value.length > 50) {
+        callback('Length must not be greater than 50.');
+      } else if (!/^[A-Za-z0-9_-]{1,}$/.test(value)) {
+        callback(
+          'Name cannot contain special characters or spaces except "_","-","."'
+        );
+      } else {
+        callback();
+      }
+    };
+    let firstname = (rule, value, callback) => {
+      if (value === '') {
+        callback('Field required');
+      } else if (value.length > 64 || value.length < 2) {
+        callback('Length must be 2 to 64 characters.');
+      } else if (!/^[A-Za-z0-9_-]{2,}$/.test(value)) {
+        callback(
+          'Name cannot contain special characters or spaces except "_","-","."'
+        );
+      } else {
+        callback();
+      }
+    };
+    let lastname = (rule, value, callback) => {
+      if (value === '') {
+        callback('Field required');
+      } else if (!/^[A-Za-z0-9_-]*$/.test(value)) {
+        callback(
+          '1.Should begin with a character 2.Name cannot contain special characters or spaces except "_","-","."'
+        );
+      } else {
+        callback();
+      }
+    };
+    let password = (rule, value, callback) => {
+      if (value === '') {
+        callback('Field required');
+      } else if (!/^[\S\n\s]{8,16}$/.test(value)) {
+        callback('Password length should be 8 to 16 characters');
+      } else {
+        callback();
+      }
+    };
+    let confirm = (rule, value, callback) => {
+      if (value === '') {
+        callback('Field required');
+      } else if (value !== this.formData.user.password) {
+        callback('Passwords do not match');
+      } else {
+        callback();
+      }
+    };
+    let email = (rule, value, callback) => {
+      if (value === '') {
+        callback('Field required');
+      } else if (
+        !/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(value)
+      ) {
+        callback('Invalid email address');
+      } else {
+        callback();
+      }
+    };
+    let primaryRole = (rule, value, callback) => {
+      if (value === '') {
+        callback('Select Role');
+      } else {
+        callback();
+      }
+    };
     return {
       //分页
       pageIndex: 1,
@@ -198,6 +315,23 @@ export default {
       modalTitle: '', //表单标题
       modalType: '', //表单编辑or新建
       userRoles: [], ////用户权限
+      // 修改密码表单悬浮框
+      formTips: {
+        flag: false,
+        tipText: '',
+        x: 0,
+        y: 0,
+        positionStyle: { top: '20px', left: '20px' }
+      },
+      //表单提示信息
+      message: {
+        name: '',
+        password: '',
+        firstname: '',
+        lastname: '',
+        email: '',
+        primaryRole: ''
+      },
       // 表格列数据模型
       columns: [
         {
@@ -245,6 +379,7 @@ export default {
         user: {
           name: '',
           password: '',
+          confirm: '',
           firstname: '',
           lastname: '',
           email: '',
@@ -258,48 +393,13 @@ export default {
       },
       // 表单校验规则
       rules: {
-        name: [
-          {
-            required: true,
-            trigger: 'blur'
-          }
-        ],
-        firstname: [
-          {
-            required: true,
-            trigger: 'blur'
-          }
-        ],
-        lastname: [
-          {
-            required: true,
-            trigger: 'blur'
-          }
-        ],
-        password: [
-          {
-            required: true,
-            trigger: 'blur'
-          }
-        ],
-        email: [
-          {
-            required: true,
-            trigger: 'blur'
-          }
-        ],
-        primaryRole: [
-          {
-            required: true,
-            trigger: 'change'
-          }
-        ],
-        personalizedLandingPage: [
-          {
-            required: true,
-            trigger: 'change'
-          }
-        ]
+        name: [{ validator: name }],
+        firstname: [{ validator: firstname }],
+        lastname: [{ validator: lastname }],
+        password: [{ validator: password }],
+        confirm: [{ validator: confirm }],
+        email: [{ validator: email }],
+        primaryRole: [{ validator: primaryRole }]
       }
     };
   },
@@ -315,17 +415,18 @@ export default {
   },
   created() {
     //获取组织列表
-    this.$store.dispatch('getNameList');
     if (this.organization) {
-      this.$store.dispatch('adminUsersList', {
+      this.adminUsersList({
         organization: this.organization,
         offset: (this.pageIndex - 1) * this.pageSize,
         limit: this.pageSize
       });
+    } else {
+      this.getNameList();
     }
   },
   methods: {
-    ...mapActions(['adminUsersList']),
+    ...mapActions(['getNameList', 'adminUsersList']),
     pageChange(pageIndex) {
       this.pageIndex = pageIndex;
       this.adminUsersList({
@@ -349,7 +450,56 @@ export default {
     selectChange(selection, rowData) {
       console.log('select-change', selection, rowData);
     },
+    // 输入框同步提示信息
+    validate(field, valid, message) {
+      if (valid) {
+        this.message[field] = '';
+      } else {
+        this.message[field] = message;
+      }
+    },
+    // 修改密码悬浮提示
+    enter(field) {
+      if (this.message) {
+        this.formTips.tipText = '';
+        switch (field) {
+          case 'name':
+            this.formTips.tipText = this.message.name;
+            break;
+          case 'firstname':
+            this.formTips.tipText = this.message.firstname;
+            break;
+          case 'lastname':
+            this.formTips.tipText = this.message.lastname;
+            break;
+          case 'password':
+            this.formTips.tipText = this.message.password;
+            break;
+          case 'confirm':
+            this.formTips.tipText = this.message.confirm;
+            break;
+          case 'email':
+            this.formTips.tipText = this.message.email;
+            break;
+          case 'primaryRole':
+            this.formTips.tipText = this.message.primaryRole;
+            break;
+        }
 
+        this.formTips.flag = true;
+      }
+    },
+    leave() {
+      this.formTips.flag = false;
+    },
+    updateXY(event) {
+      this.x = event.pageX;
+      this.y = event.pageY;
+      this.formTips.positionStyle = {
+        top: this.y + 14 + 'px',
+        left: this.x - 2 + 'px'
+      };
+    },
     //添加组织用户
     async addUser() {
       console.log(this.organization);
@@ -372,7 +522,6 @@ export default {
       const res = await adminUserDel(this.admUserDel);
       if (res.status !== '0000') return this.$message.error(res.status.message);
       this.$message.success('组织用户删除成功！');
-      // 列表更新
       this.adminUsersList({
         organization: this.organization,
         offset: (this.pageIndex - 1) * this.pageSize,
@@ -388,38 +537,69 @@ export default {
     },
     async handleOk() {
       if (this.modalType === 'add') {
-        const result = await adminUserAdd(this.formData);
-        if (result.status !== '0000')
-          return this.$message.error(result.message);
-        this.$message.success('组织用户创建成功！');
-        // 列表更新
-        this.adminUsersList({
-          organization: this.organization,
-          offset: (this.pageIndex - 1) * this.pageSize,
-          limit: this.pageSize
+        this.$refs.orgUser.validate(async valid => {
+          if (valid) {
+            const result = await adminUserAdd(this.formData);
+            if (result.status !== '0000')
+              return this.$message.error(result.message);
+            this.$message.success('组织用户创建成功！');
+            this.visible = false;
+            this.adminUsersList({
+              organization: this.organization,
+              offset: (this.pageIndex - 1) * this.pageSize,
+              limit: this.pageSize
+            });
+          }
         });
-        this.visible = false;
       }
       if (this.modalType === 'edt') {
-        const res = await adminUserEdt(this.formData.user.name, this.formData);
-
-        if (res.status !== '0000') return this.$message.error(res.message);
-        this.$message.success('组织用户更新成功！');
-        this.visible = false;
+        this.$refs.orgUser.validateField(
+          ['firstname', 'lastname', 'primaryRole'],
+          async () => {
+            if (
+              !this.message.firstname &&
+              !this.message.lastname &&
+              !this.message.primaryRole
+            ) {
+              const res = await adminUserEdt(
+                this.formData.user.name,
+                this.formData
+              );
+              if (res.status !== '0000')
+                return this.$message.error(res.message);
+              this.$message.success('组织用户更新成功！');
+              this.visible = false;
+              this.adminUsersList({
+                organization: this.organization,
+                offset: (this.pageIndex - 1) * this.pageSize,
+                limit: this.pageSize
+              });
+            }
+          }
+        );
       }
     },
     cleanData() {
+      this.$refs.orgUser.clearValidate();
       this.formData = {
         user: {
           name: '',
           password: '',
+          confirm: '',
           firstname: '',
           lastname: '',
           email: '',
-          role: [],
           organization: '',
           primaryRole: ''
         }
+      };
+      this.message = {
+        name: '',
+        password: '',
+        firstname: '',
+        lastname: '',
+        email: '',
+        primaryRole: ''
       };
     }
   }
@@ -473,6 +653,11 @@ Vue.use(FormModel);
 }
 .roles-select {
   position: relative;
+  width: 225px;
+  padding: 10px 10px 10px;
+  border: 1px solid #456880;
+  border-radius: 4px;
+  margin-top: 40px;
   &::before {
     content: 'Roles';
     background: #507691;
@@ -496,68 +681,6 @@ Vue.use(FormModel);
     &:focus {
       box-shadow: none;
       border-color: #b0c7d5;
-    }
-  }
-}
-
-/deep/ .from-wrap {
-  .ant-modal-header {
-    color: rgb(13, 73, 106);
-    background-color: rgb(233, 244, 252);
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    padding: 6px 10px;
-    .ant-modal-title {
-      font-size: 12px;
-    }
-  }
-  .ant-modal-close {
-    color: rgb(13, 73, 106);
-    font-weight: 700;
-    .ant-modal-close-x {
-      width: 30px;
-      height: 34px;
-      .anticon {
-        vertical-align: 0.5em;
-      }
-    }
-  }
-  .ant-modal-footer {
-    background-color: rgb(220, 237, 248);
-    .ant-btn {
-      line-height: 30px;
-      padding: 0px 12px;
-      background: rgb(167, 208, 84);
-      color: rgb(255, 255, 255);
-      transition: all 0.5s ease-out 0s;
-      border-radius: 4px;
-      font-size: 12px;
-      border: 0;
-      min-width: 70px;
-      &:hover {
-        background: rgb(153, 190, 77);
-      }
-    }
-    .ant-btn-primary {
-      background: rgb(63, 74, 91);
-      &:hover {
-        background: rgb(79, 93, 114);
-      }
-    }
-  }
-  .ant-modal-body {
-    .ant-form-item {
-      width: 162px;
-      margin: 0;
-      .ant-form-item-label {
-        width: 100%;
-        padding: 0;
-        label {
-          color: rgb(249, 249, 249);
-          font-size: 12px;
-          line-height: 18px;
-        }
-      }
     }
   }
 }

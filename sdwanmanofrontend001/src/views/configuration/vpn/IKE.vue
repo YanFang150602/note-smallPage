@@ -1174,7 +1174,8 @@ export default {
               if (item['dh'] === this.delDHList[i]) {
                 this.vpnTableSelectsPlus({
                   key: 'vpnIKEDH',
-                  label: item['dh']
+                  label: item['dh'],
+                  value: item['dh']
                 });
                 filter = false;
                 break;
@@ -1285,7 +1286,7 @@ export default {
           this.dhList.forEach(obj => {
             this.ike.groups.push(obj.dh);
           });
-          this.vpnTableSelectsMinus({ key: 'vpnIKEDH', label: params.label });
+          this.vpnTableSelectsMinus({ key: 'vpnIKEDH', label: params.label, value: params.label });
           break;
       }
     },

@@ -147,7 +147,7 @@
                 :table-data="hashList"
                 :select-all="selectALLHash"
                 :select-change="selectChangeHash"
-                :height="150"
+                :height="80"
                 style="width:275px;"
                 isFrozen="true"
                 :title-click="hashTitleClick"
@@ -164,7 +164,7 @@
                 :table-data="encryList"
                 :select-all="selectALLEncry"
                 :select-change="selectChangeEncry"
-                :height="150"
+                :height="80"
                 style="width:275px;"
                 isFrozen="true"
                 :title-click="encryTitleClick"
@@ -181,7 +181,7 @@
                 :table-data="forwardModeList"
                 :select-all="selectALLFMode"
                 :select-change="selectChangeFMode"
-                :height="150"
+                :height="80"
                 style="width:275px;"
                 isFrozen="true"
                 :title-click="fModeTitleClick"
@@ -459,7 +459,7 @@ export default {
   computed: {
     hashColumns() {
       let column = {
-        field: 'hash',
+        field: 't-hash',
         title: this.$t('VPNIKEHash'),
         width: 140,
         columnAlign: 'left',
@@ -470,7 +470,7 @@ export default {
     },
     encryColumns() {
       let column = {
-        field: 'encry',
+        field: 't-encry',
         title: this.$t('VPNIKEEntry'),
         width: 140,
         columnAlign: 'left',
@@ -481,7 +481,7 @@ export default {
     },
     forwardModeColumns() {
       let column = {
-        field: 'forward',
+        field: 't-forward',
         title: this.$t('VPNIPsecForwardSecretMode'),
         width: 140,
         columnAlign: 'left',
@@ -553,7 +553,8 @@ export default {
               if (item['hash'] === this.delHashList[i]) {
                 this.vpnTableSelectsPlus({
                   key: 'vpnIPsecHash',
-                  label: item['hash']
+                  label: item['hash'],
+                  value: item['hash']
                 });
                 filter = false;
                 break;
@@ -568,7 +569,7 @@ export default {
       }
     },
     hashCellMerge(rowIndex, rowData, field) {
-      if (field === 'hash') {
+      if (field === 't-hash') {
         return {
           colSpan: 3,
           rowSpan: 1,
@@ -604,7 +605,7 @@ export default {
       }
     },
     encryCellMerge(rowIndex, rowData, field) {
-      if (field === 'encry') {
+      if (field === 't-encry') {
         return {
           colSpan: 3,
           rowSpan: 1,
@@ -625,7 +626,8 @@ export default {
               if (item['forward'] === this.delFModeList[i]) {
                 this.vpnTableSelectsPlus({
                   key: 'vpnIPsecForward',
-                  label: item['forward']
+                  label: item['forward'],
+                  value: item['forward']
                 });
                 filter = false;
                 break;
@@ -640,7 +642,7 @@ export default {
       }
     },
     fModeCellMerge(rowIndex, rowData, field) {
-      if (field === 'forward') {
+      if (field === 't-forward') {
         return {
           colSpan: 3,
           rowSpan: 1,
@@ -720,7 +722,8 @@ export default {
           });
           this.vpnTableSelectsMinus({
             key: 'vpnIPsecForward',
-            label: params.label
+            label: params.label,
+            value: params.label
           });
           break;
       }

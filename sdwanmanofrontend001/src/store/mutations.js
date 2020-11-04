@@ -130,17 +130,17 @@ export default {
     if (status) state.isLoading += status;
     state.isLoading = status;
   },
-  [VPN_PLUS_OPTIONS](state, { key, label }) {
+  [VPN_PLUS_OPTIONS](state, { key, label, value }) {
     for (let i = 0; i < state.vpnTableSelects[key].length; i++) {
-      if (state.vpnTableSelects[key][i].label === label) {
+      if ((label && state.vpnTableSelects[key][i].label === label) || (value && state.vpnTableSelects[key][i].value === value)) {
         state.vpnTableSelects[key][i].used = false;
         break;
       }
     }
   },
-  [VPN_MINUS_OPTIONS](state, { key, label }) {
+  [VPN_MINUS_OPTIONS](state, { key, label, value }) {
     for (let i = 0; i < state.vpnTableSelects[key].length; i++) {
-      if (state.vpnTableSelects[key][i].label === label) {
+      if ((label && state.vpnTableSelects[key][i].label === label) || (value && state.vpnTableSelects[key][i].value === value)) {
         state.vpnTableSelects[key][i].used = true;
         break;
       }

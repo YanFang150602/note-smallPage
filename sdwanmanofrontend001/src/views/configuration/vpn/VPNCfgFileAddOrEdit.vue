@@ -318,9 +318,7 @@
                     </a-form-model-item>
                   </a-col>
                   <a-col>
-                    <a-form-model-item
-                      :label="$t('VPNTunnelInterface')"
-                    >
+                    <a-form-model-item :label="$t('VPNTunnelInterface')" prop="tunnelInterface" :required="tunnelInfcIsRequired">
                       <a-select
                         v-model="cVPNProfile.tunnelInterface"
                         style="width:250px;"
@@ -880,6 +878,7 @@ export default {
             trigger: 'change'
           }
         ],
+        tunnelInterface: [{ validator: this.validateTunnelInterface, trigger: 'blur' }],
         addressFrom: [
           {
             required: true,
@@ -986,7 +985,8 @@ export default {
           label: this.$t('SelectNull'),
           value: ''
         }
-      ]
+      ],
+      tunnelInfcIsRequired: true
     };
   },
   computed: {
@@ -1097,6 +1097,11 @@ export default {
       'vpnTableSelectsAll',
       'savePeerFQDNOptions'
     ]),
+    validateTunnelInterface(rule, value, callback) {
+      if (this.tunnelInfcIsRequired && !value) {
+        return callback(new Error('Tunnel Interface is required'));
+      }
+    },
     async queryRouteInsOptions() {
       const res = await RouteInstanceQuery({ deviceName: this.deviceName });
       if (res.message === 'Success') {
@@ -1637,6 +1642,7 @@ export default {
           break;
         // 基于路由
         case '7':
+          this.tunnelInfcIsRequired = true;
           this.showBaseRoute = true;
           this.showBaseStrategy = false;
           delete this.cVPNProfile.precedence;
@@ -1644,6 +1650,7 @@ export default {
           break;
         // 基于策略
         case '8':
+          this.tunnelInfcIsRequired = false;
           this.showBaseRoute = false;
           this.showBaseStrategy = true;
           this.strategyList = this.cVPNProfile.rule ? this.cVPNProfile.rule : [];

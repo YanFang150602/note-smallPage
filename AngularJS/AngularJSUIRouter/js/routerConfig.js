@@ -1,8 +1,6 @@
 define(function(){
     var module = angular.module('cmn', ['ui.router']);
-    module.config(function($stateProvider){
-        $stateProvider.errorOnUnhandledRejections = false;
-
+    module.config(function($stateProvider) {
         $stateProvider.state({
             name: 'home',
             url: '/home',
@@ -13,6 +11,11 @@ define(function(){
             url: '/blog',
             templateUrl: 'views/blog.html',
             controller: 'blogCtrl'
+        }).state({
+            name: 'blog.news',
+            url: '/news',
+            templateUrl: 'views/news.html',
+            controller: 'newsCtrl'
         });
     });
     return module;

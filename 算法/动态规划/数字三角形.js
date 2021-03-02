@@ -30,9 +30,7 @@ process.stdin.on('end', () => {
   }
 
   f[0][0] = Number(twos[0][0]);
-  f[1][0] = Number(twos[0][0]) + Number(twos[1][0]);
-  f[1][1] = Number(twos[0][0]) + Number(twos[1][1]);
-  for (let i = 2; i < twos.length; i++) {
+  for (let i = 1; i < twos.length; i++) {
     for (let j = 0; j < twos[i].length; j++) {
       if (j === 0) {
         f[i][j] = f[i-1][j] + Number(twos[i][j]);

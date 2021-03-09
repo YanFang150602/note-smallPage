@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <script src="../lib/angular-1.7.7/angular.min.js"></script>
+    </head>
+    <body>
+        <div ng-controller="myCtrl">
+            myCtrl<br />
+            <input type="text" ng-model="name">
+            <div echo name="echo" age="26"></div>
+        </div>
+        <div ng-controller="myCtrl2">
+            myCtrl2<br />
+            <input type="text" ng-model="name">
+            <div echo2 name="echo" age="26"></div>
+        </div>
+    </body>
+    <script>
+    var app = angular.module('myApp', []);
+    // controller: 'ctrlName'字符串指令会在应用中查找与字符串同名的构造函数作为自己的控制器函数。
+    // 指令的controller的值使用了与父作用域控制器相同的名字myCtrl,导致指令中也拥有了相同的controller,同样拥有了自己name属性,但这两个name属性互不干扰,毕竟有隔离作用域的存在。
+    app.controller('myCtrl', function ($scope) {
+        $scope.name = '听风是风';
+    }).directive('echo', function () {
+        return {
+            restrict: 'EACM',
+            scope: {},
+            template: '<div><input type="text" ng-model="name"><div>',
+            replace: true,
+            controller: 'myCtrl'
+        }
+    });
+    // controller: function($scope, $element, $attrs) {}
+    app.controller('myCtrl2', function ($scope) {
+        $scope.name = '听风是风';
+    }).directive('echo2', function () {
+        return {
+            restrict: 'EACM',
+            scope: {},
+            template: '<div><input type="text" ng-model="name"><div>',
+            replace: true,
+            controller: function($scope, $element, $attrs) {
+                console.log($element);
+                console.log($attrs);
+                $scope.name = 'echo';
+            }
+        }
+    });
+    angular.bootstrap(document, [ 'myApp' ]);
+    </script>
+</html>

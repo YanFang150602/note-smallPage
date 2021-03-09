@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <script src="../lib/angular-1.7.7/angular.min.js"></script>
+    </head>
+    <body>
+        <!--
+            在 angular 页面中，每一个 HTML 页面只有一个 ng-app 会被自动装载。
+            所以我们有几种方案来解决这个问题。
+            　　1. 可以简单的将多个 ng-app 合并成为一个根模块。
+            　　2. 可以手动装载除了第一个以外的多个 ng-app，如此示例：
+        -->
+        <div id="app1div" ng-app="myApp1" ng-controller="personCtrl">
+            <p>personCtrl</p>
+            First name: <input type="text" ng-model="firstName"><br>
+            Last Name: <input type="text" ng-model="lastName"><br>
+            Full Name: {{fullName()}}
+            
+        </div>
+        
+        <br><br>
+        
+        <div id="app2div" ng-app="myApp2" ng-controller="personCtrl">
+            <p>personCtrl</p>
+            First name: <input type="text" ng-model="firstName"><br>
+            Last Name: <input type="text" ng-model="lastName"><br>
+            Full Name: {{fullName()}}
+        </div>
+
+        <script>
+            var app1 = angular.module('myApp1', []);
+            var app2 = angular.module('myApp2', []);
+
+            app1.controller('personCtrl', function($scope){
+                $scope.firstName = 'Aaron';
+                $scope.lastName = 'S';
+                $scope.fullName = function(){ return $scope.firstName + $scope.lastName; }
+            });
+
+            app2.controller('personCtrl', function($scope){
+                $scope.firstName = 'Andy';
+                $scope.lastName = 'W';
+                $scope.fullName = function(){ return $scope.firstName + $scope.lastName; }
+            });
+            angular.bootstrap(document.getElementById("app2div"), ['myApp2']);
+        </script>
+    </body>
+</html>
